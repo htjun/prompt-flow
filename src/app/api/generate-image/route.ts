@@ -4,13 +4,13 @@ import { generateImageFromPrompt } from '@/actions/generateImage'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { prompt } = body
+    const { prompt, modelId } = body
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    const imageBase64 = await generateImageFromPrompt(prompt)
+    const imageBase64 = await generateImageFromPrompt(prompt, modelId)
 
     return NextResponse.json({
       imageBase64,
