@@ -1,0 +1,7 @@
+.node-label {
+  @apply cursor-move self-start rounded-sm p-1.5 text-xs font-medium tracking-wide text-gray-500 uppercase hover:bg-gray-100/50;
+}
+
+.node-container {
+  @apply h-auto min-w-80 rounded-lg border border-gray-400 bg-white;
+}

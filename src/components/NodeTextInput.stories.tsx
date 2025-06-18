@@ -1,0 +1,135 @@
+import type { Meta, StoryObj } from '@storybook/react'
+import { useState } from 'react'
+import { NodeTextInput } from './NodeTextInput'
+import { type ActionItem } from './ActionGroup'
+
+const NodeTextInputWrapper: React.FC<{
+  initialValue: string
+  label?: string
+  placeholder?: string
+  actions: ActionItem[]
+  isProcessing?: boolean
+  isLoading?: boolean
+  loadingMessage?: string
+  className?: string
+}> = (props) => {
+  const [value, setValue] = useState(props.initialValue)
+  return (
+    <NodeTextInput
+      label={props.label}
+      placeholder={props.placeholder}
+      value={value}
+      onChange={setValue}
+      actions={props.actions}
+      isProcessing={props.isProcessing}
+      isLoading={props.isLoading}
+      loadingMessage={props.loadingMessage}
+      className={props.className}
+    />
+  )
+}
+
+const meta = {
+  title: 'Components/NodeTextInput',
+  component: NodeTextInputWrapper,
+  parameters: {
+    layout: 'centered',
+  },
+  argTypes: {
+    initialValue: { control: 'text' },
+    label: { control: 'text' },
+    placeholder: { control: 'text' },
+    isProcessing: { control: 'boolean' },
+    className: { control: 'text' },
+  },
+  tags: ['autodocs'],
+} satisfies Meta<typeof NodeTextInputWrapper>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+const defaultActions: ActionItem[] = [
+  {
+    label: 'Clear',
+    onClick: () => console.log('Clear clicked'),
+  },
+  {
+    label: 'Submit',
+    onClick: () => console.log('Submit clicked'),
+  },
+]
+
+export const Default: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: '',
+    actions: defaultActions,
+    isProcessing: false,
+  },
+}
+
+export const WithContent: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue:
+      'This is a sample prompt text that demonstrates how the component looks with content.',
+    actions: defaultActions,
+    isProcessing: false,
+  },
+}
+
+export const Processing: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: 'Processing this prompt...',
+    actions: defaultActions,
+    isProcessing: true,
+  },
+}
+
+export const CustomLabel: Story = {
+  args: {
+    label: 'Custom Input',
+    placeholder: 'Type something here',
+    initialValue: '',
+    actions: defaultActions,
+    isProcessing: false,
+  },
+}
+
+export const CustomActions: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: '',
+    actions: [
+      {
+        label: 'Save',
+        onClick: () => console.log('Save clicked'),
+      },
+      {
+        label: 'Copy',
+        onClick: () => console.log('Copy clicked'),
+      },
+      {
+        label: 'Export',
+        onClick: () => console.log('Export clicked'),
+      },
+    ],
+    isProcessing: false,
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: 'Loading...',
+    isLoading: true,
+    loadingMessage: 'Loading...',
+    actions: defaultActions,
+  },
+}

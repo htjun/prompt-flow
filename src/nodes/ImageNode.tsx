@@ -1,0 +1,42 @@
+import { Handle, Position } from '@xyflow/react'
+
+type ImageNodeProps = {
+  id: string
+  data: {
+    imageData?: string
+    isLoading?: boolean
+    hasError?: boolean
+  }
+}
+
+export const ImageNode = ({ data }: ImageNodeProps) => {
+  const { imageData, isLoading, hasError } = data
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="node-label geist-mono">Generated Image</div>
+      <div className="node-container nodrag flex min-h-60 w-80 items-center justify-center p-2">
+        {hasError ? (
+          <div className="flex min-h-28 items-center justify-center text-sm text-red-400">
+            Failed to generate image
+          </div>
+        ) : imageData ? (
+          <img
+            src={`data:image/png;base64,${imageData}`}
+            alt="Generated image"
+            className="max-h-[500px] max-w-full rounded-sm"
+          />
+        ) : isLoading ? (
+          <div className="flex min-h-28 items-center justify-center text-sm text-gray-400">
+            Generating image...
+          </div>
+        ) : (
+          <div className="flex min-h-28 items-center justify-center text-sm text-gray-400">
+            No image data
+          </div>
+        )}
+      </div>
+      <Handle type="target" position={Position.Left} id="image-input" />
+    </div>
+  )
+}
