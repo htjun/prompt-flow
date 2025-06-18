@@ -8,7 +8,6 @@ export const imageModels = [
 ]
 
 export const languageModels = [
-  { id: 'gpt-4.1-nano', name: 'GPT-4.1 Nano' },
   { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini' },
   { id: 'gpt-4o', name: 'GPT-4o' },
 ]
