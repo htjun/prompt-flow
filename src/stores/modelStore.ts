@@ -10,6 +10,6 @@ interface ModelState {
 export const useModelStore = create<ModelState>((set) => ({
   selectedImageModel: 'google/imagen-4-fast',
   setSelectedImageModel: (modelId) => set({ selectedImageModel: modelId }),
-  selectedLanguageModel: 'openai/gpt-4.1-mini',
+  selectedLanguageModel: 'gpt-4.1-nano',
   setSelectedLanguageModel: (modelId) => set({ selectedLanguageModel: modelId }),
 }))
