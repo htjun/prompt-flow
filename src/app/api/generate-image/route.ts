@@ -10,10 +10,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    const imageBase64 = await generateImageFromPrompt(prompt, modelId)
+    const result = await generateImageFromPrompt(prompt, modelId)
 
     return NextResponse.json({
-      imageBase64,
+      imageData: result.imageData,
+      modelUsed: result.modelUsed,
       success: true,
     })
   } catch (error) {

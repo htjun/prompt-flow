@@ -49,18 +49,19 @@ export const useImageGenerationFlow = () => {
 
     try {
       // Generate the image
-      const imageBase64 = await generate(prompt)
-      if (imageBase64) {
-        // Update image data in the node
+      const result = await generate(prompt)
+      if (result) {
+        // Update image data in the node with model information
         useFlowStore.getState().updateNode(newNodeId, {
-          imageData: imageBase64,
+          imageData: result.imageData,
+          modelUsed: result.modelUsed,
           isLoading: false,
         })
 
         // Set the generated image in the store
-        setGeneratedImage(imageBase64)
+        setGeneratedImage(result.imageData)
         setGeneratedImageStatus('success')
-        return { nodeId: newNodeId, imageData: imageBase64 }
+        return { nodeId: newNodeId, imageData: result.imageData, modelUsed: result.modelUsed }
       } else {
         useFlowStore.getState().updateNode(newNodeId, {
           isLoading: false,
