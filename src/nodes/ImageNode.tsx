@@ -1,4 +1,5 @@
 import { Handle, Position } from '@xyflow/react'
+import { getModelDisplayName } from '@/lib/utils'
 
 type ImageNodeProps = {
   id: string
@@ -12,20 +13,6 @@ type ImageNodeProps = {
 
 export const ImageNode = ({ data }: ImageNodeProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
-
-  // Get the display name from the model ID
-  const getModelDisplayName = (modelId: string) => {
-    const modelMap: Record<string, string> = {
-      'google/imagen-4-fast': 'Imagen 4 Fast',
-      'google/imagen-4': 'Imagen 4',
-      'openai/gpt-image-1': 'GPT Image 1',
-      'stability-ai/flux-dev': 'Flux Dev',
-      'stability-ai/flux-kontext-pro': 'Flux Kontext Pro',
-      'fal-ai/phoenix-1.0': 'Phoenix 1.0',
-      'ideogram/ideogram-v3-turbo': 'Ideogram v3 Turbo',
-    }
-    return modelMap[modelId] || modelId
-  }
 
   return (
     <div className="flex flex-col gap-1">
