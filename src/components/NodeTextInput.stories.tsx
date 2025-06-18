@@ -1,9 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { useState } from 'react'
 import { NodeTextInput } from './NodeTextInput'
 import { type ActionItem } from './ActionGroup'
 
-const NodeTextInputWrapper: React.FC<{
+const NodeTextInputWrapper = ({
+  initialValue,
+  label,
+  placeholder,
+  actions,
+  isProcessing,
+  isLoading,
+  loadingMessage,
+  className,
+}: {
   initialValue: string
   label?: string
   placeholder?: string
@@ -12,19 +22,19 @@ const NodeTextInputWrapper: React.FC<{
   isLoading?: boolean
   loadingMessage?: string
   className?: string
-}> = (props) => {
-  const [value, setValue] = useState(props.initialValue)
+}) => {
+  const [value, setValue] = useState(initialValue)
   return (
     <NodeTextInput
-      label={props.label}
-      placeholder={props.placeholder}
+      label={label}
+      placeholder={placeholder}
       value={value}
       onChange={setValue}
-      actions={props.actions}
-      isProcessing={props.isProcessing}
-      isLoading={props.isLoading}
-      loadingMessage={props.loadingMessage}
-      className={props.className}
+      actions={actions}
+      isProcessing={isProcessing}
+      isLoading={isLoading}
+      loadingMessage={loadingMessage}
+      className={className}
     />
   )
 }
@@ -51,11 +61,11 @@ type Story = StoryObj<typeof meta>
 const defaultActions: ActionItem[] = [
   {
     label: 'Clear',
-    onClick: () => console.log('Clear clicked'),
+    onClick: fn(),
   },
   {
     label: 'Submit',
-    onClick: () => console.log('Submit clicked'),
+    onClick: fn(),
   },
 ]
 
@@ -108,15 +118,15 @@ export const CustomActions: Story = {
     actions: [
       {
         label: 'Save',
-        onClick: () => console.log('Save clicked'),
+        onClick: fn(),
       },
       {
         label: 'Copy',
-        onClick: () => console.log('Copy clicked'),
+        onClick: fn(),
       },
       {
         label: 'Export',
-        onClick: () => console.log('Export clicked'),
+        onClick: fn(),
       },
     ],
     isProcessing: false,
