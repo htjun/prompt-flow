@@ -1,5 +1,6 @@
 import { Handle, Position } from '@xyflow/react'
 import { getModelDisplayName } from '@/lib/utils'
+import { ActionGroup } from '@/components/ActionGroup'
 
 type ImageNodeProps = {
   id: string
@@ -22,20 +23,59 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
     return `data:image/png;base64,${data}`
   }
 
+  const handleDownload = () => {
+    if (!imageData) return
+
+    const link = document.createElement('a')
+    link.href = getImageSrc(imageData)
+    link.download = 'generated-image.png'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleDescribe = () => {
+    // TODO: Implement image description functionality
+    console.log('Describe image clicked')
+  }
+
+  const actions = [
+    {
+      label: 'Download',
+      onClick: handleDownload,
+      disabled: !imageData,
+    },
+    {
+      label: 'Describe',
+      onClick: handleDescribe,
+      disabled: !imageData,
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-1">
       <div className="node-label geist-mono">Generated Image</div>
-      <div className="node-container nodrag flex min-h-60 w-80 flex-col items-center justify-center gap-2 p-2">
+      <div className="node-container nodrag flex min-h-60 w-80 flex-col items-center justify-center gap-2">
         {hasError ? (
           <div className="flex min-h-28 items-center justify-center text-sm text-red-400">
             Failed to generate image
           </div>
         ) : imageData ? (
-          <img
-            src={getImageSrc(imageData)}
-            alt="Generated image"
-            className="max-h-[500px] max-w-full rounded-sm"
-          />
+          <div className="space-y-3">
+            <div className="space-y-2 px-2 pt-2">
+              <img
+                src={getImageSrc(imageData)}
+                alt="Generated image"
+                className="max-h-[500px] max-w-full rounded-sm"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              {modelUsed && (
+                <div className="px-2.5 text-xs text-gray-400">{getModelDisplayName(modelUsed)}</div>
+              )}
+              <ActionGroup actions={actions} />
+            </div>
+          </div>
         ) : isLoading ? (
           <div className="flex min-h-28 items-center justify-center text-sm text-gray-400">
             Generating image...
@@ -44,9 +84,6 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
           <div className="flex min-h-28 items-center justify-center text-sm text-gray-400">
             No image data
           </div>
-        )}
-        {modelUsed && (
-          <div className="text-xs text-gray-500">Model: {getModelDisplayName(modelUsed)}</div>
         )}
       </div>
       <Handle type="target" position={Position.Left} id="image-input" />

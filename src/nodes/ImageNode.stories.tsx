@@ -12,7 +12,7 @@ const MOCK_IMAGE_DATA = {
   imageData: PLACEHOLDER_IMAGE,
   isLoading: false,
   hasError: false,
-  modelUsed: 'dall-e-3',
+  modelUsed: 'Flux Dev',
 }
 
 // Wrapper component to provide required ReactFlow context
