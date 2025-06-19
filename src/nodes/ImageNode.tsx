@@ -14,6 +14,14 @@ type ImageNodeProps = {
 export const ImageNode = ({ data }: ImageNodeProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
 
+  const getImageSrc = (data: string) => {
+    if (data.startsWith('data:')) {
+      return data
+    }
+
+    return `data:image/png;base64,${data}`
+  }
+
   return (
     <div className="flex flex-col gap-1">
       <div className="node-label geist-mono">Generated Image</div>
@@ -24,7 +32,7 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
           </div>
         ) : imageData ? (
           <img
-            src={`data:image/png;base64,${imageData}`}
+            src={getImageSrc(imageData)}
             alt="Generated image"
             className="max-h-[500px] max-w-full rounded-sm"
           />
