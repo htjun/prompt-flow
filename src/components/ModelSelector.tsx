@@ -32,7 +32,9 @@ export const ModelSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="xs" className="text-gray-500">
-          {getSelectedImageModelName()} / {getSelectedLanguageModelName()}
+          <span className="text-xs">{getSelectedImageModelName()}</span>
+          <span className="text-xs opacity-30">/</span>
+          <span className="text-xs">{getSelectedLanguageModelName()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
