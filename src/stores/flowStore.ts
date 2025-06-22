@@ -13,7 +13,7 @@ interface FlowState {
   edges: Edge[]
   addNode: (
     node: Omit<Node, 'position'> & { position?: { x: number; y: number } },
-    actionType?: 'enhance' | 'structure' | 'generate',
+    actionType?: 'enhance' | 'structure' | 'generate' | 'describe',
     referenceNodeId?: string,
     getNodeDimensions?: (nodeId: string) => { width: number; height: number } | null
   ) => void
@@ -63,6 +63,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         switch (actionType) {
           case 'enhance':
           case 'structure':
+          case 'describe':
             // Position below the reference node (same x, y + height + gap)
             position = {
               x: referenceNode.position.x,

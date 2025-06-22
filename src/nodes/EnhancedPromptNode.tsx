@@ -5,7 +5,7 @@ import { usePromptActions } from '@/hooks/usePromptActions'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 
-const NODE_LABEL = 'Enhanced Prompt'
+const NODE_LABEL = 'Prompt'
 
 export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const { getEnhancedPrompt, setEnhancedPrompt, getEnhancedPromptStatus } = usePromptActions()

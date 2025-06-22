@@ -8,6 +8,7 @@ import { useFlowStore } from '@/stores/flowStore'
 import { useNodeDimensions } from '@/lib/flowHelpers'
 import { imageModels } from '@/constants/models'
 import { useModelStore } from '@/stores/modelStore'
+import { useImageActions } from '@/hooks/useImageActions'
 
 type ImageNodeProps = {
   id: string
@@ -26,6 +27,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const addEdge = useFlowStore((state) => state.addEdge)
   const getNodeDimensions = useNodeDimensions()
   const selectedImageModel = useModelStore((state) => state.selectedImageModel)
+  const { describe } = useImageActions(id, data.imageData)
 
   const getImageSrc = (data: string) => {
     if (data.startsWith('data:')) {
@@ -77,7 +79,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     },
     {
       label: 'Describe',
-      onClick: () => {},
+      onClick: describe,
     },
   ]
 
@@ -150,6 +152,12 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
         position={Position.Bottom}
         id="refine"
         className="right-[107px] !left-auto opacity-0 transition-opacity duration-200"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="describe"
+        className="right-[34px] !left-auto opacity-0 transition-opacity duration-200"
       />
     </div>
   )
