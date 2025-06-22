@@ -52,3 +52,27 @@ export const copyImageToClipboard = (imageData: string): Promise<void> => {
     img.src = imageSrc
   })
 }
+
+// Helper function to download image data
+export const downloadImage = (
+  imageData: string,
+  filename: string = 'generated-image.png'
+): void => {
+  if (!imageData) {
+    throw new Error('No image data provided')
+  }
+
+  const getImageSrc = (data: string) => {
+    if (data.startsWith('data:')) {
+      return data
+    }
+    return `data:image/png;base64,${data}`
+  }
+
+  const link = document.createElement('a')
+  link.href = getImageSrc(imageData)
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

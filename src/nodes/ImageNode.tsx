@@ -1,9 +1,11 @@
 import { Handle, Position } from '@xyflow/react'
-import { getModelDisplayName, copyImageToClipboard } from '@/lib/utils'
+import { getModelDisplayName, copyImageToClipboard, downloadImage } from '@/lib/utils'
 import { ActionGroup } from '@/components/ActionGroup'
 import { Button } from '@/components/ui/button'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useFlowStore } from '@/stores/flowStore'
+import { useNodeDimensions } from '@/lib/flowHelpers'
 
 type ImageNodeProps = {
   id: string
@@ -15,9 +17,12 @@ type ImageNodeProps = {
   }
 }
 
-export const ImageNode = ({ data }: ImageNodeProps) => {
+export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
   const [copySuccess, setCopySuccess] = useState(false)
+  const addNode = useFlowStore((state) => state.addNode)
+  const addEdge = useFlowStore((state) => state.addEdge)
+  const getNodeDimensions = useNodeDimensions()
 
   const getImageSrc = (data: string) => {
     if (data.startsWith('data:')) {
@@ -38,7 +43,16 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
     }
   }
 
-  // Reset copy success state after 1 second
+  const handleDownload = () => {
+    if (!imageData) return
+
+    try {
+      downloadImage(imageData)
+    } catch (error) {
+      console.error('Failed to download image:', error)
+    }
+  }
+
   useEffect(() => {
     if (copySuccess) {
       const timer = setTimeout(() => {
@@ -48,22 +62,46 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
     }
   }, [copySuccess])
 
-  const handleDownload = () => {
+  const handleRefine = () => {
     if (!imageData) return
 
-    const link = document.createElement('a')
-    link.href = getImageSrc(imageData)
-    link.download = 'generated-image.png'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    // Generate a unique ID for the refine node
+    const refineNodeId = `refine-${crypto.randomUUID()}`
+
+    // Add the refine node to the flow with the image data
+    addNode(
+      {
+        id: refineNodeId,
+        type: 'refine',
+        data: {
+          sourceImageData: imageData,
+          sourceImageNodeId: id,
+        },
+      },
+      'generate',
+      id,
+      getNodeDimensions
+    )
+
+    // Connect the image node to the refine node
+    addEdge({
+      id: `${id}-to-${refineNodeId}`,
+      source: id,
+      sourceHandle: 'refine',
+      target: refineNodeId,
+      targetHandle: 'image-input',
+      animated: true,
+    })
   }
 
   const actions = [
     {
-      label: 'Download',
-      onClick: handleDownload,
-      disabled: !imageData,
+      label: 'Refine',
+      onClick: handleRefine,
+    },
+    {
+      label: 'Describe',
+      onClick: () => {},
     },
   ]
 
@@ -124,6 +162,12 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
         )}
       </div>
       <Handle type="target" position={Position.Left} id="image-input" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="refine"
+        className="right-[107px] !left-auto opacity-0 transition-opacity duration-200"
+      />
     </div>
   )
 }
