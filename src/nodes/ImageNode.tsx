@@ -1,6 +1,9 @@
 import { Handle, Position } from '@xyflow/react'
-import { getModelDisplayName } from '@/lib/utils'
+import { getModelDisplayName, copyImageToClipboard } from '@/lib/utils'
 import { ActionGroup } from '@/components/ActionGroup'
+import { Button } from '@/components/ui/button'
+import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 type ImageNodeProps = {
   id: string
@@ -14,6 +17,7 @@ type ImageNodeProps = {
 
 export const ImageNode = ({ data }: ImageNodeProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
+  const [copySuccess, setCopySuccess] = useState(false)
 
   const getImageSrc = (data: string) => {
     if (data.startsWith('data:')) {
@@ -22,6 +26,27 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
 
     return `data:image/png;base64,${data}`
   }
+
+  const handleCopy = async () => {
+    if (!imageData) return
+
+    try {
+      await copyImageToClipboard(imageData)
+      setCopySuccess(true)
+    } catch (error) {
+      console.error('Failed to copy image:', error)
+    }
+  }
+
+  // Reset copy success state after 1 second
+  useEffect(() => {
+    if (copySuccess) {
+      const timer = setTimeout(() => {
+        setCopySuccess(false)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [copySuccess])
 
   const handleDownload = () => {
     if (!imageData) return
@@ -34,20 +59,10 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
     document.body.removeChild(link)
   }
 
-  const handleDescribe = () => {
-    // TODO: Implement image description functionality
-    console.log('Describe image clicked')
-  }
-
   const actions = [
     {
       label: 'Download',
       onClick: handleDownload,
-      disabled: !imageData,
-    },
-    {
-      label: 'Describe',
-      onClick: handleDescribe,
       disabled: !imageData,
     },
   ]
@@ -62,7 +77,29 @@ export const ImageNode = ({ data }: ImageNodeProps) => {
           </div>
         ) : imageData ? (
           <div className="space-y-3">
-            <div className="space-y-2 px-2 pt-2">
+            <div className="group relative space-y-2 px-2 pt-2">
+              <div className="absolute top-3 right-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="cursor-pointer hover:bg-neutral-800/50"
+                  onClick={handleCopy}
+                >
+                  {copySuccess ? (
+                    <CheckIcon className="h-4 w-4 text-white" />
+                  ) : (
+                    <CopyIcon className="h-4 w-4 text-white" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="cursor-pointer hover:bg-neutral-800/50"
+                  onClick={handleDownload}
+                >
+                  <DownloadIcon className="h-4 w-4 text-white" />
+                </Button>
+              </div>
               <img
                 src={getImageSrc(imageData)}
                 alt="Generated image"
