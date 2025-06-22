@@ -6,6 +6,8 @@ import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useFlowStore } from '@/stores/flowStore'
 import { useNodeDimensions } from '@/lib/flowHelpers'
+import { imageModels } from '@/constants/models'
+import { useModelStore } from '@/stores/modelStore'
 
 type ImageNodeProps = {
   id: string
@@ -23,6 +25,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const addNode = useFlowStore((state) => state.addNode)
   const addEdge = useFlowStore((state) => state.addEdge)
   const getNodeDimensions = useNodeDimensions()
+  const selectedImageModel = useModelStore((state) => state.selectedImageModel)
 
   const getImageSrc = (data: string) => {
     if (data.startsWith('data:')) {
@@ -62,39 +65,12 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     }
   }, [copySuccess])
 
-  const handleRefine = () => {
-    if (!imageData) return
+  const handleRefine = () => {}
 
-    // Generate a unique ID for the refine node
-    const refineNodeId = `refine-${crypto.randomUUID()}`
+  const supportsImageInput =
+    imageModels.find((model) => model.id === selectedImageModel)?.imageInput || false
 
-    // Add the refine node to the flow with the image data
-    addNode(
-      {
-        id: refineNodeId,
-        type: 'refine',
-        data: {
-          sourceImageData: imageData,
-          sourceImageNodeId: id,
-        },
-      },
-      'generate',
-      id,
-      getNodeDimensions
-    )
-
-    // Connect the image node to the refine node
-    addEdge({
-      id: `${id}-to-${refineNodeId}`,
-      source: id,
-      sourceHandle: 'refine',
-      target: refineNodeId,
-      targetHandle: 'image-input',
-      animated: true,
-    })
-  }
-
-  const actions = [
+  const allActions = [
     {
       label: 'Refine',
       onClick: handleRefine,
@@ -104,6 +80,13 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
       onClick: () => {},
     },
   ]
+
+  const actions = allActions.filter((action) => {
+    if (action.label === 'Refine') {
+      return supportsImageInput
+    }
+    return true
+  })
 
   return (
     <div className="flex flex-col gap-1">

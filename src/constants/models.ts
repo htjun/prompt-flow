@@ -1,10 +1,10 @@
 export const imageModels = [
-  { id: 'google/imagen-4-fast', name: 'Imagen 4 Fast' },
-  { id: 'google/imagen-4', name: 'Imagen 4' },
-  { id: 'black-forest-labs/flux-dev-lora', name: 'Flux Dev' },
-  { id: 'black-forest-labs/flux-kontext-pro', name: 'Flux Kontext Pro' },
-  { id: 'leonardoai/phoenix-1.0', name: 'Phoenix 1.0' },
-  { id: 'ideogram-ai/ideogram-v3-turbo', name: 'Ideogram V3 Turbo' },
+  { id: 'google/imagen-4-fast', name: 'Imagen 4 Fast', imageInput: false },
+  { id: 'google/imagen-4', name: 'Imagen 4', imageInput: false },
+  { id: 'black-forest-labs/flux-dev-lora', name: 'Flux Dev', imageInput: true },
+  { id: 'black-forest-labs/flux-kontext-pro', name: 'Flux Kontext Pro', imageInput: true },
+  { id: 'leonardoai/phoenix-1.0', name: 'Phoenix 1.0', imageInput: false },
+  { id: 'ideogram-ai/ideogram-v3-turbo', name: 'Ideogram V3 Turbo', imageInput: false },
 ]
 
 export const languageModels = [
