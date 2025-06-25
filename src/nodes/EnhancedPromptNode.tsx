@@ -1,14 +1,16 @@
 import { Position, Handle, useEdges, NodeProps } from '@xyflow/react'
 import { NodeTextInput } from '@/components/NodeTextInput'
 import { cn } from '@/lib/utils'
-import { usePromptActions } from '@/hooks/usePromptActions'
+import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 
 const NODE_LABEL = 'Prompt'
 
 export const EnhancedPromptNode = ({ id }: NodeProps) => {
-  const { getEnhancedPrompt, setEnhancedPrompt, getEnhancedPromptStatus } = usePromptActions()
+  const getEnhancedPrompt = usePromptStore((s) => s.getEnhancedPrompt)
+  const setEnhancedPrompt = usePromptStore((s) => s.setEnhancedPrompt)
+  const getEnhancedPromptStatus = usePromptStore((s) => s.getEnhancedPromptStatus)
   const { structurePrompt, generateImage, isStructuring } = useFlowActions()
   const edges = useEdges()
 

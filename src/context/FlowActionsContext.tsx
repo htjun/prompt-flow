@@ -1,11 +1,6 @@
 import { createContext, useContext } from 'react'
-import { type z } from 'zod'
-import { imageStructureSchema } from '@/schema/imageStructure'
-import { usePromptEnhancementFlow } from '@/hooks/usePromptEnhancementFlow'
-import { useImageGenerationFlow } from '@/hooks/useImageGenerationFlow'
-import { usePromptStructureFlow } from '@/hooks/usePromptStructureFlow'
-
-export type ImageStructure = z.infer<typeof imageStructureSchema>
+import { useFlowOperations } from '@/hooks/useFlowOperations'
+import { type ImageStructure } from '@/hooks/useAIActions'
 
 interface FlowActionsContextValue {
   enhancePrompt: (prompt: string, nodeId: string) => Promise<string | null>
@@ -13,7 +8,7 @@ interface FlowActionsContextValue {
     prompt: string,
     nodeId: string,
     handleId: string
-  ) => Promise<{ nodeId: string; imageData: string } | null>
+  ) => Promise<{ nodeId: string; data?: any } | null>
   structurePrompt: (
     prompt: string,
     nodeId: string
@@ -22,8 +17,11 @@ interface FlowActionsContextValue {
     nodeId: string,
     data: ImageStructure
   ) => string | null
+  describeImage: (imageData: string, nodeId: string) => Promise<string | null>
   isEnhancing: boolean
+  isGenerating: boolean
   isStructuring: boolean
+  isDescribing: boolean
 }
 
 const FlowActionsContext = createContext<FlowActionsContextValue>({
@@ -31,23 +29,26 @@ const FlowActionsContext = createContext<FlowActionsContextValue>({
   generateImage: async () => null,
   structurePrompt: async () => null,
   duplicateStructuredPrompt: () => null,
+  describeImage: async () => null,
   isEnhancing: false,
+  isGenerating: false,
   isStructuring: false,
+  isDescribing: false,
 })
 
 export const FlowActionsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { enhancePromptNode, isEnhancing } = usePromptEnhancementFlow()
-  const { generateImageNode } = useImageGenerationFlow()
-  const { structurePromptNode, duplicateStructuredPromptNode, isStructuring } =
-    usePromptStructureFlow()
+  const flowOperations = useFlowOperations()
 
   const value: FlowActionsContextValue = {
-    enhancePrompt: enhancePromptNode,
-    generateImage: generateImageNode,
-    structurePrompt: structurePromptNode,
-    duplicateStructuredPrompt: duplicateStructuredPromptNode,
-    isEnhancing,
-    isStructuring,
+    enhancePrompt: flowOperations.enhancePrompt,
+    generateImage: flowOperations.generateImage,
+    structurePrompt: flowOperations.structurePrompt,
+    duplicateStructuredPrompt: flowOperations.duplicateStructuredPrompt,
+    describeImage: flowOperations.describeImage,
+    isEnhancing: flowOperations.isEnhancing,
+    isGenerating: flowOperations.isGenerating,
+    isStructuring: flowOperations.isStructuring,
+    isDescribing: flowOperations.isDescribing,
   }
 
   return <FlowActionsContext.Provider value={value}>{children}</FlowActionsContext.Provider>

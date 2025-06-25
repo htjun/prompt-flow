@@ -1,12 +1,13 @@
 import { NodeTextInput } from '@/components/NodeTextInput'
 import { cn } from '@/lib/utils'
 import { Position, Handle, useEdges } from '@xyflow/react'
-import { usePromptActions } from '@/hooks/usePromptActions'
+import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 
 export const PromptNode = () => {
-  const { prompt, setPrompt } = usePromptActions()
+  const prompt = usePromptStore((s) => s.prompt)
+  const setPrompt = usePromptStore((s) => s.setPrompt)
   const { enhancePrompt, generateImage } = useFlowActions()
   const edges = useEdges()
 
