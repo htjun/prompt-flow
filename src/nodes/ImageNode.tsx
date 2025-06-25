@@ -1,5 +1,10 @@
 import { Handle, Position } from '@xyflow/react'
-import { getModelDisplayName, copyImageToClipboard, downloadImage } from '@/lib/utils'
+import {
+  getModelDisplayName,
+  copyImageToClipboard,
+  downloadImage,
+  calculateHandleOffset,
+} from '@/lib/utils'
 import { ActionGroup } from '@/components/ActionGroup'
 import { Button } from '@/components/ui/button'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
@@ -95,6 +100,9 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     return true
   })
 
+  // Define action labels for handle positioning (matches the filtered actions)
+  const actionLabels = actions.map((action) => action.label)
+
   return (
     <div className="flex flex-col gap-1">
       <div className="node-label geist-mono">Generated Image</div>
@@ -156,13 +164,15 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
         type="source"
         position={Position.Bottom}
         id="refine"
-        className="right-[107px] !left-auto opacity-0 transition-opacity duration-200"
+        className="!left-auto opacity-0 transition-opacity duration-200"
+        style={calculateHandleOffset(actionLabels, actionLabels.indexOf('Refine'))}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="describe"
-        className="right-[34px] !left-auto opacity-0 transition-opacity duration-200"
+        className="!left-auto opacity-0 transition-opacity duration-200"
+        style={calculateHandleOffset(actionLabels, actionLabels.indexOf('Describe'))}
       />
     </div>
   )

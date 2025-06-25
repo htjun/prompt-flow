@@ -1,6 +1,6 @@
 import { Position, Handle, useEdges, NodeProps } from '@xyflow/react'
 import { NodeTextInput } from '@/components/NodeTextInput'
-import { cn } from '@/lib/utils'
+import { cn, calculateHandleOffset } from '@/lib/utils'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
@@ -42,6 +42,9 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
     setEnhancedPrompt(nodeId, value)
   }
 
+  // Define action labels for handle positioning
+  const actionLabels = ['Structure', 'Generate']
+
   return (
     <>
       <NodeTextInput
@@ -70,18 +73,20 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
         id="structure"
         position={Position.Bottom}
         className={cn(
-          'right-[110px] !left-auto transition-opacity duration-200',
+          '!left-auto transition-opacity duration-200',
           isStructureHandleConnected ? 'opacity-100' : 'opacity-0'
         )}
+        style={calculateHandleOffset(actionLabels, 0)}
       />
       <Handle
         type="source"
         id="generate"
         position={Position.Bottom}
         className={cn(
-          'right-[36px] !left-auto transition-opacity duration-200',
+          '!left-auto transition-opacity duration-200',
           isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'
         )}
+        style={calculateHandleOffset(actionLabels, 1)}
       />
     </>
   )

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { imageModels, languageModels } from '@/constants/models'
+import { CSSProperties } from 'react'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -75,4 +76,43 @@ export const downloadImage = (
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+}
+
+/**
+ * Calculates the right offset for a handle to center it with action buttons
+ * @param actions Array of action items
+ * @param targetIndex Index of the action button to center the handle with
+ * @returns Inline style object for right positioning
+ */
+export const calculateHandleOffset = (actions: string[], targetIndex: number): CSSProperties => {
+  // Button dimensions for size="xs"
+  const BUTTON_HEIGHT = 28 // h-7 = 1.75rem = 28px
+  const BUTTON_PADDING_X = 10 // px-2.5 = 0.625rem = 10px each side
+  const BUTTON_GAP = 6 // gap-1.5 = 0.375rem = 6px
+  const CONTAINER_PADDING = 4 // p-1 = 0.25rem = 4px
+
+  // Estimate character width for text-xs (12px font-size)
+  const CHAR_WIDTH = 6 // Approximate width per character in pixels
+
+  // Calculate button widths
+  const buttonWidths = actions.map((action) => {
+    const textWidth = action.length * CHAR_WIDTH
+    return textWidth + BUTTON_PADDING_X * 2 // Add left and right padding
+  })
+
+  // Calculate position from right edge
+  let rightOffset = CONTAINER_PADDING
+
+  // Add widths of buttons to the right of target
+  for (let i = actions.length - 1; i > targetIndex; i--) {
+    rightOffset += buttonWidths[i]
+    if (i > targetIndex + 1) rightOffset += BUTTON_GAP
+  }
+
+  // Add half width of target button to center the handle
+  rightOffset += buttonWidths[targetIndex] / 2
+
+  // Round to nearest pixel and return as inline style
+  const offset = Math.round(rightOffset)
+  return { right: `${offset}px` }
 }

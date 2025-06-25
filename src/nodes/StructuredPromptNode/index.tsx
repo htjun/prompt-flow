@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { imageStructureSchema } from '@/schema/imageStructure'
 import { ActionGroup, type ActionItem } from '@/components/ActionGroup'
 import { useState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
+import { cn, calculateHandleOffset } from '@/lib/utils'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 import { PromptCategoryTabs } from './PromptCategoryTabs'
@@ -72,6 +72,9 @@ export const StructuredPromptNode = ({
 
   const allActions = [duplicateAction, generateAction]
 
+  // Define action labels for handle positioning
+  const actionLabels = ['Duplicate', 'Generate']
+
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -100,19 +103,20 @@ export const StructuredPromptNode = ({
           id="duplicate"
           position={Position.Bottom}
           className={cn(
-            'right-[110px] !left-auto transition-opacity duration-200',
+            '!left-auto transition-opacity duration-200',
             isDuplicateHandleConnected ? 'opacity-100' : 'opacity-0'
           )}
+          style={calculateHandleOffset(actionLabels, 0)}
         />
         <Handle
           type="source"
           position={Position.Bottom}
           id="generate"
           className={cn(
-            'right-[36px] !left-auto transition-opacity duration-200',
+            '!left-auto transition-opacity duration-200',
             isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'
           )}
-          style={{ background: '#555' }}
+          style={{ ...calculateHandleOffset(actionLabels, 1), background: '#555' }}
         />
       </div>
     </>
