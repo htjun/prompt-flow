@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 import {
   Node,
   Edge,
@@ -7,126 +8,372 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
 } from '@xyflow/react'
+import { NodePositioningService, type ActionType } from '@/lib/nodePositioning'
 
 interface FlowState {
+  // Core state
   nodes: Node[]
   edges: Edge[]
-  addNode: (
+  
+  // UI state
+  ui: {
+    selectedNodeIds: string[]
+    viewportState: {
+      x: number
+      y: number
+      zoom: number
+    }
+    isSelectionMode: boolean
+  }
+  
+  // Core actions
+  addNode: (node: Omit<Node, 'position'> & { position?: { x: number; y: number } }) => void
+  updateNode: (id: string, data: Record<string, unknown>) => void
+  removeNode: (id: string) => void
+  clearAllNodes: () => void
+  
+  addEdge: (edge: Edge) => void
+  removeEdge: (id: string) => void
+  clearAllEdges: () => void
+  
+  // Flow-specific actions with positioning
+  addNodeWithPositioning: (
     node: Omit<Node, 'position'> & { position?: { x: number; y: number } },
-    actionType?: 'enhance' | 'structure' | 'generate' | 'describe',
+    actionType?: ActionType,
     referenceNodeId?: string,
     getNodeDimensions?: (nodeId: string) => { width: number; height: number } | null
   ) => void
-  updateNode: (id: string, data: Record<string, unknown>) => void
-  getNodeById: (id: string) => Node | undefined
-  addEdge: (edge: Edge) => void
-  removeNode: (id: string) => void
-  removeEdge: (id: string) => void
+  
+  // React Flow handlers
   handleNodesChange: (changes: NodeChange[]) => void
   handleEdgesChange: (changes: EdgeChange[]) => void
+  
+  // Selectors
+  getNodeById: (id: string) => Node | undefined
+  getNodesByType: (type: string) => Node[]
+  getConnectedNodes: (nodeId: string) => { incoming: Node[]; outgoing: Node[] }
+  getEdgesByNodeId: (nodeId: string) => { incoming: Edge[]; outgoing: Edge[] }
+  
+  // UI actions
+  setSelectedNodes: (nodeIds: string[]) => void
+  addToSelection: (nodeId: string) => void
+  removeFromSelection: (nodeId: string) => void
+  clearSelection: () => void
+  setViewportState: (viewport: { x: number; y: number; zoom: number }) => void
+  setSelectionMode: (enabled: boolean) => void
+  
+  // Bulk operations
+  duplicateNodes: (nodeIds: string[]) => void
+  deleteSelectedNodes: () => void
+  
+  // Layout utilities
+  arrangeNodesInGrid: (nodeIds: string[]) => void
+  autoLayoutNodes: () => void
 }
 
-export const useFlowStore = create<FlowState>((set, get) => ({
-  nodes: [
-    {
-      id: 'prompt',
-      type: 'prompt',
-      position: { x: 100, y: 100 },
-      data: {},
-    },
-  ],
-  edges: [],
+export const useFlowStore = create<FlowState>()(
+  devtools(
+    (set, get) => ({
+      // Initial state
+      nodes: [
+        {
+          id: 'prompt',
+          type: 'prompt',
+          position: { x: 100, y: 100 },
+          data: {},
+        },
+      ],
+      edges: [],
+      ui: {
+        selectedNodeIds: [],
+        viewportState: { x: 0, y: 0, zoom: 1 },
+        isSelectionMode: false,
+      },
 
-  addNode: (node, actionType, referenceNodeId, getNodeDimensions) => {
-    let position = node.position || { x: 100, y: 100 }
+      // Core node actions
+      addNode: (node) =>
+        set(
+          (state) => ({
+            nodes: [...state.nodes, { ...node, position: node.position || { x: 100, y: 100 } }],
+          }),
+          false,
+          'addNode'
+        ),
 
-    // If actionType and referenceNodeId are provided, calculate position based on action
-    if (actionType && referenceNodeId) {
-      const { nodes } = get()
-      const referenceNode = nodes.find((n) => n.id === referenceNodeId)
+      updateNode: (id, data) =>
+        set(
+          (state) => ({
+            nodes: state.nodes.map((node) =>
+              node.id === id ? { ...node, data: { ...node.data, ...data } } : node
+            ),
+          }),
+          false,
+          'updateNode'
+        ),
 
-      if (referenceNode) {
-        const gap = 50
+      removeNode: (id) =>
+        set(
+          (state) => ({
+            nodes: state.nodes.filter((node) => node.id !== id),
+            edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id),
+            ui: {
+              ...state.ui,
+              selectedNodeIds: state.ui.selectedNodeIds.filter((nodeId) => nodeId !== id),
+            },
+          }),
+          false,
+          'removeNode'
+        ),
 
-        // Try to get actual node dimensions, fallback to defaults
-        let nodeHeight = 160
-        let nodeWidth = 320
+      clearAllNodes: () =>
+        set(
+          {
+            nodes: [],
+            edges: [],
+            ui: {
+              selectedNodeIds: [],
+              viewportState: { x: 0, y: 0, zoom: 1 },
+              isSelectionMode: false,
+            },
+          },
+          false,
+          'clearAllNodes'
+        ),
 
-        if (getNodeDimensions) {
-          const dimensions = getNodeDimensions(referenceNodeId)
-          if (dimensions) {
-            nodeHeight = dimensions.height
-            nodeWidth = dimensions.width
+      // Core edge actions
+      addEdge: (edge) =>
+        set(
+          (state) => ({
+            edges: [...state.edges, edge],
+          }),
+          false,
+          'addEdge'
+        ),
+
+      removeEdge: (id) =>
+        set(
+          (state) => ({
+            edges: state.edges.filter((edge) => edge.id !== id),
+          }),
+          false,
+          'removeEdge'
+        ),
+
+      clearAllEdges: () =>
+        set(
+          (state) => ({ edges: [] }),
+          false,
+          'clearAllEdges'
+        ),
+
+      // Flow-specific positioning action
+      addNodeWithPositioning: (node, actionType, referenceNodeId, getNodeDimensions) => {
+        let position = node.position || { x: 100, y: 100 }
+
+        // Calculate position if actionType and referenceNodeId are provided
+        if (actionType && referenceNodeId) {
+          const referenceNode = get().getNodeById(referenceNodeId)
+          if (referenceNode) {
+            position = NodePositioningService.calculatePosition(
+              actionType,
+              referenceNode,
+              getNodeDimensions
+            )
           }
         }
 
-        switch (actionType) {
-          case 'enhance':
-          case 'structure':
-          case 'describe':
-            // Position below the reference node (same x, y + height + gap)
-            position = {
-              x: referenceNode.position.x,
-              y: referenceNode.position.y + nodeHeight + gap,
-            }
-            break
-          case 'generate':
-            // Position to the right of the reference node (x + width + gap, same y)
-            position = {
-              x: referenceNode.position.x + nodeWidth + gap,
-              y: referenceNode.position.y,
-            }
-            break
+        get().addNode({ ...node, position })
+      },
+
+      // React Flow handlers
+      handleNodesChange: (changes) =>
+        set(
+          (state) => ({
+            nodes: applyNodeChanges(changes, state.nodes),
+          }),
+          false,
+          'handleNodesChange'
+        ),
+
+      handleEdgesChange: (changes) =>
+        set(
+          (state) => ({
+            edges: applyEdgeChanges(changes, state.edges),
+          }),
+          false,
+          'handleEdgesChange'
+        ),
+
+      // Selectors
+      getNodeById: (id) => get().nodes.find((node) => node.id === id),
+      
+      getNodesByType: (type) => get().nodes.filter((node) => node.type === type),
+      
+      getConnectedNodes: (nodeId) => {
+        const { nodes, edges } = get()
+        const incomingEdges = edges.filter((edge) => edge.target === nodeId)
+        const outgoingEdges = edges.filter((edge) => edge.source === nodeId)
+        
+        return {
+          incoming: incomingEdges
+            .map((edge) => nodes.find((node) => node.id === edge.source))
+            .filter(Boolean) as Node[],
+          outgoing: outgoingEdges
+            .map((edge) => nodes.find((node) => node.id === edge.target))
+            .filter(Boolean) as Node[],
         }
-      }
-    }
+      },
+      
+      getEdgesByNodeId: (nodeId) => {
+        const { edges } = get()
+        return {
+          incoming: edges.filter((edge) => edge.target === nodeId),
+          outgoing: edges.filter((edge) => edge.source === nodeId),
+        }
+      },
 
-    set((state) => ({
-      nodes: [...state.nodes, { ...node, position }],
-    }))
-  },
+      // UI actions
+      setSelectedNodes: (nodeIds) =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, selectedNodeIds: nodeIds },
+          }),
+          false,
+          'setSelectedNodes'
+        ),
 
-  updateNode: (id, data) => {
-    set((state) => ({
-      nodes: state.nodes.map((node) =>
-        node.id === id ? { ...node, data: { ...node.data, ...data } } : node
-      ),
-    }))
-  },
+      addToSelection: (nodeId) =>
+        set(
+          (state) => ({
+            ui: {
+              ...state.ui,
+              selectedNodeIds: state.ui.selectedNodeIds.includes(nodeId)
+                ? state.ui.selectedNodeIds
+                : [...state.ui.selectedNodeIds, nodeId],
+            },
+          }),
+          false,
+          'addToSelection'
+        ),
 
-  getNodeById: (id) => {
-    const { nodes } = get()
-    return nodes.find((node) => node.id === id)
-  },
+      removeFromSelection: (nodeId) =>
+        set(
+          (state) => ({
+            ui: {
+              ...state.ui,
+              selectedNodeIds: state.ui.selectedNodeIds.filter((id) => id !== nodeId),
+            },
+          }),
+          false,
+          'removeFromSelection'
+        ),
 
-  addEdge: (edge) => {
-    set((state) => ({
-      edges: [...state.edges, edge],
-    }))
-  },
+      clearSelection: () =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, selectedNodeIds: [] },
+          }),
+          false,
+          'clearSelection'
+        ),
 
-  removeNode: (id) => {
-    set((state) => ({
-      nodes: state.nodes.filter((node) => node.id !== id),
-      edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id),
-    }))
-  },
+      setViewportState: (viewport) =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, viewportState: viewport },
+          }),
+          false,
+          'setViewportState'
+        ),
 
-  removeEdge: (id) => {
-    set((state) => ({
-      edges: state.edges.filter((edge) => edge.id !== id),
-    }))
-  },
+      setSelectionMode: (enabled) =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, isSelectionMode: enabled },
+          }),
+          false,
+          'setSelectionMode'
+        ),
 
-  handleNodesChange: (changes) => {
-    set((state) => ({
-      nodes: applyNodeChanges(changes, state.nodes),
-    }))
-  },
+      // Bulk operations
+      duplicateNodes: (nodeIds) => {
+        const { nodes } = get()
+        const nodesToDuplicate = nodes.filter((node) => nodeIds.includes(node.id))
+        
+        nodesToDuplicate.forEach((node, index) => {
+          const newId = `${node.id}-copy-${Date.now()}-${index}`
+          const newPosition = {
+            x: node.position.x + 50,
+            y: node.position.y + 50,
+          }
+          
+          get().addNode({
+            ...node,
+            id: newId,
+            position: newPosition,
+          })
+        })
+      },
 
-  handleEdgesChange: (changes) => {
-    set((state) => ({
-      edges: applyEdgeChanges(changes, state.edges),
-    }))
-  },
-}))
+      deleteSelectedNodes: () => {
+        const { ui } = get()
+        ui.selectedNodeIds.forEach((nodeId) => {
+          get().removeNode(nodeId)
+        })
+        get().clearSelection()
+      },
+
+      // Layout utilities
+      arrangeNodesInGrid: (nodeIds) => {
+        const { nodes } = get()
+        const nodesToArrange = nodes.filter((node) => nodeIds.includes(node.id))
+        
+        nodesToArrange.forEach((node, index) => {
+          const position = NodePositioningService.calculateGridPosition(index)
+          get().updateNode(node.id, { position })
+        })
+      },
+
+      autoLayoutNodes: () => {
+        // Simple auto-layout: arrange all nodes in a grid
+        const { nodes } = get()
+        nodes.forEach((node, index) => {
+          const position = NodePositioningService.calculateGridPosition(index)
+          set(
+            (state) => ({
+              nodes: state.nodes.map((n) =>
+                n.id === node.id ? { ...n, position } : n
+              ),
+            }),
+            false,
+            'autoLayoutNodes'
+          )
+        })
+      },
+    }),
+    { name: 'flow-store' }
+  )
+)
+
+// Reusable selectors for better performance
+export const selectNodes = (state: FlowState) => state.nodes
+export const selectEdges = (state: FlowState) => state.edges
+export const selectSelectedNodeIds = (state: FlowState) => state.ui.selectedNodeIds
+export const selectViewportState = (state: FlowState) => state.ui.viewportState
+export const selectIsSelectionMode = (state: FlowState) => state.ui.isSelectionMode
+
+export const selectNodeById = (id: string) => (state: FlowState) =>
+  state.nodes.find((node) => node.id === id)
+
+export const selectNodesByType = (type: string) => (state: FlowState) =>
+  state.nodes.filter((node) => node.type === type)
+
+export const selectSelectedNodes = (state: FlowState) =>
+  state.nodes.filter((node) => state.ui.selectedNodeIds.includes(node.id))
+
+// Derived selectors
+export const selectNodeCount = (state: FlowState) => state.nodes.length
+export const selectEdgeCount = (state: FlowState) => state.edges.length
+export const selectSelectedNodeCount = (state: FlowState) => state.ui.selectedNodeIds.length
+
+export const selectHasSelection = (state: FlowState) => state.ui.selectedNodeIds.length > 0

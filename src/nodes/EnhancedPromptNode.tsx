@@ -10,14 +10,14 @@ const NODE_LABEL = 'Prompt'
 export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const getEnhancedPrompt = usePromptStore((s) => s.getEnhancedPrompt)
   const setEnhancedPrompt = usePromptStore((s) => s.setEnhancedPrompt)
-  const getEnhancedPromptStatus = usePromptStore((s) => s.getEnhancedPromptStatus)
+  const getOperationStatus = usePromptStore((s) => s.getOperationStatus)
   const { structurePrompt, generateImage, isStructuring } = useFlowActions()
   const edges = useEdges()
 
   // Get the specific enhanced prompt for this node
   const nodeId = id
   const enhancedPrompt = getEnhancedPrompt(nodeId)
-  const enhancedPromptStatus = getEnhancedPromptStatus(nodeId)
+  const operationStatus = getOperationStatus(nodeId)
 
   // Check if the target handle is connected to any node
   const isTargetHandleConnected = isHandleConnected(edges, nodeId, 'image-input', 'target')
@@ -53,7 +53,7 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
           { label: 'Generate', onClick: handleGenerate },
         ]}
         hasOutputHandle={false}
-        isLoading={enhancedPromptStatus === 'loading'}
+        isLoading={operationStatus === 'loading'}
         loadingMessage="Enhancing prompt..."
       />
 

@@ -17,7 +17,7 @@ describe('flowStore', () => {
   it('positions generate nodes to the right', () => {
     useFlowStore
       .getState()
-      .addNode({ id: 'n2', type: 'x', data: {} }, 'generate', 'prompt', () => ({
+      .addNodeWithPositioning({ id: 'n2', type: 'x', data: {} }, 'generate', 'prompt', () => ({
         width: 80,
         height: 40,
       }))
@@ -25,7 +25,7 @@ describe('flowStore', () => {
   })
 
   it('positions enhance nodes below', () => {
-    useFlowStore.getState().addNode({ id: 'n3', type: 'x', data: {} }, 'enhance', 'prompt', () => ({
+    useFlowStore.getState().addNodeWithPositioning({ id: 'n3', type: 'x', data: {} }, 'enhance', 'prompt', () => ({
       width: 80,
       height: 40,
     }))

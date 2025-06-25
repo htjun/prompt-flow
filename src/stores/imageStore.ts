@@ -1,17 +1,196 @@
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 
-interface ImageState {
-  generatedImageStatus: 'none' | 'loading' | 'error' | 'success'
-  setGeneratedImageStatus: (status: 'none' | 'loading' | 'error' | 'success') => void
-  generatedImage: string | null
-  setGeneratedImage: (image: string | null) => void
+// Improved image data structure
+interface ImageData {
+  imageData: string
+  modelUsed: string
+  prompt: string
+  createdAt: number
 }
 
-export const useImageStore = create<ImageState>((set) => ({
-  generatedImageStatus: 'none',
-  setGeneratedImageStatus: (status) => set({ generatedImageStatus: status }),
-  generatedImage: null,
-  setGeneratedImage: (image) => {
-    set({ generatedImage: image })
-  },
-}))
+interface OperationState {
+  status: 'idle' | 'loading' | 'success' | 'error'
+  error?: string
+  timestamp: number
+}
+
+interface ImageState {
+  // Normalized image storage by node ID
+  images: Record<string, ImageData>
+  
+  // Operation tracking per image
+  operations: Record<string, OperationState>
+  
+  // UI state
+  ui: {
+    selectedImageId: string | null
+    viewMode: 'grid' | 'list'
+  }
+  
+  // Actions
+  setImageData: (nodeId: string, data: Omit<ImageData, 'createdAt'>) => void
+  removeImage: (nodeId: string) => void
+  
+  // Operation management
+  setOperationStatus: (nodeId: string, status: Omit<OperationState, 'timestamp'>) => void
+  clearOperation: (nodeId: string) => void
+  
+  // Selectors
+  getImageData: (nodeId: string) => ImageData | null
+  getOperationStatus: (nodeId: string) => OperationState['status']
+  getOperationError: (nodeId: string) => string | undefined
+  getAllImages: () => ImageData[]
+  
+  // UI actions
+  setSelectedImage: (nodeId: string | null) => void
+  setViewMode: (mode: 'grid' | 'list') => void
+  
+  // Cleanup
+  clearAllImages: () => void
+}
+
+export const useImageStore = create<ImageState>()(
+  devtools(
+    (set, get) => ({
+      // Initial state
+      images: {},
+      operations: {},
+      ui: {
+        selectedImageId: null,
+        viewMode: 'grid',
+      },
+
+      // Image data management
+      setImageData: (nodeId, data) =>
+        set(
+          (state) => ({
+            images: {
+              ...state.images,
+              [nodeId]: {
+                ...data,
+                createdAt: Date.now(),
+              },
+            },
+          }),
+          false,
+          'setImageData'
+        ),
+
+      removeImage: (nodeId) =>
+        set(
+          (state) => {
+            const { [nodeId]: removed, ...rest } = state.images
+            const { [nodeId]: removedOp, ...restOps } = state.operations
+            return {
+              images: rest,
+              operations: restOps,
+              ui: {
+                ...state.ui,
+                selectedImageId: state.ui.selectedImageId === nodeId ? null : state.ui.selectedImageId,
+              },
+            }
+          },
+          false,
+          'removeImage'
+        ),
+
+      // Operation management
+      setOperationStatus: (nodeId, statusUpdate) =>
+        set(
+          (state) => ({
+            operations: {
+              ...state.operations,
+              [nodeId]: {
+                ...statusUpdate,
+                timestamp: Date.now(),
+              },
+            },
+          }),
+          false,
+          'setOperationStatus'
+        ),
+
+      clearOperation: (nodeId) =>
+        set(
+          (state) => {
+            const { [nodeId]: removed, ...rest } = state.operations
+            return { operations: rest }
+          },
+          false,
+          'clearOperation'
+        ),
+
+      // Selectors
+      getImageData: (nodeId) => get().images[nodeId] || null,
+      getOperationStatus: (nodeId) => get().operations[nodeId]?.status || 'idle',
+      getOperationError: (nodeId) => get().operations[nodeId]?.error,
+      getAllImages: () => Object.values(get().images),
+
+      // UI actions
+      setSelectedImage: (nodeId) =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, selectedImageId: nodeId },
+          }),
+          false,
+          'setSelectedImage'
+        ),
+
+      setViewMode: (mode) =>
+        set(
+          (state) => ({
+            ui: { ...state.ui, viewMode: mode },
+          }),
+          false,
+          'setViewMode'
+        ),
+
+      // Cleanup
+      clearAllImages: () =>
+        set(
+          {
+            images: {},
+            operations: {},
+            ui: {
+              selectedImageId: null,
+              viewMode: 'grid',
+            },
+          },
+          false,
+          'clearAllImages'
+        ),
+    }),
+    { name: 'image-store' }
+  )
+)
+
+// Reusable selectors for better performance
+export const selectImageById = (nodeId: string) => (state: ImageState) =>
+  state.images[nodeId] || null
+
+export const selectOperationStatusById = (nodeId: string) => (state: ImageState) =>
+  state.operations[nodeId]?.status || 'idle'
+
+export const selectOperationErrorById = (nodeId: string) => (state: ImageState) =>
+  state.operations[nodeId]?.error
+
+export const selectAllImages = (state: ImageState) => Object.values(state.images)
+
+export const selectSelectedImageId = (state: ImageState) => state.ui.selectedImageId
+
+export const selectViewMode = (state: ImageState) => state.ui.viewMode
+
+// Derived selectors
+export const selectIsImageLoading = (nodeId: string) => (state: ImageState) =>
+  state.operations[nodeId]?.status === 'loading'
+
+export const selectHasImageError = (nodeId: string) => (state: ImageState) =>
+  state.operations[nodeId]?.status === 'error'
+
+export const selectImageCount = (state: ImageState) => Object.keys(state.images).length
+
+export const selectRecentImages = (limit: number = 10) => (state: ImageState) =>
+  Object.values(state.images)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, limit)

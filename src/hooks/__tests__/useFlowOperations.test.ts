@@ -43,19 +43,18 @@ const mockFlowStore = {
   addEdge: jest.fn(),
   updateNode: jest.fn(),
   getNodeById: jest.fn(),
+  addNodeWithPositioning: jest.fn(),
 }
 
 const mockPromptStore = {
-  setEnhancedPromptStatusById: jest.fn(),
-  setEnhancedPromptStatus: jest.fn(),
   setEnhancedPrompt: jest.fn(),
   setStructuredPrompt: jest.fn(),
-  setStructuredPromptStatus: jest.fn(),
+  setOperationStatus: jest.fn(),
 }
 
 const mockImageStore = {
-  setGeneratedImage: jest.fn(),
-  setGeneratedImageStatus: jest.fn(),
+  setImageData: jest.fn(),
+  setOperationStatus: jest.fn(),
 }
 
 describe('useFlowOperations', () => {
@@ -110,7 +109,7 @@ describe('useFlowOperations', () => {
       })
 
       expect(mockAIActions.enhance).toHaveBeenCalledWith('test prompt')
-      expect(mockFlowStore.addNode).toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(enhanceResult).toBe(mockEnhancedText)
     })
@@ -156,7 +155,7 @@ describe('useFlowOperations', () => {
       })
 
       expect(mockAIActions.generate).toHaveBeenCalledWith('test prompt')
-      expect(mockFlowStore.addNode).toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(generateResult).toEqual({
         nodeId: expect.stringContaining('image-'),
@@ -174,7 +173,7 @@ describe('useFlowOperations', () => {
       })
 
       expect(generateResult).toBe(null)
-      expect(mockImageStore.setGeneratedImageStatus).toHaveBeenCalledWith('error')
+      expect(mockImageStore.setOperationStatus).toHaveBeenCalledWith(expect.any(String), { status: 'error' })
     })
   })
 
@@ -196,7 +195,7 @@ describe('useFlowOperations', () => {
       })
 
       expect(mockAIActions.structure).toHaveBeenCalledWith('test prompt')
-      expect(mockFlowStore.addNode).toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(structureResult).toEqual(mockStructureResult)
     })
@@ -215,7 +214,7 @@ describe('useFlowOperations', () => {
       })
 
       expect(mockAIActions.describe).toHaveBeenCalledWith('base64-image-data')
-      expect(mockFlowStore.addNode).toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(describeResult).toBe(mockDescription)
     })
@@ -237,7 +236,7 @@ describe('useFlowOperations', () => {
         duplicateResult = result.current.duplicateStructuredPrompt('source-node', mockStructuredData)
       })
 
-      expect(mockFlowStore.addNode).toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(duplicateResult).toMatch(/^structured-prompt-/)
     })
@@ -248,7 +247,7 @@ describe('useFlowOperations', () => {
       const duplicateResult = result.current.duplicateStructuredPrompt('source-node', {} as any)
 
       expect(duplicateResult).toBe(null)
-      expect(mockFlowStore.addNode).not.toHaveBeenCalled()
+      expect(mockFlowStore.addNodeWithPositioning).not.toHaveBeenCalled()
     })
   })
 

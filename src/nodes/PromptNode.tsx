@@ -6,8 +6,12 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 
 export const PromptNode = () => {
-  const prompt = usePromptStore((s) => s.prompt)
-  const setPrompt = usePromptStore((s) => s.setPrompt)
+  const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
+  const setBasicPrompt = usePromptStore((s) => s.setBasicPrompt)
+  
+  // Use the prompt node's specific prompt
+  const prompt = getBasicPrompt('prompt')
+  const setPrompt = (text: string) => setBasicPrompt('prompt', text)
   const { enhancePrompt, generateImage } = useFlowActions()
   const edges = useEdges()
 

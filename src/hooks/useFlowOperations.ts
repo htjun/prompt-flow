@@ -23,7 +23,7 @@ export const useFlowOperations = () => {
     actionType: 'enhance' | 'generate' | 'structure' | 'describe',
     sourceNodeId: string
   ) => {
-    flowStore.addNode(
+    flowStore.addNodeWithPositioning(
       {
         id: nodeId,
         type: nodeType,
@@ -54,8 +54,7 @@ export const useFlowOperations = () => {
     if (!sourceNode) return null
 
     // Set loading state
-    promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'loading')
-    promptStore.setEnhancedPromptStatus('loading')
+    promptStore.setOperationStatus(enhancedPromptId, { status: 'loading' })
 
     // Create node with loading state
     createNodeWithPositioning(
@@ -78,17 +77,14 @@ export const useFlowOperations = () => {
       if (enhancedText) {
         flowStore.updateNode(enhancedPromptId, { text: enhancedText })
         promptStore.setEnhancedPrompt(enhancedPromptId, enhancedText)
-        promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'success')
-        promptStore.setEnhancedPromptStatus('success')
+        promptStore.setOperationStatus(enhancedPromptId, { status: 'success' })
         return enhancedText
       } else {
-        promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'error')
-        promptStore.setEnhancedPromptStatus('error')
+        promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
         return null
       }
     } catch {
-      promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'error')
-      promptStore.setEnhancedPromptStatus('error')
+      promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
       return null
     }
   }
@@ -133,15 +129,19 @@ export const useFlowOperations = () => {
           isLoading: false,
         })
 
-        imageStore.setGeneratedImage(result.imageData)
-        imageStore.setGeneratedImageStatus('success')
+        imageStore.setImageData(newNodeId, {
+          imageData: result.imageData,
+          modelUsed: result.modelUsed,
+          prompt: prompt,
+        })
+        imageStore.setOperationStatus(newNodeId, { status: 'success' })
         return { nodeId: newNodeId, data: result }
       } else {
         flowStore.updateNode(newNodeId, {
           isLoading: false,
           hasError: true,
         })
-        imageStore.setGeneratedImageStatus('error')
+        imageStore.setOperationStatus(newNodeId, { status: 'error' })
         return null
       }
     } catch {
@@ -149,7 +149,7 @@ export const useFlowOperations = () => {
         isLoading: false,
         hasError: true,
       })
-      imageStore.setGeneratedImageStatus('error')
+      imageStore.setOperationStatus(newNodeId, { status: 'error' })
       return null
     }
   }
@@ -187,58 +187,19 @@ export const useFlowOperations = () => {
           isLoading: false,
         })
 
-        // Convert ImageStructure to StructuredPrompt format for store compatibility
-        const structuredPrompt = {
-          composition: {
-            focal_point: result.camera.angle,
-            balance: 'centered', // default value
-            depth: result.camera.depth_of_field,
-            motion: 'static', // default value
-          },
-          style: {
-            art_style: result.style.art_style,
-            color_palette: result.style.color_palette,
-            mood: result.style.mood,
-            lighting: result.style.lighting,
-          },
-          scene: {
-            background: result.scene.background || '',
-            time_of_day: result.scene.time || '',
-            weather: result.scene.weather || '',
-            location: result.scene.setting,
-          },
-          subjects: result.subjects?.map(subject => ({
-            type: subject.type,
-            description: subject.description,
-            pose: subject.pose || undefined,
-            emotion: subject.emotion || undefined,
-            position: {
-              x: 0, // default values - could be enhanced later
-              y: 0,
-              width: 100,
-              height: 100,
-            }
-          })),
-          camera: {
-            focal_length: result.camera.focal_length,
-            aperture: result.camera.aperture,
-            angle: result.camera.angle,
-            depth_of_field: result.camera.depth_of_field,
-            aspect_ratio: '16:9', // default value
-          },
-        }
-        promptStore.setStructuredPrompt(structuredPromptId, structuredPrompt)
-        promptStore.setStructuredPromptStatus('success')
+        // Store the result directly since new store accepts ImageStructure
+        promptStore.setStructuredPrompt(structuredPromptId, result)
+        promptStore.setOperationStatus(structuredPromptId, { status: 'success' })
         return result
       } else {
         flowStore.updateNode(structuredPromptId, { isLoading: false })
-        promptStore.setStructuredPromptStatus('error')
+        promptStore.setOperationStatus(structuredPromptId, { status: 'error' })
         return null
       }
     } catch (error) {
       console.error('Error structuring prompt:', error)
       flowStore.updateNode(structuredPromptId, { isLoading: false })
-      promptStore.setStructuredPromptStatus('error')
+      promptStore.setOperationStatus(structuredPromptId, { status: 'error' })
       return null
     }
   }
@@ -252,7 +213,7 @@ export const useFlowOperations = () => {
     if (!sourceNode) return null
 
     // Set loading state
-    promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'loading')
+    promptStore.setOperationStatus(enhancedPromptId, { status: 'loading' })
 
     // Create node with loading state
     createNodeWithPositioning(
@@ -275,14 +236,14 @@ export const useFlowOperations = () => {
       if (describedText) {
         flowStore.updateNode(enhancedPromptId, { text: describedText })
         promptStore.setEnhancedPrompt(enhancedPromptId, describedText)
-        promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'success')
+        promptStore.setOperationStatus(enhancedPromptId, { status: 'success' })
         return describedText
       } else {
-        promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'error')
+        promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
         return null
       }
     } catch {
-      promptStore.setEnhancedPromptStatusById(enhancedPromptId, 'error')
+      promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
       return null
     }
   }
