@@ -3,6 +3,7 @@ import { usePromptStore } from '@/stores/promptStore'
 import { useImageStore } from '@/stores/imageStore'
 import { useFlowStore } from '@/stores/flowStore'
 import { useNodeDimensions } from '@/lib/flowHelpers'
+import { HANDLE_IDS, createEdgeId } from '@/constants/flowConstants'
 
 interface FlowOperationResult {
   nodeId: string
@@ -35,16 +36,6 @@ export const useFlowOperations = () => {
     )
   }
 
-  const createEdge = (sourceNodeId: string, targetNodeId: string, sourceHandle: string) => {
-    flowStore.addEdge({
-      id: `${sourceNodeId}->${targetNodeId}`,
-      source: sourceNodeId,
-      sourceHandle,
-      target: targetNodeId,
-      animated: true,
-    })
-  }
-
   const enhancePrompt = async (prompt: string, sourceNodeId: string): Promise<string | null> => {
     if (!prompt.trim()) return null
 
@@ -70,11 +61,11 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: `${sourceNodeId}-to-${enhancedPromptId}`,
+      id: createEdgeId(sourceNodeId, enhancedPromptId),
       source: sourceNodeId,
-      sourceHandle: 'enhance',
+      sourceHandle: HANDLE_IDS.ENHANCE,
       target: enhancedPromptId,
-      targetHandle: 'prompt-input',
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
 
@@ -113,11 +104,11 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: `${sourceNodeId}-to-${newNodeId}`,
+      id: createEdgeId(sourceNodeId, newNodeId),
       source: sourceNodeId,
       sourceHandle: sourceHandleId,
       target: newNodeId,
-      targetHandle: 'image-input',
+      targetHandle: HANDLE_IDS.IMAGE_INPUT,
       animated: true,
     })
 
@@ -181,11 +172,11 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: `${sourceNodeId}-to-${structuredPromptId}`,
+      id: createEdgeId(sourceNodeId, structuredPromptId),
       source: sourceNodeId,
-      sourceHandle: 'structure',
+      sourceHandle: HANDLE_IDS.STRUCTURE,
       target: structuredPromptId,
-      targetHandle: 'prompt-input',
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
 
@@ -240,11 +231,11 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: `${sourceNodeId}-to-${enhancedPromptId}`,
+      id: createEdgeId(sourceNodeId, enhancedPromptId),
       source: sourceNodeId,
-      sourceHandle: 'describe',
+      sourceHandle: HANDLE_IDS.DESCRIBE,
       target: enhancedPromptId,
-      targetHandle: 'prompt-input',
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
 
@@ -292,11 +283,11 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: `${sourceNodeId}-to-${duplicatedNodeId}`,
+      id: createEdgeId(sourceNodeId, duplicatedNodeId),
       source: sourceNodeId,
-      sourceHandle: 'duplicate',
+      sourceHandle: HANDLE_IDS.DUPLICATE,
       target: duplicatedNodeId,
-      targetHandle: 'image-input',
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
 

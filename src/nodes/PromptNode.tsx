@@ -4,6 +4,7 @@ import { Position, Handle, useEdges } from '@xyflow/react'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
+import { HANDLE_IDS } from '@/constants/flowConstants'
 
 export const PromptNode = () => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
@@ -16,10 +17,15 @@ export const PromptNode = () => {
   const edges = useEdges()
 
   // Check if the enhance handle is connected to any node
-  const isEnhanceHandleConnected = isHandleConnected(edges, 'prompt', 'enhance', 'source')
+  const isEnhanceHandleConnected = isHandleConnected(edges, 'prompt', HANDLE_IDS.ENHANCE, 'source')
 
   // Check if the generate handle is connected to any node
-  const isGenerateHandleConnected = isHandleConnected(edges, 'prompt', 'generate', 'source')
+  const isGenerateHandleConnected = isHandleConnected(
+    edges,
+    'prompt',
+    HANDLE_IDS.GENERATE,
+    'source'
+  )
 
   const handleEnhance = async () => {
     if (!prompt.trim()) return
@@ -49,7 +55,7 @@ export const PromptNode = () => {
       <Handle
         type="source"
         position={Position.Bottom}
-        id="enhance"
+        id={HANDLE_IDS.ENHANCE}
         className={cn(
           '!left-auto transition-opacity duration-200',
           isEnhanceHandleConnected ? 'opacity-100' : 'opacity-0'
@@ -59,7 +65,7 @@ export const PromptNode = () => {
       <Handle
         type="source"
         position={Position.Bottom}
-        id="generate"
+        id={HANDLE_IDS.GENERATE}
         className={cn(
           '!left-auto transition-opacity duration-200',
           isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'

@@ -7,6 +7,7 @@ import { cn, calculateHandleOffset } from '@/lib/utils'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 import { PromptCategoryTabs } from './PromptCategoryTabs'
+import { HANDLE_IDS } from '@/constants/flowConstants'
 
 type ImageStructure = z.infer<typeof imageStructureSchema>
 
@@ -38,9 +39,14 @@ export const StructuredPromptNode = ({
   const { generateImage, duplicateStructuredPrompt } = useFlowActions()
   const edges = useEdges()
 
-  const isDuplicateHandleConnected = isHandleConnected(edges, nodeId, 'duplicate', 'source')
+  const isDuplicateHandleConnected = isHandleConnected(
+    edges,
+    nodeId,
+    HANDLE_IDS.DUPLICATE,
+    'source'
+  )
 
-  const isGenerateHandleConnected = isHandleConnected(edges, nodeId, 'generate', 'source')
+  const isGenerateHandleConnected = isHandleConnected(edges, nodeId, HANDLE_IDS.GENERATE, 'source')
 
   const handleDataChange = (newData: ImageStructure) => {
     setCurrentData(newData)
@@ -97,10 +103,10 @@ export const StructuredPromptNode = ({
             }
           />
         </div>
-        <Handle type="target" position={Position.Left} id="prompt-input" />
+        <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />
         <Handle
           type="source"
-          id="duplicate"
+          id={HANDLE_IDS.DUPLICATE}
           position={Position.Bottom}
           className={cn(
             '!left-auto transition-opacity duration-200',
@@ -111,7 +117,7 @@ export const StructuredPromptNode = ({
         <Handle
           type="source"
           position={Position.Bottom}
-          id="generate"
+          id={HANDLE_IDS.GENERATE}
           className={cn(
             '!left-auto transition-opacity duration-200',
             isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'

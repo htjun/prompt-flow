@@ -4,6 +4,7 @@ import { cn, calculateHandleOffset } from '@/lib/utils'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
+import { HANDLE_IDS } from '@/constants/flowConstants'
 
 const NODE_LABEL = 'Prompt'
 
@@ -20,13 +21,23 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const operationStatus = getOperationStatus(nodeId)
 
   // Check if the target handle is connected to any node
-  const isTargetHandleConnected = isHandleConnected(edges, nodeId, 'prompt-input', 'target')
+  const isTargetHandleConnected = isHandleConnected(
+    edges,
+    nodeId,
+    HANDLE_IDS.PROMPT_INPUT,
+    'target'
+  )
 
   // Check if the structure handle is connected to any node
-  const isStructureHandleConnected = isHandleConnected(edges, nodeId, 'structure', 'source')
+  const isStructureHandleConnected = isHandleConnected(
+    edges,
+    nodeId,
+    HANDLE_IDS.STRUCTURE,
+    'source'
+  )
 
   // Check if the generate handle is connected to any node
-  const isGenerateHandleConnected = isHandleConnected(edges, nodeId, 'generate', 'source')
+  const isGenerateHandleConnected = isHandleConnected(edges, nodeId, HANDLE_IDS.GENERATE, 'source')
 
   const handleStructure = async () => {
     if (!enhancedPrompt.trim() || isStructuring) return
@@ -60,10 +71,10 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
         loadingMessage="Enhancing prompt..."
       />
 
-      <Handle type="target" position={Position.Left} id="prompt-input" />
+      <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />
       <Handle
         type="source"
-        id="structure"
+        id={HANDLE_IDS.STRUCTURE}
         position={Position.Bottom}
         className={cn(
           '!left-auto transition-opacity duration-200',
@@ -73,7 +84,7 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
       />
       <Handle
         type="source"
-        id="generate"
+        id={HANDLE_IDS.GENERATE}
         position={Position.Bottom}
         className={cn(
           '!left-auto transition-opacity duration-200',

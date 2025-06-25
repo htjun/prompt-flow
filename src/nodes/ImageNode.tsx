@@ -15,6 +15,7 @@ import { useNodeDimensions, isHandleConnected } from '@/lib/flowHelpers'
 import { imageModels } from '@/constants/models'
 import { useModelStore } from '@/stores/modelStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
+import { HANDLE_IDS } from '@/constants/flowConstants'
 
 type ImageNodeProps = {
   id: string
@@ -105,8 +106,8 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
   // Define action labels for handle positioning (matches the filtered actions)
   const actionLabels = actions.map((action) => action.label)
 
-  const isRefineHandleConnected = isHandleConnected(edges, id, 'refine', 'source')
-  const isDescribeHandleConnected = isHandleConnected(edges, id, 'describe', 'source')
+  const isRefineHandleConnected = isHandleConnected(edges, id, HANDLE_IDS.REFINE, 'source')
+  const isDescribeHandleConnected = isHandleConnected(edges, id, HANDLE_IDS.DESCRIBE, 'source')
 
   return (
     <div className="flex flex-col gap-1">
@@ -164,11 +165,11 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
           </div>
         )}
       </div>
-      <Handle type="target" position={Position.Left} id="image-input" />
+      <Handle type="target" position={Position.Left} id={HANDLE_IDS.IMAGE_INPUT} />
       <Handle
         type="source"
         position={Position.Bottom}
-        id="refine"
+        id={HANDLE_IDS.REFINE}
         className={cn(
           '!left-auto transition-opacity duration-200',
           isRefineHandleConnected ? 'opacity-100' : 'opacity-0'
@@ -178,7 +179,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
       <Handle
         type="source"
         position={Position.Bottom}
-        id="describe"
+        id={HANDLE_IDS.DESCRIBE}
         className={cn(
           '!left-auto transition-opacity duration-200',
           isDescribeHandleConnected ? 'opacity-100' : 'opacity-0'

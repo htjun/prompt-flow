@@ -1,6 +1,7 @@
 import { useFlowStore } from '@/stores/flowStore'
 import { type OnConnect } from '@xyflow/react'
 import { useCallback } from 'react'
+import { createEdgeId } from '@/constants/flowConstants'
 
 /**
  * Hook that provides all the flow controls needed for the App component
@@ -16,7 +17,7 @@ export const useFlowControls = () => {
     (connection) => {
       const newEdge = {
         ...connection,
-        id: `${connection.source}->${connection.target}`,
+        id: createEdgeId(connection.source as string, connection.target as string),
       }
       addEdge(newEdge)
     },
