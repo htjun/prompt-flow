@@ -32,12 +32,16 @@ export const useAIActions = () => {
     setState(prev => ({
       ...prev,
       [operation]: value,
-      ...(operation === 'error' ? {} : { error: null })
     }))
+  }
+
+  const clearError = () => {
+    setState(prev => ({ ...prev, error: null }))
   }
 
   const enhance = async (prompt: string) => {
     try {
+      clearError()
       setOperationState('isEnhancing', true)
       const result = await enhancePrompt(prompt)
       return result
@@ -52,6 +56,7 @@ export const useAIActions = () => {
 
   const generate = async (prompt: string) => {
     try {
+      clearError()
       setOperationState('isGenerating', true)
       const result = await generateImageFromPrompt(prompt, selectedImageModel)
       return result
@@ -66,6 +71,7 @@ export const useAIActions = () => {
 
   const describe = async (imageData: string) => {
     try {
+      clearError()
       setOperationState('isDescribing', true)
       const result = await describeImage(imageData)
       return result
@@ -80,6 +86,7 @@ export const useAIActions = () => {
 
   const structure = async (prompt: string): Promise<ImageStructure | null> => {
     try {
+      clearError()
       setOperationState('isStructuring', true)
       const result = await structurePrompt(prompt)
       return result.object
