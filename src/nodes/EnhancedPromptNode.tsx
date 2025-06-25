@@ -20,7 +20,7 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const operationStatus = getOperationStatus(nodeId)
 
   // Check if the target handle is connected to any node
-  const isTargetHandleConnected = isHandleConnected(edges, nodeId, 'image-input', 'target')
+  const isTargetHandleConnected = isHandleConnected(edges, nodeId, 'prompt-input', 'target')
 
   // Check if the structure handle is connected to any node
   const isStructureHandleConnected = isHandleConnected(edges, nodeId, 'structure', 'source')
@@ -60,14 +60,7 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
         loadingMessage="Enhancing prompt..."
       />
 
-      <Handle
-        type="target"
-        position={Position.Left}
-        className={cn(
-          'transition-opacity duration-200',
-          isTargetHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-      />
+      <Handle type="target" position={Position.Left} id="prompt-input" />
       <Handle
         type="source"
         id="structure"

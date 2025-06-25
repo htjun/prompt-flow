@@ -69,7 +69,14 @@ export const useFlowOperations = () => {
     )
 
     // Create edge
-    createEdge(sourceNodeId, enhancedPromptId, 'enhance')
+    flowStore.addEdge({
+      id: `${sourceNodeId}-to-${enhancedPromptId}`,
+      source: sourceNodeId,
+      sourceHandle: 'enhance',
+      target: enhancedPromptId,
+      targetHandle: 'prompt-input',
+      animated: true,
+    })
 
     try {
       const enhancedText = await aiActions.enhance(prompt)
@@ -102,13 +109,7 @@ export const useFlowOperations = () => {
     if (!sourceNode) return null
 
     // Create node with loading state
-    createNodeWithPositioning(
-      newNodeId,
-      'image',
-      { isLoading: true },
-      'generate',
-      sourceNodeId
-    )
+    createNodeWithPositioning(newNodeId, 'image', { isLoading: true }, 'generate', sourceNodeId)
 
     // Create edge
     flowStore.addEdge({
@@ -154,7 +155,10 @@ export const useFlowOperations = () => {
     }
   }
 
-  const structurePrompt = async (prompt: string, sourceNodeId: string): Promise<ImageStructure | null> => {
+  const structurePrompt = async (
+    prompt: string,
+    sourceNodeId: string
+  ): Promise<ImageStructure | null> => {
     if (!prompt.trim()) return null
 
     const structuredPromptId = `structured-prompt-${crypto.randomUUID()}`
@@ -176,7 +180,14 @@ export const useFlowOperations = () => {
     )
 
     // Create edge
-    createEdge(sourceNodeId, structuredPromptId, 'structure')
+    flowStore.addEdge({
+      id: `${sourceNodeId}-to-${structuredPromptId}`,
+      source: sourceNodeId,
+      sourceHandle: 'structure',
+      target: structuredPromptId,
+      targetHandle: 'prompt-input',
+      animated: true,
+    })
 
     try {
       const result = await aiActions.structure(prompt)
@@ -228,7 +239,14 @@ export const useFlowOperations = () => {
     )
 
     // Create edge
-    createEdge(sourceNodeId, enhancedPromptId, 'describe')
+    flowStore.addEdge({
+      id: `${sourceNodeId}-to-${enhancedPromptId}`,
+      source: sourceNodeId,
+      sourceHandle: 'describe',
+      target: enhancedPromptId,
+      targetHandle: 'prompt-input',
+      animated: true,
+    })
 
     try {
       const describedText = await aiActions.describe(imageData)
@@ -248,7 +266,10 @@ export const useFlowOperations = () => {
     }
   }
 
-  const duplicateStructuredPrompt = (sourceNodeId: string, structuredData: ImageStructure): string | null => {
+  const duplicateStructuredPrompt = (
+    sourceNodeId: string,
+    structuredData: ImageStructure
+  ): string | null => {
     if (!structuredData || Object.keys(structuredData).length === 0) return null
 
     const duplicatedNodeId = `structured-prompt-${crypto.randomUUID()}`

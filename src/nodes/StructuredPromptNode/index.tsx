@@ -97,7 +97,7 @@ export const StructuredPromptNode = ({
             }
           />
         </div>
-        <Handle type="target" position={Position.Left} id="image-input" />
+        <Handle type="target" position={Position.Left} id="prompt-input" />
         <Handle
           type="source"
           id="duplicate"

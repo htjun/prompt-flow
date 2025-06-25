@@ -1,16 +1,17 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, useEdges } from '@xyflow/react'
 import {
   getModelDisplayName,
   copyImageToClipboard,
   downloadImage,
   calculateHandleOffset,
+  cn,
 } from '@/lib/utils'
 import { ActionGroup } from '@/components/ActionGroup'
 import { Button } from '@/components/ui/button'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useFlowStore } from '@/stores/flowStore'
-import { useNodeDimensions } from '@/lib/flowHelpers'
+import { useNodeDimensions, isHandleConnected } from '@/lib/flowHelpers'
 import { imageModels } from '@/constants/models'
 import { useModelStore } from '@/stores/modelStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
@@ -33,6 +34,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const getNodeDimensions = useNodeDimensions()
   const selectedImageModel = useModelStore((state) => state.selectedImageModel)
   const { describeImage } = useFlowActions()
+  const edges = useEdges()
 
   const handleDescribe = () => {
     if (!imageData) return
@@ -103,6 +105,9 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
   // Define action labels for handle positioning (matches the filtered actions)
   const actionLabels = actions.map((action) => action.label)
 
+  const isRefineHandleConnected = isHandleConnected(edges, id, 'refine', 'source')
+  const isDescribeHandleConnected = isHandleConnected(edges, id, 'describe', 'source')
+
   return (
     <div className="flex flex-col gap-1">
       <div className="node-label geist-mono">Generated Image</div>
@@ -164,14 +169,20 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
         type="source"
         position={Position.Bottom}
         id="refine"
-        className="!left-auto opacity-0 transition-opacity duration-200"
+        className={cn(
+          '!left-auto transition-opacity duration-200',
+          isRefineHandleConnected ? 'opacity-100' : 'opacity-0'
+        )}
         style={calculateHandleOffset(actionLabels, actionLabels.indexOf('Refine'))}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="describe"
-        className="!left-auto opacity-0 transition-opacity duration-200"
+        className={cn(
+          '!left-auto transition-opacity duration-200',
+          isDescribeHandleConnected ? 'opacity-100' : 'opacity-0'
+        )}
         style={calculateHandleOffset(actionLabels, actionLabels.indexOf('Describe'))}
       />
     </div>
