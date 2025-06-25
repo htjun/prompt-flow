@@ -38,6 +38,7 @@ pnpm build-storybook   # Build storybook
 ## Architecture Overview
 
 ### State Management
+
 - **Zustand stores** for all state management:
   - `flowStore`: Manages React Flow nodes, edges, and flow operations
   - `modelStore`: Tracks selected language and image models
@@ -45,6 +46,7 @@ pnpm build-storybook   # Build storybook
   - `promptStore`: Manages prompt-related state
 
 ### Core Flow System
+
 - **React Flow** (`@xyflow/react`) provides the visual node-based interface
 - **Node Types**: 4 main node types defined in `src/nodes/index.ts`
   - `prompt`: Basic prompt input nodes
@@ -53,10 +55,12 @@ pnpm build-storybook   # Build storybook
   - `image`: Generated image display nodes
 
 ### Context Architecture
+
 - `FlowActionsContext` provides centralized flow actions (enhance, generate, structure)
 - Wraps the main app to provide actions to all nodes and components
 
 ### AI Integration
+
 - **Multiple AI providers**: OpenAI, Google (Gemini), Replicate
 - **Server actions** in `src/actions/` handle AI operations:
   - `enhancePrompt.ts`: Uses language models to improve prompts
@@ -65,7 +69,9 @@ pnpm build-storybook   # Build storybook
   - `describeImage.ts`: Analyzes and describes uploaded images
 
 ### Custom Hooks Pattern
+
 All complex logic is abstracted into custom hooks in `src/hooks/`:
+
 - Flow-specific hooks (`useImageGenerationFlow`, `usePromptEnhancementFlow`)
 - Action hooks (`usePromptActions`, `useImageActions`)
 - Control hooks (`useFlowControls`)
@@ -81,9 +87,9 @@ All complex logic is abstracted into custom hooks in `src/hooks/`:
 ## Environment Setup
 
 Required environment variables in `.env.local`:
+
 ```
 NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
 NEXT_PUBLIC_REPLICATE_API_TOKEN=your_replicate_api_token
 ```
 
@@ -100,6 +106,7 @@ NEXT_PUBLIC_REPLICATE_API_TOKEN=your_replicate_api_token
 ## Flow Node Positioning
 
 The `flowStore` includes intelligent node positioning logic:
+
 - **Below reference**: enhance, structure, describe actions
 - **To the right**: generate actions
 - Uses actual node dimensions when available
@@ -108,6 +115,7 @@ The `flowStore` includes intelligent node positioning logic:
 ## Model Selection
 
 Default models configured in `modelStore`:
+
 - Language model: `gpt-4.1-mini`
 - Image model: `google/imagen-4-fast`
 
