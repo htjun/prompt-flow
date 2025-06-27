@@ -8,12 +8,10 @@ export const PromptNode = () => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
   const setBasicPrompt = usePromptStore((s) => s.setBasicPrompt)
 
-  // Use the prompt node's specific prompt
   const prompt = getBasicPrompt('prompt')
   const setPrompt = (text: string) => setBasicPrompt('prompt', text)
   const { enhancePrompt, generateImage } = useFlowActions()
 
-  // Use the new hook
   const { renderSourceHandle } = useNodeHandles('prompt')
 
   const handleEnhance = async () => {
@@ -26,19 +24,16 @@ export const PromptNode = () => {
     await generateImage(prompt, 'prompt', 'generate')
   }
 
-  // Define action labels for handle positioning
-  const actionLabels = ['Enhance', 'Generate']
+  const actions = [
+    { label: 'Enhance', onClick: handleEnhance },
+    { label: 'Generate', onClick: handleGenerate },
+  ]
+
+  const actionLabels = actions.map((action) => action.label)
 
   return (
     <div className="flex flex-col gap-1">
-      <NodeTextInput
-        value={prompt}
-        onChange={setPrompt}
-        actions={[
-          { label: 'Enhance', onClick: handleEnhance },
-          { label: 'Generate', onClick: handleGenerate },
-        ]}
-      />
+      <NodeTextInput value={prompt} onChange={setPrompt} actions={actions} />
 
       {renderSourceHandle({
         handleId: HANDLE_IDS.ENHANCE,

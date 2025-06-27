@@ -13,10 +13,8 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const getOperationStatus = usePromptStore((s) => s.getOperationStatus)
   const { structurePrompt, generateImage, isStructuring } = useFlowActions()
 
-  // Use the new hook
   const { renderSourceHandle, renderTargetHandle } = useNodeHandles(id)
 
-  // Get the specific enhanced prompt for this node
   const nodeId = id
   const enhancedPrompt = getEnhancedPrompt(nodeId)
   const operationStatus = getOperationStatus(nodeId)
@@ -35,8 +33,12 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
     setEnhancedPrompt(nodeId, value)
   }
 
-  // Define action labels for handle positioning
-  const actionLabels = ['Structure', 'Generate']
+  const actions = [
+    { label: 'Structure', onClick: handleStructure },
+    { label: 'Generate', onClick: handleGenerate },
+  ]
+
+  const actionLabels = actions.map((action) => action.label)
 
   return (
     <>
@@ -44,10 +46,7 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
         label={NODE_LABEL}
         value={enhancedPrompt}
         onChange={handleChange}
-        actions={[
-          { label: 'Structure', onClick: handleStructure },
-          { label: 'Generate', onClick: handleGenerate },
-        ]}
+        actions={actions}
         isLoading={operationStatus === 'loading'}
         loadingMessage="Enhancing prompt..."
       />
