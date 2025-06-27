@@ -1,9 +1,7 @@
 import { NodeTextInput } from '@/components/NodeTextInput'
-import { cn, calculateHandleOffset } from '@/lib/utils'
-import { Position, Handle, useEdges } from '@xyflow/react'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
-import { isHandleConnected } from '@/lib/flowHelpers'
+import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 
 export const PromptNode = () => {
@@ -14,18 +12,9 @@ export const PromptNode = () => {
   const prompt = getBasicPrompt('prompt')
   const setPrompt = (text: string) => setBasicPrompt('prompt', text)
   const { enhancePrompt, generateImage } = useFlowActions()
-  const edges = useEdges()
 
-  // Check if the enhance handle is connected to any node
-  const isEnhanceHandleConnected = isHandleConnected(edges, 'prompt', HANDLE_IDS.ENHANCE, 'source')
-
-  // Check if the generate handle is connected to any node
-  const isGenerateHandleConnected = isHandleConnected(
-    edges,
-    'prompt',
-    HANDLE_IDS.GENERATE,
-    'source'
-  )
+  // Use the new hook
+  const { renderSourceHandle } = useNodeHandles('prompt')
 
   const handleEnhance = async () => {
     if (!prompt.trim()) return
@@ -45,33 +34,23 @@ export const PromptNode = () => {
       <NodeTextInput
         value={prompt}
         onChange={setPrompt}
-        hasOutputHandle={false}
         actions={[
           { label: 'Enhance', onClick: handleEnhance },
           { label: 'Generate', onClick: handleGenerate },
         ]}
       />
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id={HANDLE_IDS.ENHANCE}
-        className={cn(
-          '!left-auto transition-opacity duration-200',
-          isEnhanceHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-        style={calculateHandleOffset(actionLabels, 0)}
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id={HANDLE_IDS.GENERATE}
-        className={cn(
-          '!left-auto transition-opacity duration-200',
-          isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-        style={calculateHandleOffset(actionLabels, 1)}
-      />
+      {renderSourceHandle({
+        handleId: HANDLE_IDS.ENHANCE,
+        actionLabels,
+        actionIndex: 0,
+      })}
+
+      {renderSourceHandle({
+        handleId: HANDLE_IDS.GENERATE,
+        actionLabels,
+        actionIndex: 1,
+      })}
     </div>
   )
 }

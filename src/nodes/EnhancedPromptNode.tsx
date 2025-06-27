@@ -1,9 +1,8 @@
-import { Position, Handle, useEdges, NodeProps } from '@xyflow/react'
+import { type NodeProps } from '@xyflow/react'
 import { NodeTextInput } from '@/components/NodeTextInput'
-import { cn, calculateHandleOffset } from '@/lib/utils'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
-import { isHandleConnected } from '@/lib/flowHelpers'
+import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 
 const NODE_LABEL = 'Prompt'
@@ -13,31 +12,14 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
   const setEnhancedPrompt = usePromptStore((s) => s.setEnhancedPrompt)
   const getOperationStatus = usePromptStore((s) => s.getOperationStatus)
   const { structurePrompt, generateImage, isStructuring } = useFlowActions()
-  const edges = useEdges()
+
+  // Use the new hook
+  const { renderSourceHandle, renderTargetHandle } = useNodeHandles(id)
 
   // Get the specific enhanced prompt for this node
   const nodeId = id
   const enhancedPrompt = getEnhancedPrompt(nodeId)
   const operationStatus = getOperationStatus(nodeId)
-
-  // Check if the target handle is connected to any node
-  const isTargetHandleConnected = isHandleConnected(
-    edges,
-    nodeId,
-    HANDLE_IDS.PROMPT_INPUT,
-    'target'
-  )
-
-  // Check if the structure handle is connected to any node
-  const isStructureHandleConnected = isHandleConnected(
-    edges,
-    nodeId,
-    HANDLE_IDS.STRUCTURE,
-    'source'
-  )
-
-  // Check if the generate handle is connected to any node
-  const isGenerateHandleConnected = isHandleConnected(edges, nodeId, HANDLE_IDS.GENERATE, 'source')
 
   const handleStructure = async () => {
     if (!enhancedPrompt.trim() || isStructuring) return
@@ -66,32 +48,25 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
           { label: 'Structure', onClick: handleStructure },
           { label: 'Generate', onClick: handleGenerate },
         ]}
-        hasOutputHandle={false}
         isLoading={operationStatus === 'loading'}
         loadingMessage="Enhancing prompt..."
       />
 
-      <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />
-      <Handle
-        type="source"
-        id={HANDLE_IDS.STRUCTURE}
-        position={Position.Bottom}
-        className={cn(
-          '!left-auto transition-opacity duration-200',
-          isStructureHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-        style={calculateHandleOffset(actionLabels, 0)}
-      />
-      <Handle
-        type="source"
-        id={HANDLE_IDS.GENERATE}
-        position={Position.Bottom}
-        className={cn(
-          '!left-auto transition-opacity duration-200',
-          isGenerateHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-        style={calculateHandleOffset(actionLabels, 1)}
-      />
+      {renderTargetHandle({
+        handleId: HANDLE_IDS.PROMPT_INPUT,
+      })}
+
+      {renderSourceHandle({
+        handleId: HANDLE_IDS.STRUCTURE,
+        actionLabels,
+        actionIndex: 0,
+      })}
+
+      {renderSourceHandle({
+        handleId: HANDLE_IDS.GENERATE,
+        actionLabels,
+        actionIndex: 1,
+      })}
     </>
   )
 }

@@ -10,7 +10,6 @@ type NodeTextInputProps = {
   isLoading?: boolean
   loadingMessage?: string
   isProcessing?: boolean
-  hasOutputHandle?: boolean
   className?: string
 }
 
