@@ -27,7 +27,7 @@ export const NodeTextInput = ({
   return (
     <div className={cn('flex flex-col gap-1', className)}>
       <div className="node-label geist-mono">{label}</div>
-      <div className="node-container nodrag w-80">
+      <div className="node-container nodrag group w-80">
         {!isLoading ? (
           <>
             <textarea

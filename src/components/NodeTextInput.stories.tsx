@@ -79,6 +79,25 @@ export const Default: Story = {
   },
 }
 
+export const WithInternalActions: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: '',
+    actions: [
+      {
+        label: 'Enhance',
+        onClick: fn(),
+        isInternal: true,
+      },
+      {
+        label: 'Generate',
+        onClick: fn(),
+      },
+    ],
+  },
+}
+
 export const WithContent: Story = {
   args: {
     label: 'Prompt',
