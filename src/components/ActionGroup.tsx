@@ -74,7 +74,7 @@ export const ActionGroup = ({
     }, [])
 
     return (
-      <DropdownMenu key={`${keyPrefix}-${index}`} open={open} onOpenChange={setOpen} modal={false}>
+      <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
@@ -93,7 +93,7 @@ export const ActionGroup = ({
         >
           {action.dropdown!.items.map((item, idx) => (
             <DropdownMenuItem
-              key={idx}
+              key={`${action.label}-item-${idx}-${item.label}`}
               onClick={item.onClick}
               disabled={item.disabled || isProcessing || isDisabled}
               className="text-xs font-medium hover:cursor-pointer"
@@ -107,13 +107,15 @@ export const ActionGroup = ({
   }
 
   const renderAction = (action: ActionItem, index: number, keyPrefix: string) => {
+    const actionKey = `${keyPrefix}-${index}`
+
     if (action.dropdown) {
-      return <DropdownAction action={action} index={index} keyPrefix={keyPrefix} />
+      return <DropdownAction key={actionKey} action={action} index={index} keyPrefix={keyPrefix} />
     }
 
     return (
       <Button
-        key={`${keyPrefix}-${index}`}
+        key={actionKey}
         variant="ghost"
         size="xs"
         className="hover:cursor-pointer"
