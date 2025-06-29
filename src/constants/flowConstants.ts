@@ -7,10 +7,8 @@ export const HANDLE_IDS = {
   // Output handles
   ENHANCE: 'enhance',
   GENERATE: 'generate',
-  ATOMIZE: 'atomize',
-  SEGMENT: 'segment',
+  PARSE: 'parse',
   DESCRIBE: 'describe',
-  REFINE: 'refine',
   DUPLICATE: 'duplicate',
 } as const
 

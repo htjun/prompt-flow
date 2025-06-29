@@ -124,7 +124,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, atomizedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.ATOMIZE,
+      sourceHandle: HANDLE_IDS.PARSE,
       target: atomizedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
@@ -271,7 +271,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, segmentedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.SEGMENT,
+      sourceHandle: HANDLE_IDS.PARSE,
       target: segmentedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
