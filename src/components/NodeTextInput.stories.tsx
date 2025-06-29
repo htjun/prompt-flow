@@ -162,3 +162,63 @@ export const Loading: Story = {
     actions: defaultActions,
   },
 }
+
+export const WithDropdownAction: Story = {
+  args: {
+    label: 'Prompt',
+    placeholder: 'Enter your prompt',
+    initialValue: 'A serene landscape with mountains and a lake',
+    actions: [
+      {
+        label: 'Enhance',
+        onClick: fn(),
+        isInternal: true,
+      },
+      {
+        label: 'Parse',
+        dropdown: {
+          items: [
+            {
+              label: 'Segment',
+              onClick: fn(),
+            },
+            {
+              label: 'Atomize',
+              onClick: fn(),
+            },
+          ],
+        },
+      },
+      {
+        label: 'Generate',
+        onClick: fn(),
+      },
+    ],
+  },
+}
+
+export const ParseDropdownOnly: Story = {
+  args: {
+    label: 'Prompt Analysis',
+    placeholder: 'Enter your prompt to analyze',
+    initialValue:
+      'A futuristic city at sunset with flying cars and neon lights reflecting on wet streets',
+    actions: [
+      {
+        label: 'Parse',
+        dropdown: {
+          items: [
+            {
+              label: 'Segment',
+              onClick: fn(),
+            },
+            {
+              label: 'Atomize',
+              onClick: fn(),
+            },
+          ],
+        },
+      },
+    ],
+  },
+}
