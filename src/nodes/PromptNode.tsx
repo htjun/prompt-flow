@@ -1,4 +1,5 @@
 import { NodeTextInput } from '@/components/NodeTextInput'
+import { type ActionItem } from '@/components/ActionGroup'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
@@ -21,7 +22,7 @@ export const PromptNode = () => {
   const hasBeenEnhanced = enhancedPrompt !== ''
 
   const setPrompt = (text: string) => setBasicPrompt(nodeId, text)
-  const { generateImage } = useFlowActions()
+  const { generateImage, structurePrompt } = useFlowActions()
 
   const { renderSourceHandle } = useNodeHandles(nodeId)
 
@@ -30,10 +31,10 @@ export const PromptNode = () => {
     .trim()
     .split(/\s+/)
     .filter((word) => word.length > 0).length
-  const isEnhanceDisabled = wordCount > 20
+  const isPromptLongEnough = wordCount > 20
 
   const handleEnhance = async () => {
-    if (!prompt.trim() || isEnhanceDisabled || isEnhancing) return
+    if (!prompt.trim() || isPromptLongEnough || isEnhancing) return
 
     // Store the original prompt before enhancement
     setEnhancedPrompt(nodeId, prompt)
@@ -47,7 +48,10 @@ export const PromptNode = () => {
       } else {
         // Restore on failure
         setEnhancedPrompt(nodeId, '')
-        setOperationStatus(nodeId, { status: 'error', error: 'Failed to enhance prompt' })
+        setOperationStatus(nodeId, {
+          status: 'error',
+          error: 'Failed to enhance prompt',
+        })
       }
     } catch (error) {
       // Restore on error
@@ -71,27 +75,73 @@ export const PromptNode = () => {
     setOperationStatus(nodeId, { status: 'idle' })
   }
 
+  const handleStructure = async () => {
+    if (!prompt.trim()) return
+    await structurePrompt(prompt, nodeId)
+  }
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return
     await generateImage(prompt, nodeId, 'generate')
   }
 
-  const actions = hasBeenEnhanced
-    ? [
-        { label: 'Undo', onClick: handleUndo, isInternal: true },
-        { label: 'Generate', onClick: handleGenerate },
-      ]
-    : [
-        {
-          label: 'Enhance',
-          onClick: handleEnhance,
-          isInternal: true,
-          disabled: isEnhanceDisabled,
-        },
-        { label: 'Generate', onClick: handleGenerate },
-      ]
+  // Define action configurations
+  const actionConfigs = {
+    undo: { label: 'Undo', onClick: handleUndo, isInternal: true },
+    enhance: {
+      label: 'Enhance',
+      onClick: handleEnhance,
+      isInternal: true,
+      disabled: isPromptLongEnough,
+    },
+    structure: { label: 'Structure', onClick: handleStructure },
+    generate: { label: 'Generate', onClick: handleGenerate },
+  }
 
+  // Define state-based configurations
+  type StateConfig = {
+    actions: (keyof typeof actionConfigs)[]
+    handles: Array<{ id: string; actionKey: keyof typeof actionConfigs }>
+  }
+
+  const stateConfigs: Record<string, StateConfig> = {
+    enhanced: {
+      actions: ['undo', 'structure', 'generate'],
+      handles: [
+        { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+        { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
+      ],
+    },
+    longPrompt: {
+      actions: ['structure', 'generate'],
+      handles: [
+        { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+        { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
+      ],
+    },
+    default: {
+      actions: ['enhance', 'generate'],
+      handles: [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }],
+    },
+  }
+
+  // Determine current state
+  const currentState = hasBeenEnhanced ? 'enhanced' : isPromptLongEnough ? 'longPrompt' : 'default'
+
+  const config = stateConfigs[currentState]
+
+  // Build actions from config
+  const actions: ActionItem[] = config.actions.map((key) => actionConfigs[key])
   const actionLabels = actions.map((action) => action.label)
+
+  // Render handles from config
+  const handles = config.handles.map(({ id, actionKey }) =>
+    renderSourceHandle({
+      handleId: id,
+      actionLabels,
+      actionIndex: config.actions.indexOf(actionKey),
+    })
+  )
 
   return (
     <div className="flex flex-col gap-1">
@@ -102,29 +152,7 @@ export const PromptNode = () => {
         isLoading={isEnhancing}
       />
 
-      {hasBeenEnhanced ? (
-        <>
-          {renderSourceHandle({
-            handleId: HANDLE_IDS.GENERATE,
-            actionLabels,
-            actionIndex: 1,
-          })}
-        </>
-      ) : (
-        <>
-          {renderSourceHandle({
-            handleId: HANDLE_IDS.ENHANCE,
-            actionLabels,
-            actionIndex: 0,
-          })}
-
-          {renderSourceHandle({
-            handleId: HANDLE_IDS.GENERATE,
-            actionLabels,
-            actionIndex: 1,
-          })}
-        </>
-      )}
+      {handles}
     </div>
   )
 }
