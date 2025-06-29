@@ -8,6 +8,7 @@ export const HANDLE_IDS = {
   ENHANCE: 'enhance',
   GENERATE: 'generate',
   ATOMIZE: 'atomize',
+  SEGMENT: 'segment',
   DESCRIBE: 'describe',
   REFINE: 'refine',
   DUPLICATE: 'duplicate',

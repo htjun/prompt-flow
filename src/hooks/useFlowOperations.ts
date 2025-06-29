@@ -249,13 +249,94 @@ export const useFlowOperations = () => {
   ): Promise<CategorizedPrompt | null> => {
     if (!prompt.trim()) return null
 
+    const segmentedPromptId = `segmented-prompt-${crypto.randomUUID()}`
+    const sourceNode = flowStore.getNodeById(sourceNodeId)
+
+    if (!sourceNode) return null
+
+    // Create node with loading state
+    createNodeWithPositioning(
+      segmentedPromptId,
+      'segmented-prompt-node',
+      {
+        object: { prompts: [] },
+        nodeId: segmentedPromptId,
+        isLoading: true,
+      },
+      'parse',
+      sourceNodeId
+    )
+
+    // Create edge
+    flowStore.addEdge({
+      id: createEdgeId(sourceNodeId, segmentedPromptId),
+      source: sourceNodeId,
+      sourceHandle: HANDLE_IDS.SEGMENT,
+      target: segmentedPromptId,
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
+      animated: true,
+    })
+
     try {
       const result = await aiActions.segment(prompt)
-      return result
+
+      if (result) {
+        flowStore.updateNode(segmentedPromptId, {
+          object: result,
+          isLoading: false,
+        })
+
+        // Store the result in prompt store (we might need to add support for segmented prompts)
+        promptStore.setOperationStatus(segmentedPromptId, { status: 'success' })
+        return result
+      } else {
+        flowStore.updateNode(segmentedPromptId, { isLoading: false })
+        promptStore.setOperationStatus(segmentedPromptId, { status: 'error' })
+        return null
+      }
     } catch (error) {
       console.error('Error segmenting prompt:', error)
+      flowStore.updateNode(segmentedPromptId, { isLoading: false })
+      promptStore.setOperationStatus(segmentedPromptId, { status: 'error' })
       return null
     }
+  }
+
+  const duplicateSegmentedPrompt = (
+    sourceNodeId: string,
+    segmentedData: CategorizedPrompt
+  ): string | null => {
+    if (!segmentedData || !segmentedData.prompts || segmentedData.prompts.length === 0) return null
+
+    const duplicatedNodeId = `segmented-prompt-${crypto.randomUUID()}`
+    const sourceNode = flowStore.getNodeById(sourceNodeId)
+
+    if (!sourceNode) return null
+
+    // Create duplicated node
+    createNodeWithPositioning(
+      duplicatedNodeId,
+      'segmented-prompt-node',
+      {
+        object: segmentedData,
+        nodeId: duplicatedNodeId,
+        isLoading: false,
+      },
+      'parse',
+      sourceNodeId
+    )
+
+    // Create edge
+    flowStore.addEdge({
+      id: createEdgeId(sourceNodeId, duplicatedNodeId),
+      source: sourceNodeId,
+      sourceHandle: HANDLE_IDS.DUPLICATE,
+      target: duplicatedNodeId,
+      targetHandle: HANDLE_IDS.PROMPT_INPUT,
+      animated: true,
+    })
+
+    return duplicatedNodeId
   }
 
   return {
@@ -264,6 +345,7 @@ export const useFlowOperations = () => {
     segmentPrompt,
     describeImage,
     duplicateAtomizedPrompt,
+    duplicateSegmentedPrompt,
     // Expose loading states from AI actions
     isGenerating: aiActions.isGenerating,
     isAtomizing: aiActions.isAtomizing,
