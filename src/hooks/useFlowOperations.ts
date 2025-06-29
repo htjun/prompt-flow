@@ -36,57 +36,6 @@ export const useFlowOperations = () => {
     )
   }
 
-  const enhancePrompt = async (prompt: string, sourceNodeId: string): Promise<string | null> => {
-    if (!prompt.trim()) return null
-
-    const enhancedPromptId = `enhanced-prompt-${crypto.randomUUID()}`
-    const sourceNode = flowStore.getNodeById(sourceNodeId)
-
-    if (!sourceNode) return null
-
-    // Set loading state
-    promptStore.setOperationStatus(enhancedPromptId, { status: 'loading' })
-
-    // Create node with loading state
-    createNodeWithPositioning(
-      enhancedPromptId,
-      'enhanced-prompt',
-      {
-        text: '',
-        nodeId: enhancedPromptId,
-      },
-      'enhance',
-      sourceNodeId
-    )
-
-    // Create edge
-    flowStore.addEdge({
-      id: createEdgeId(sourceNodeId, enhancedPromptId),
-      source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.ENHANCE,
-      target: enhancedPromptId,
-      targetHandle: HANDLE_IDS.PROMPT_INPUT,
-      animated: true,
-    })
-
-    try {
-      const enhancedText = await aiActions.enhance(prompt)
-
-      if (enhancedText) {
-        flowStore.updateNode(enhancedPromptId, { text: enhancedText })
-        promptStore.setEnhancedPrompt(enhancedPromptId, enhancedText)
-        promptStore.setOperationStatus(enhancedPromptId, { status: 'success' })
-        return enhancedText
-      } else {
-        promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
-        return null
-      }
-    } catch {
-      promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
-      return null
-    }
-  }
-
   const generateImage = async (
     prompt: string,
     sourceNodeId: string,
@@ -209,21 +158,20 @@ export const useFlowOperations = () => {
   const describeImage = async (imageData: string, sourceNodeId: string): Promise<string | null> => {
     if (!imageData.trim()) return null
 
-    const enhancedPromptId = `enhanced-prompt-${crypto.randomUUID()}`
+    const promptNodeId = `prompt-${crypto.randomUUID()}`
     const sourceNode = flowStore.getNodeById(sourceNodeId)
 
     if (!sourceNode) return null
 
     // Set loading state
-    promptStore.setOperationStatus(enhancedPromptId, { status: 'loading' })
+    promptStore.setOperationStatus(promptNodeId, { status: 'loading' })
 
     // Create node with loading state
     createNodeWithPositioning(
-      enhancedPromptId,
-      'enhanced-prompt',
+      promptNodeId,
+      'prompt',
       {
-        text: '',
-        nodeId: enhancedPromptId,
+        id: promptNodeId,
       },
       'describe',
       sourceNodeId
@@ -231,10 +179,10 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: createEdgeId(sourceNodeId, enhancedPromptId),
+      id: createEdgeId(sourceNodeId, promptNodeId),
       source: sourceNodeId,
       sourceHandle: HANDLE_IDS.DESCRIBE,
-      target: enhancedPromptId,
+      target: promptNodeId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
@@ -243,16 +191,16 @@ export const useFlowOperations = () => {
       const describedText = await aiActions.describe(imageData)
 
       if (describedText) {
-        flowStore.updateNode(enhancedPromptId, { text: describedText })
-        promptStore.setEnhancedPrompt(enhancedPromptId, describedText)
-        promptStore.setOperationStatus(enhancedPromptId, { status: 'success' })
+        flowStore.updateNode(promptNodeId, { id: promptNodeId })
+        promptStore.setBasicPrompt(promptNodeId, describedText)
+        promptStore.setOperationStatus(promptNodeId, { status: 'success' })
         return describedText
       } else {
-        promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
+        promptStore.setOperationStatus(promptNodeId, { status: 'error' })
         return null
       }
     } catch {
-      promptStore.setOperationStatus(enhancedPromptId, { status: 'error' })
+      promptStore.setOperationStatus(promptNodeId, { status: 'error' })
       return null
     }
   }
@@ -295,13 +243,11 @@ export const useFlowOperations = () => {
   }
 
   return {
-    enhancePrompt,
     generateImage,
     structurePrompt,
     describeImage,
     duplicateStructuredPrompt,
     // Expose loading states from AI actions
-    isEnhancing: aiActions.isEnhancing,
     isGenerating: aiActions.isGenerating,
     isStructuring: aiActions.isStructuring,
     isDescribing: aiActions.isDescribing,

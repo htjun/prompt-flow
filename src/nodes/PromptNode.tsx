@@ -1,3 +1,4 @@
+import { type NodeProps } from '@xyflow/react'
 import { NodeTextInput } from '@/components/NodeTextInput'
 import { type ActionItem } from '@/components/ActionGroup'
 import { usePromptStore } from '@/stores/promptStore'
@@ -6,7 +7,7 @@ import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
 
-export const PromptNode = () => {
+export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
   const setBasicPrompt = usePromptStore((s) => s.setBasicPrompt)
   const getEnhancedPrompt = usePromptStore((s) => s.getEnhancedPrompt)
@@ -14,7 +15,7 @@ export const PromptNode = () => {
   const getOperationStatus = usePromptStore((s) => s.getOperationStatus)
   const setOperationStatus = usePromptStore((s) => s.setOperationStatus)
 
-  const nodeId = 'prompt'
+  const nodeId = id
   const prompt = getBasicPrompt(nodeId)
   const enhancedPrompt = getEnhancedPrompt(nodeId)
   const operationStatus = getOperationStatus(nodeId)
@@ -24,7 +25,7 @@ export const PromptNode = () => {
   const setPrompt = (text: string) => setBasicPrompt(nodeId, text)
   const { generateImage, structurePrompt } = useFlowActions()
 
-  const { renderSourceHandle } = useNodeHandles(nodeId)
+  const { renderSourceHandle, renderTargetHandle } = useNodeHandles(nodeId)
 
   // Count words in the prompt
   const wordCount = prompt
@@ -85,6 +86,9 @@ export const PromptNode = () => {
     await generateImage(prompt, nodeId, 'generate')
   }
 
+  // Check if this is the root prompt node
+  const isRootNode = nodeId === 'prompt'
+
   // Define action configurations
   const actionConfigs = {
     undo: { label: 'Undo', onClick: handleUndo, isInternal: true },
@@ -120,8 +124,13 @@ export const PromptNode = () => {
       ],
     },
     default: {
-      actions: ['enhance', 'generate'],
-      handles: [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }],
+      actions: isRootNode ? ['enhance', 'generate'] : ['structure', 'generate'],
+      handles: isRootNode
+        ? [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }]
+        : [
+            { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+            { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
+          ],
     },
   }
 
@@ -151,6 +160,12 @@ export const PromptNode = () => {
         actions={actions}
         isLoading={isEnhancing}
       />
+
+      {/* Render target handle for non-root nodes */}
+      {!isRootNode &&
+        renderTargetHandle({
+          handleId: HANDLE_IDS.PROMPT_INPUT,
+        })}
 
       {handles}
     </div>
