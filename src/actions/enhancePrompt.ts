@@ -2,7 +2,7 @@
 
 import { openai } from '@/lib/ai'
 import { generateText } from 'ai'
-import { enhancePromptSystemMessage } from '@/prompts/imageGeneration'
+import { enhancePromptSystemMessage } from '@/prompts/promptEnhance'
 import { useModelStore } from '@/stores/modelStore'
 
 export const enhancePrompt = async (prompt: string) => {

@@ -3,7 +3,7 @@
 import { openai } from '@/lib/ai'
 import { generateObject } from 'ai'
 import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
-import { atomizePromptSystemMessage } from '@/prompts/imageGeneration'
+import { atomizePromptSystemMessage } from '@/prompts/promptParse'
 import { useModelStore } from '@/stores/modelStore'
 
 export const atomizePrompt = async (prompt: string) => {
