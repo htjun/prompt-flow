@@ -79,7 +79,6 @@ export const ActionGroup = ({
           <Button
             variant="ghost"
             size="xs"
-            className="hover:cursor-pointer"
             disabled={action.disabled || isProcessing || isDisabled}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -97,7 +96,7 @@ export const ActionGroup = ({
               key={idx}
               onClick={item.onClick}
               disabled={item.disabled || isProcessing || isDisabled}
-              className="text-xs"
+              className="text-xs font-medium hover:cursor-pointer"
             >
               {item.label}
             </DropdownMenuItem>

@@ -107,8 +107,8 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
       label: 'Parse',
       dropdown: {
         items: [
-          { label: 'Segment', onClick: handleSegment },
           { label: 'Atomize', onClick: handleAtomize },
+          { label: 'Segment', onClick: handleSegment },
         ],
       },
     },
