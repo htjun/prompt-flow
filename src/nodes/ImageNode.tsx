@@ -10,12 +10,10 @@ import { ActionGroup } from '@/components/ActionGroup'
 import { Button } from '@/components/ui/button'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { useFlowStore } from '@/stores/flowStore'
-import { useNodeDimensions, isHandleConnected } from '@/lib/flowHelpers'
-import { imageModels } from '@/constants/models'
-import { useModelStore } from '@/stores/modelStore'
+import { isHandleConnected } from '@/lib/flowHelpers'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { HANDLE_IDS } from '@/constants/flowConstants'
+import Image from 'next/image'
 
 type ImageNodeProps = {
   id: string
@@ -30,10 +28,6 @@ type ImageNodeProps = {
 export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
   const [copySuccess, setCopySuccess] = useState(false)
-  const addNode = useFlowStore((state) => state.addNode)
-  const addEdge = useFlowStore((state) => state.addEdge)
-  const getNodeDimensions = useNodeDimensions()
-  const selectedImageModel = useModelStore((state) => state.selectedImageModel)
   const { describeImage } = useFlowActions()
   const edges = useEdges()
 
@@ -80,33 +74,16 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     }
   }, [copySuccess])
 
-  const handleRefine = () => {}
-
-  const supportsImageInput =
-    imageModels.find((model) => model.id === selectedImageModel)?.imageInput || false
-
-  const allActions = [
-    {
-      label: 'Refine',
-      onClick: handleRefine,
-    },
+  const actions = [
     {
       label: 'Describe',
       onClick: handleDescribe,
     },
   ]
 
-  const actions = allActions.filter((action) => {
-    if (action.label === 'Refine') {
-      return supportsImageInput
-    }
-    return true
-  })
-
   // Define action labels for handle positioning (matches the filtered actions)
   const actionLabels = actions.map((action) => action.label)
 
-  const isRefineHandleConnected = isHandleConnected(edges, id, HANDLE_IDS.REFINE, 'source')
   const isDescribeHandleConnected = isHandleConnected(edges, id, HANDLE_IDS.DESCRIBE, 'source')
 
   return (
@@ -142,10 +119,13 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
                   <DownloadIcon className="h-4 w-4 text-white" />
                 </Button>
               </div>
-              <img
+              <Image
                 src={getImageSrc(imageData)}
                 alt="Generated image"
                 className="max-h-[500px] max-w-full rounded-sm"
+                width={500}
+                height={500}
+                style={{ objectFit: 'contain' }}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -166,16 +146,6 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
         )}
       </div>
       <Handle type="target" position={Position.Left} id={HANDLE_IDS.IMAGE_INPUT} />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id={HANDLE_IDS.REFINE}
-        className={cn(
-          '!left-auto transition-opacity duration-200',
-          isRefineHandleConnected ? 'opacity-100' : 'opacity-0'
-        )}
-        style={calculateHandleOffset(actionLabels, actionLabels.indexOf('Refine'))}
-      />
       <Handle
         type="source"
         position={Position.Bottom}

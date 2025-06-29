@@ -247,8 +247,6 @@ export const useFlowOperations = () => {
     prompt: string,
     sourceNodeId: string
   ): Promise<CategorizedPrompt | null> => {
-    // TODO: Implement the full flow logic for segmentPrompt
-    // For now, just call the AI action
     if (!prompt.trim()) return null
 
     try {

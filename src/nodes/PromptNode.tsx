@@ -6,14 +6,6 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { ChevronDownIcon } from 'lucide-react'
 
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)

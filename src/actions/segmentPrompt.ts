@@ -8,9 +8,6 @@ export type CategorizedPrompt = {
 }
 
 export const segmentPrompt = async (prompt: string): Promise<CategorizedPrompt> => {
-  // TODO: Implement prompt segmentation logic
-  console.log('segmentPrompt called with:', prompt)
-
   // Placeholder return
   return {
     prompts: [
