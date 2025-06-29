@@ -14,8 +14,12 @@ jest.mock('@/actions/describeImage', () => ({
   describeImage: jest.fn(),
 }))
 
-jest.mock('@/actions/structurePrompt', () => ({
-  structurePrompt: jest.fn(),
+jest.mock('@/actions/atomizePrompt', () => ({
+  atomizePrompt: jest.fn(),
+}))
+
+jest.mock('@/actions/segmentPrompt', () => ({
+  segmentPrompt: jest.fn(),
 }))
 
 // Mock the model store with a simpler approach
@@ -28,12 +32,16 @@ jest.mock('@/stores/modelStore', () => ({
 import { enhancePrompt } from '@/actions/enhancePrompt'
 import { generateImageFromPrompt } from '@/actions/generateImage'
 import { describeImage } from '@/actions/describeImage'
-import { structurePrompt } from '@/actions/structurePrompt'
+import { atomizePrompt } from '@/actions/atomizePrompt'
+import { segmentPrompt } from '@/actions/segmentPrompt'
 
 const mockEnhancePrompt = enhancePrompt as jest.MockedFunction<typeof enhancePrompt>
-const mockGenerateImage = generateImageFromPrompt as jest.MockedFunction<typeof generateImageFromPrompt>
+const mockGenerateImage = generateImageFromPrompt as jest.MockedFunction<
+  typeof generateImageFromPrompt
+>
 const mockDescribeImage = describeImage as jest.MockedFunction<typeof describeImage>
-const mockStructurePrompt = structurePrompt as jest.MockedFunction<typeof structurePrompt>
+const mockAtomizePrompt = atomizePrompt as jest.MockedFunction<typeof atomizePrompt>
+const mockSegmentPrompt = segmentPrompt as jest.MockedFunction<typeof segmentPrompt>
 
 describe('useAIActions', () => {
   beforeEach(() => {
@@ -42,16 +50,18 @@ describe('useAIActions', () => {
 
   it('initializes with correct default state', () => {
     const { result } = renderHook(() => useAIActions())
-    
+
     expect(result.current.isEnhancing).toBe(false)
     expect(result.current.isGenerating).toBe(false)
     expect(result.current.isDescribing).toBe(false)
-    expect(result.current.isStructuring).toBe(false)
+    expect(result.current.isAtomizing).toBe(false)
+    expect(result.current.isSegmenting).toBe(false)
     expect(result.current.error).toBe(null)
     expect(typeof result.current.enhance).toBe('function')
     expect(typeof result.current.generate).toBe('function')
     expect(typeof result.current.describe).toBe('function')
-    expect(typeof result.current.structure).toBe('function')
+    expect(typeof result.current.atomize).toBe('function')
+    expect(typeof result.current.segment).toBe('function')
   })
 
   describe('enhance', () => {
@@ -162,44 +172,105 @@ describe('useAIActions', () => {
     })
   })
 
-  describe('structure', () => {
-    it('successfully structures a prompt', async () => {
-      const mockStructureResult = {
+  describe('atomize', () => {
+    it('successfully atomizes a prompt', async () => {
+      const mockAtomizeResult = {
         object: {
-          scene: { setting: 'forest', time: 'dawn', weather: null, background: null, context: null },
+          scene: {
+            setting: 'forest',
+            time: 'dawn',
+            weather: null,
+            background: null,
+            context: null,
+          },
           subjects: null,
-          style: { art_style: 'realism', color_palette: 'warm', mood: 'peaceful', lighting: 'soft' },
-          camera: { focal_length: '50mm', aperture: 'f/2.8', angle: 'eye-level', depth_of_field: 'shallow' }
-        }
+          style: {
+            art_style: 'realism',
+            color_palette: 'warm',
+            mood: 'peaceful',
+            lighting: 'soft',
+          },
+          camera: {
+            focal_length: '50mm',
+            aperture: 'f/2.8',
+            angle: 'eye-level',
+            depth_of_field: 'shallow',
+          },
+        },
+        usage: {
+          prompt_tokens: 100,
+          completion_tokens: 200,
+          total_tokens: 300,
+        },
       }
-      mockStructurePrompt.mockResolvedValue(mockStructureResult)
+      mockAtomizePrompt.mockResolvedValue(mockAtomizeResult)
 
       const { result } = renderHook(() => useAIActions())
 
-      let structureResult: any = null
+      let atomizeResult: any = null
       await act(async () => {
-        structureResult = await result.current.structure('test prompt')
+        atomizeResult = await result.current.atomize('test prompt')
       })
 
-      expect(mockStructurePrompt).toHaveBeenCalledWith('test prompt')
-      expect(structureResult).toEqual(mockStructureResult.object)
-      expect(result.current.isStructuring).toBe(false)
+      expect(mockAtomizePrompt).toHaveBeenCalledWith('test prompt')
+      expect(atomizeResult).toEqual(mockAtomizeResult.object)
+      expect(result.current.isAtomizing).toBe(false)
       expect(result.current.error).toBe(null)
     })
 
-    it('handles structure error', async () => {
-      const mockError = new Error('Structure failed')
-      mockStructurePrompt.mockRejectedValue(mockError)
+    it('handles atomize error', async () => {
+      const mockError = new Error('Atomize failed')
+      mockAtomizePrompt.mockRejectedValue(mockError)
 
       const { result } = renderHook(() => useAIActions())
 
-      let structureResult: any = null
+      let atomizeResult: any = null
       await act(async () => {
-        structureResult = await result.current.structure('test prompt')
+        atomizeResult = await result.current.atomize('test prompt')
       })
 
-      expect(structureResult).toBe(null)
-      expect(result.current.isStructuring).toBe(false)
+      expect(atomizeResult).toBe(null)
+      expect(result.current.isAtomizing).toBe(false)
+      expect(result.current.error).toEqual(mockError)
+    })
+  })
+
+  describe('segment', () => {
+    it('successfully segments a prompt', async () => {
+      const mockSegmentResult = {
+        prompts: [
+          { category: 'scene' as const, text: 'Scene description' },
+          { category: 'style' as const, text: 'Style description' },
+        ],
+      }
+      mockSegmentPrompt.mockResolvedValue(mockSegmentResult)
+
+      const { result } = renderHook(() => useAIActions())
+
+      let segmentResult: any = null
+      await act(async () => {
+        segmentResult = await result.current.segment('test prompt')
+      })
+
+      expect(mockSegmentPrompt).toHaveBeenCalledWith('test prompt')
+      expect(segmentResult).toEqual(mockSegmentResult)
+      expect(result.current.isSegmenting).toBe(false)
+      expect(result.current.error).toBe(null)
+    })
+
+    it('handles segment error', async () => {
+      const mockError = new Error('Segment failed')
+      mockSegmentPrompt.mockRejectedValue(mockError)
+
+      const { result } = renderHook(() => useAIActions())
+
+      let segmentResult: any = null
+      await act(async () => {
+        segmentResult = await result.current.segment('test prompt')
+      })
+
+      expect(segmentResult).toBe(null)
+      expect(result.current.isSegmenting).toBe(false)
       expect(result.current.error).toEqual(mockError)
     })
   })

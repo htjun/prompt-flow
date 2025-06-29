@@ -65,7 +65,8 @@ pnpm build-storybook   # Build storybook
 - **Server actions** in `src/actions/` handle AI operations:
   - `enhancePrompt.ts`: Uses language models to improve prompts
   - `generateImage.ts`: Creates images from prompts
-  - `structurePrompt.ts`: Breaks down prompts into structured categories
+  - `atomizePrompt.ts`: Breaks down prompts into structured data fields
+- `segmentPrompt.ts`: Categorizes prompts into natural language segments
   - `describeImage.ts`: Analyzes and describes uploaded images
 
 ### Custom Hooks Pattern

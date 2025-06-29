@@ -1,6 +1,6 @@
 import type { Node } from '@xyflow/react'
 
-export type ActionType = 'enhance' | 'structure' | 'generate' | 'describe'
+export type ActionType = 'enhance' | 'structure' | 'generate' | 'describe' | 'parse'
 
 export interface NodeDimensions {
   width: number
@@ -26,7 +26,7 @@ export class NodePositioningService {
     getNodeDimensions?: (nodeId: string) => NodeDimensions | null
   ): Position {
     const gap = this.NODE_GAP
-    
+
     // Try to get actual node dimensions, fallback to defaults
     let nodeHeight = this.DEFAULT_NODE_HEIGHT
     let nodeWidth = this.DEFAULT_NODE_WIDTH
@@ -42,20 +42,21 @@ export class NodePositioningService {
     switch (actionType) {
       case 'enhance':
       case 'structure':
+      case 'parse':
       case 'describe':
         // Position below the reference node (same x, y + height + gap)
         return {
           x: referenceNode.position.x,
           y: referenceNode.position.y + nodeHeight + gap,
         }
-      
+
       case 'generate':
         // Position to the right of the reference node (x + width + gap, same y)
         return {
           x: referenceNode.position.x + nodeWidth + gap,
           y: referenceNode.position.y,
         }
-      
+
       default:
         // Fallback position
         return {
@@ -71,7 +72,7 @@ export class NodePositioningService {
   static calculateGridPosition(index: number, columns: number = 3): Position {
     const row = Math.floor(index / columns)
     const col = index % columns
-    
+
     return {
       x: col * (this.DEFAULT_NODE_WIDTH + this.NODE_GAP) + 100,
       y: row * (this.DEFAULT_NODE_HEIGHT + this.NODE_GAP) + 100,
@@ -82,9 +83,9 @@ export class NodePositioningService {
    * Check if two nodes overlap
    */
   static doNodesOverlap(
-    pos1: Position, 
+    pos1: Position,
     dimensions1: NodeDimensions,
-    pos2: Position, 
+    pos2: Position,
     dimensions2: NodeDimensions
   ): boolean {
     return !(
@@ -101,34 +102,34 @@ export class NodePositioningService {
   static findNonOverlappingPosition(
     targetPosition: Position,
     existingNodes: Array<{ position: Position; dimensions: NodeDimensions }>,
-    newNodeDimensions: NodeDimensions = { 
-      width: this.DEFAULT_NODE_WIDTH, 
-      height: this.DEFAULT_NODE_HEIGHT 
+    newNodeDimensions: NodeDimensions = {
+      width: this.DEFAULT_NODE_WIDTH,
+      height: this.DEFAULT_NODE_HEIGHT,
     }
   ): Position {
     let position = { ...targetPosition }
     let attempts = 0
     const maxAttempts = 20
-    
+
     while (attempts < maxAttempts) {
-      const hasOverlap = existingNodes.some(node =>
+      const hasOverlap = existingNodes.some((node) =>
         this.doNodesOverlap(position, newNodeDimensions, node.position, node.dimensions)
       )
-      
+
       if (!hasOverlap) {
         return position
       }
-      
+
       // Try different offsets
       const offset = (attempts + 1) * this.NODE_GAP
       position = {
         x: targetPosition.x + offset,
         y: targetPosition.y + (attempts % 2 === 0 ? 0 : offset),
       }
-      
+
       attempts++
     }
-    
+
     // Fallback: return original position
     return targetPosition
   }

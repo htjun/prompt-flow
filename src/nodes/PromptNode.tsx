@@ -6,6 +6,14 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { ChevronDownIcon } from 'lucide-react'
 
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
@@ -23,7 +31,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const hasBeenEnhanced = enhancedPrompt !== ''
 
   const setPrompt = (text: string) => setBasicPrompt(nodeId, text)
-  const { generateImage, structurePrompt } = useFlowActions()
+  const { generateImage, atomizePrompt, segmentPrompt } = useFlowActions()
 
   const { renderSourceHandle, renderTargetHandle } = useNodeHandles(nodeId)
 
@@ -76,9 +84,14 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     setOperationStatus(nodeId, { status: 'idle' })
   }
 
-  const handleStructure = async () => {
+  const handleAtomize = async () => {
     if (!prompt.trim()) return
-    await structurePrompt(prompt, nodeId)
+    await atomizePrompt(prompt, nodeId)
+  }
+
+  const handleSegment = async () => {
+    if (!prompt.trim()) return
+    await segmentPrompt(prompt, nodeId)
   }
 
   const handleGenerate = async () => {
@@ -98,7 +111,15 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
       isInternal: true,
       disabled: isPromptLongEnough,
     },
-    structure: { label: 'Structure', onClick: handleStructure },
+    parse: {
+      label: 'Parse',
+      dropdown: {
+        items: [
+          { label: 'Segment', onClick: handleSegment },
+          { label: 'Atomize', onClick: handleAtomize },
+        ],
+      },
+    },
     generate: { label: 'Generate', onClick: handleGenerate },
   }
 
@@ -110,25 +131,25 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   const stateConfigs: Record<string, StateConfig> = {
     enhanced: {
-      actions: ['undo', 'structure', 'generate'],
+      actions: ['undo', 'parse', 'generate'],
       handles: [
-        { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+        { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
         { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
       ],
     },
     longPrompt: {
-      actions: ['structure', 'generate'],
+      actions: ['parse', 'generate'],
       handles: [
-        { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+        { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
         { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
       ],
     },
     default: {
-      actions: isRootNode ? ['enhance', 'generate'] : ['structure', 'generate'],
+      actions: isRootNode ? ['enhance', 'generate'] : ['parse', 'generate'],
       handles: isRootNode
         ? [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }]
         : [
-            { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' },
+            { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
             { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
           ],
     },

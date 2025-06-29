@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { enhancePrompt } from '@/actions/enhancePrompt'
 import { generateImageFromPrompt } from '@/actions/generateImage'
 import { describeImage } from '@/actions/describeImage'
-import { structurePrompt } from '@/actions/structurePrompt'
+import { atomizePrompt } from '@/actions/atomizePrompt'
+import { segmentPrompt, type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { useModelStore } from '@/stores/modelStore'
 import { type z } from 'zod'
 import { imageStructureSchema } from '@/schema/imageStructure'
@@ -13,7 +14,8 @@ interface AIActionsState {
   isEnhancing: boolean
   isGenerating: boolean
   isDescribing: boolean
-  isStructuring: boolean
+  isAtomizing: boolean
+  isSegmenting: boolean
   error: Error | null
 }
 
@@ -22,21 +24,22 @@ export const useAIActions = () => {
     isEnhancing: false,
     isGenerating: false,
     isDescribing: false,
-    isStructuring: false,
+    isAtomizing: false,
+    isSegmenting: false,
     error: null,
   })
 
   const { selectedImageModel } = useModelStore()
 
   const setOperationState = (operation: keyof AIActionsState, value: boolean | Error | null) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       [operation]: value,
     }))
   }
 
   const clearError = () => {
-    setState(prev => ({ ...prev, error: null }))
+    setState((prev) => ({ ...prev, error: null }))
   }
 
   const enhance = async (prompt: string) => {
@@ -84,18 +87,33 @@ export const useAIActions = () => {
     }
   }
 
-  const structure = async (prompt: string): Promise<ImageStructure | null> => {
+  const atomize = async (prompt: string): Promise<ImageStructure | null> => {
     try {
       clearError()
-      setOperationState('isStructuring', true)
-      const result = await structurePrompt(prompt)
+      setOperationState('isAtomizing', true)
+      const result = await atomizePrompt(prompt)
       return result.object
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to structure prompt')
+      const error = err instanceof Error ? err : new Error('Failed to atomize prompt')
       setOperationState('error', error)
       return null
     } finally {
-      setOperationState('isStructuring', false)
+      setOperationState('isAtomizing', false)
+    }
+  }
+
+  const segment = async (prompt: string): Promise<CategorizedPrompt | null> => {
+    try {
+      clearError()
+      setOperationState('isSegmenting', true)
+      const result = await segmentPrompt(prompt)
+      return result
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to segment prompt')
+      setOperationState('error', error)
+      return null
+    } finally {
+      setOperationState('isSegmenting', false)
     }
   }
 
@@ -103,11 +121,13 @@ export const useAIActions = () => {
     enhance,
     generate,
     describe,
-    structure,
+    atomize,
+    segment,
     isEnhancing: state.isEnhancing,
     isGenerating: state.isGenerating,
     isDescribing: state.isDescribing,
-    isStructuring: state.isStructuring,
+    isAtomizing: state.isAtomizing,
+    isSegmenting: state.isSegmenting,
     error: state.error,
   }
 }

@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 import { useFlowOperations } from '@/hooks/useFlowOperations'
 import { type ImageStructure } from '@/hooks/useAIActions'
+import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 
 interface FlowActionsContextValue {
   generateImage: (
@@ -8,21 +9,25 @@ interface FlowActionsContextValue {
     nodeId: string,
     handleId: string
   ) => Promise<{ nodeId: string; data?: any } | null>
-  structurePrompt: (prompt: string, nodeId: string) => Promise<ImageStructure | null>
+  atomizePrompt: (prompt: string, nodeId: string) => Promise<ImageStructure | null>
+  segmentPrompt: (prompt: string, nodeId: string) => Promise<CategorizedPrompt | null>
   duplicateStructuredPrompt: (nodeId: string, data: ImageStructure) => string | null
   describeImage: (imageData: string, nodeId: string) => Promise<string | null>
   isGenerating: boolean
-  isStructuring: boolean
+  isAtomizing: boolean
+  isSegmenting: boolean
   isDescribing: boolean
 }
 
 const FlowActionsContext = createContext<FlowActionsContextValue>({
   generateImage: async () => null,
-  structurePrompt: async () => null,
+  atomizePrompt: async () => null,
+  segmentPrompt: async () => null,
   duplicateStructuredPrompt: () => null,
   describeImage: async () => null,
   isGenerating: false,
-  isStructuring: false,
+  isAtomizing: false,
+  isSegmenting: false,
   isDescribing: false,
 })
 
@@ -31,11 +36,13 @@ export const FlowActionsProvider = ({ children }: { children: React.ReactNode })
 
   const value: FlowActionsContextValue = {
     generateImage: flowOperations.generateImage,
-    structurePrompt: flowOperations.structurePrompt,
+    atomizePrompt: flowOperations.atomizePrompt,
+    segmentPrompt: flowOperations.segmentPrompt,
     duplicateStructuredPrompt: flowOperations.duplicateStructuredPrompt,
     describeImage: flowOperations.describeImage,
     isGenerating: flowOperations.isGenerating,
-    isStructuring: flowOperations.isStructuring,
+    isAtomizing: flowOperations.isAtomizing,
+    isSegmenting: flowOperations.isSegmenting,
     isDescribing: flowOperations.isDescribing,
   }
 

@@ -1,4 +1,5 @@
 import { useAIActions, type ImageStructure } from '@/hooks/useAIActions'
+import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { usePromptStore } from '@/stores/promptStore'
 import { useImageStore } from '@/stores/imageStore'
 import { useFlowStore } from '@/stores/flowStore'
@@ -21,7 +22,7 @@ export const useFlowOperations = () => {
     nodeId: string,
     nodeType: string,
     nodeData: any,
-    actionType: 'enhance' | 'generate' | 'structure' | 'describe',
+    actionType: 'enhance' | 'generate' | 'structure' | 'describe' | 'parse',
     sourceNodeId: string
   ) => {
     flowStore.addNodeWithPositioning(
@@ -95,7 +96,7 @@ export const useFlowOperations = () => {
     }
   }
 
-  const structurePrompt = async (
+  const atomizePrompt = async (
     prompt: string,
     sourceNodeId: string
   ): Promise<ImageStructure | null> => {
@@ -115,7 +116,7 @@ export const useFlowOperations = () => {
         nodeId: structuredPromptId,
         isLoading: true,
       },
-      'structure',
+      'parse',
       sourceNodeId
     )
 
@@ -130,7 +131,7 @@ export const useFlowOperations = () => {
     })
 
     try {
-      const result = await aiActions.structure(prompt)
+      const result = await aiActions.atomize(prompt)
 
       if (result) {
         flowStore.updateNode(structuredPromptId, {
@@ -148,7 +149,7 @@ export const useFlowOperations = () => {
         return null
       }
     } catch (error) {
-      console.error('Error structuring prompt:', error)
+      console.error('Error atomizing prompt:', error)
       flowStore.updateNode(structuredPromptId, { isLoading: false })
       promptStore.setOperationStatus(structuredPromptId, { status: 'error' })
       return null
@@ -225,7 +226,7 @@ export const useFlowOperations = () => {
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
-      'structure',
+      'parse',
       sourceNodeId
     )
 
@@ -242,14 +243,33 @@ export const useFlowOperations = () => {
     return duplicatedNodeId
   }
 
+  const segmentPrompt = async (
+    prompt: string,
+    sourceNodeId: string
+  ): Promise<CategorizedPrompt | null> => {
+    // TODO: Implement the full flow logic for segmentPrompt
+    // For now, just call the AI action
+    if (!prompt.trim()) return null
+
+    try {
+      const result = await aiActions.segment(prompt)
+      return result
+    } catch (error) {
+      console.error('Error segmenting prompt:', error)
+      return null
+    }
+  }
+
   return {
     generateImage,
-    structurePrompt,
+    atomizePrompt,
+    segmentPrompt,
     describeImage,
     duplicateStructuredPrompt,
     // Expose loading states from AI actions
     isGenerating: aiActions.isGenerating,
-    isStructuring: aiActions.isStructuring,
+    isAtomizing: aiActions.isAtomizing,
+    isSegmenting: aiActions.isSegmenting,
     isDescribing: aiActions.isDescribing,
     error: aiActions.error,
   }

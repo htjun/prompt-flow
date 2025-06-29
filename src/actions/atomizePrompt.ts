@@ -6,7 +6,7 @@ import { imageStructureSchema } from '@/schema/imageStructure'
 import { structurePromptSystemMessage } from '@/prompts/imageGeneration'
 import { useModelStore } from '@/stores/modelStore'
 
-export const structurePrompt = async (prompt: string) => {
+export const atomizePrompt = async (prompt: string) => {
   try {
     const selectedModel = useModelStore.getState().selectedLanguageModel
     const result = await generateObject({
@@ -33,7 +33,7 @@ export const structurePrompt = async (prompt: string) => {
       usage: JSON.parse(JSON.stringify(result.usage)),
     }
   } catch (error) {
-    console.error('Error in analyzeImage server action:', error)
+    console.error('Error in atomizePrompt server action:', error)
     throw error
   }
 }
