@@ -1,6 +1,6 @@
 import type { Node } from '@xyflow/react'
 
-export type ActionType = 'enhance' | 'structure' | 'generate' | 'describe' | 'parse'
+export type ActionType = 'enhance' | 'atomize' | 'generate' | 'describe' | 'parse'
 
 export interface NodeDimensions {
   width: number
@@ -41,7 +41,7 @@ export class NodePositioningService {
 
     switch (actionType) {
       case 'enhance':
-      case 'structure':
+      case 'atomize':
       case 'parse':
       case 'describe':
         // Position below the reference node (same x, y + height + gap)

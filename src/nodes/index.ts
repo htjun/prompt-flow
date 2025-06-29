@@ -2,12 +2,12 @@ import type { NodeTypes } from '@xyflow/react'
 
 import { PromptNode } from './PromptNode'
 import { ImageNode } from './ImageNode'
-import { StructuredPromptNode } from './StructuredPromptNode'
+import { AtomizedPromptNode } from './AtomizedPromptNode'
 
 export const nodeTypes = {
   prompt: PromptNode,
   image: ImageNode,
-  'structured-prompt-node': StructuredPromptNode,
+  'atomized-prompt-node': AtomizedPromptNode,
 } as const
 
-export { PromptNode, ImageNode, StructuredPromptNode }
+export { PromptNode, ImageNode, AtomizedPromptNode }

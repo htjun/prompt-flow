@@ -13,7 +13,7 @@ Key Objectives:
 5.  **Direct Language**: Avoid instructional verbs (e.g., "Create," "Generate") and superfluous filler phrases. Focus on descriptive language.
 Output a single, coherent, and rich paragraph ready for an image generation model.`
 
-export const structurePromptSystemMessage = `You are an AI assistant specializing in decomposing image concepts into a structured format. Your task is to analyze the user's image prompt and populate a detailed schema with all relevant visual information.
+export const atomizePromptSystemMessage = `You are an AI assistant specializing in decomposing image concepts into a structured format. Your task is to analyze the user's image prompt and populate a detailed schema with all relevant visual information.
 Core Task:
 Based on the user's prompt, provide comprehensive details for the following categories, ensuring all information is grounded in the prompt's explicit or strongly implied elements:
 *   **Scene**: Describe the setting (environment, time, weather, background, overall context).

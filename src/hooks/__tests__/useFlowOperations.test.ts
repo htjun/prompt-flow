@@ -49,9 +49,18 @@ const mockFlowStore = {
 }
 
 const mockPromptStore = {
+  setBasicPrompt: jest.fn(),
   setEnhancedPrompt: jest.fn(),
-  setStructuredPrompt: jest.fn(),
+  setAtomizedPrompt: jest.fn(),
   setOperationStatus: jest.fn(),
+  getBasicPrompt: jest.fn(),
+  getEnhancedPrompt: jest.fn(),
+  getAtomizedPrompt: jest.fn(),
+  getOperationStatus: jest.fn(),
+  getOperationError: jest.fn(),
+  setActivePrompt: jest.fn(),
+  clearPrompt: jest.fn(),
+  clearOperation: jest.fn(),
 }
 
 const mockImageStore = {
@@ -91,7 +100,7 @@ describe('useFlowOperations', () => {
     expect(typeof result.current.atomizePrompt).toBe('function')
     expect(typeof result.current.segmentPrompt).toBe('function')
     expect(typeof result.current.describeImage).toBe('function')
-    expect(typeof result.current.duplicateStructuredPrompt).toBe('function')
+    expect(typeof result.current.duplicateAtomizedPrompt).toBe('function')
     expect(result.current.isGenerating).toBe(false)
     expect(result.current.isAtomizing).toBe(false)
     expect(result.current.isSegmenting).toBe(false)
@@ -186,13 +195,33 @@ describe('useFlowOperations', () => {
       expect(mockAIActions.describe).toHaveBeenCalledWith('base64-image-data')
       expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
+      expect(mockPromptStore.setBasicPrompt).toHaveBeenCalledWith(
+        expect.any(String),
+        mockDescription
+      )
       expect(describeResult).toBe(mockDescription)
+    })
+
+    it('handles describe error', async () => {
+      mockAIActions.describe.mockResolvedValue(null)
+
+      const { result } = renderHook(() => useFlowOperations())
+
+      let describeResult: string | null = null
+      await act(async () => {
+        describeResult = await result.current.describeImage('base64-image-data', 'source-node')
+      })
+
+      expect(describeResult).toBe(null)
+      expect(mockPromptStore.setOperationStatus).toHaveBeenCalledWith(expect.any(String), {
+        status: 'error',
+      })
     })
   })
 
-  describe('duplicateStructuredPrompt', () => {
-    it('successfully duplicates a structured prompt', async () => {
-      const mockStructuredData = {
+  describe('duplicateAtomizedPrompt', () => {
+    it('successfully duplicates an atomized prompt', async () => {
+      const mockAtomizedData = {
         scene: { setting: 'forest', time: 'dawn', weather: null, background: null, context: null },
         subjects: null,
         style: { art_style: 'realism', color_palette: 'warm', mood: 'peaceful', lighting: 'soft' },
@@ -208,21 +237,18 @@ describe('useFlowOperations', () => {
 
       let duplicateResult: string | null = null
       act(() => {
-        duplicateResult = result.current.duplicateStructuredPrompt(
-          'source-node',
-          mockStructuredData
-        )
+        duplicateResult = result.current.duplicateAtomizedPrompt('source-node', mockAtomizedData)
       })
 
       expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
-      expect(duplicateResult).toMatch(/^structured-prompt-/)
+      expect(duplicateResult).toMatch(/^atomized-prompt-/)
     })
 
-    it('handles empty structured data', () => {
+    it('handles empty atomized data', () => {
       const { result } = renderHook(() => useFlowOperations())
 
-      const duplicateResult = result.current.duplicateStructuredPrompt('source-node', {} as any)
+      const duplicateResult = result.current.duplicateAtomizedPrompt('source-node', {} as any)
 
       expect(duplicateResult).toBe(null)
       expect(mockFlowStore.addNodeWithPositioning).not.toHaveBeenCalled()

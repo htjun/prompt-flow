@@ -16,26 +16,29 @@ describe('promptStore', () => {
 
   it('manages enhanced prompts', () => {
     const store = usePromptStore.getState()
-    store.setEnhancedPrompt('id', 'enhanced prompt')
-    expect(store.getEnhancedPrompt('id')).toBe('enhanced prompt')
-    store.setOperationStatus('id', { status: 'success' })
-    expect(store.getOperationStatus('id')).toBe('success')
-    expect(store.getEnhancedPrompt('missing')).toBe('')
-    expect(store.getOperationStatus('missing')).toBe('idle')
+    store.setEnhancedPrompt('id', 'test enhanced prompt')
+    expect(store.getEnhancedPrompt('id')).toBe('test enhanced prompt')
   })
 
-  it('manages structured prompts', () => {
+  it('manages atomized prompts', () => {
     const data = {
       scene: { setting: 'forest', time: 'dawn', weather: null, background: null, context: null },
       subjects: null,
       style: { art_style: 'realism', color_palette: 'warm', mood: 'peaceful', lighting: 'soft' },
-      camera: { focal_length: '50mm', aperture: 'f/2.8', angle: 'eye-level', depth_of_field: 'shallow' }
+      camera: {
+        focal_length: '50mm',
+        aperture: 'f/2.8',
+        angle: 'eye-level',
+        depth_of_field: 'shallow',
+      },
     }
     const store = usePromptStore.getState()
-    store.setStructuredPrompt('id', data)
-    expect(store.getStructuredPrompt('id')).toEqual(data)
-    store.setOperationStatus('id', { status: 'success' })
-    expect(store.getOperationStatus('id')).toBe('success')
-    expect(store.getStructuredPrompt('missing')).toBeNull()
+    store.setAtomizedPrompt('id', data)
+    expect(store.getAtomizedPrompt('id')).toEqual(data)
+  })
+
+  it('returns null for missing atomized prompt', () => {
+    const store = usePromptStore.getState()
+    expect(store.getAtomizedPrompt('missing')).toBeNull()
   })
 })

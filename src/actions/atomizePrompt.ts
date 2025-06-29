@@ -2,8 +2,8 @@
 
 import { openai } from '@/lib/ai'
 import { generateObject } from 'ai'
-import { imageStructureSchema } from '@/schema/imageStructure'
-import { structurePromptSystemMessage } from '@/prompts/imageGeneration'
+import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
+import { atomizePromptSystemMessage } from '@/prompts/imageGeneration'
 import { useModelStore } from '@/stores/modelStore'
 
 export const atomizePrompt = async (prompt: string) => {
@@ -13,12 +13,12 @@ export const atomizePrompt = async (prompt: string) => {
       model: openai(selectedModel, {
         structuredOutputs: true,
       }),
-      schemaName: 'structured-image-prompt',
-      schema: imageStructureSchema,
+      schemaName: 'atomized-image-prompt',
+      schema: imageAtomizationSchema,
       messages: [
         {
           role: 'system',
-          content: structurePromptSystemMessage,
+          content: atomizePromptSystemMessage,
         },
         {
           role: 'user',

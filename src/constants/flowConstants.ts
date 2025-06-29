@@ -7,7 +7,7 @@ export const HANDLE_IDS = {
   // Output handles
   ENHANCE: 'enhance',
   GENERATE: 'generate',
-  STRUCTURE: 'structure', // Still used for handle IDs, represents parse actions
+  ATOMIZE: 'atomize',
   DESCRIBE: 'describe',
   REFINE: 'refine',
   DUPLICATE: 'duplicate',

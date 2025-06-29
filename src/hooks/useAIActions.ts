@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import { generateObject, generateText, streamText } from 'ai'
+import { openai } from '@/lib/ai'
 import { enhancePrompt } from '@/actions/enhancePrompt'
-import { generateImageFromPrompt } from '@/actions/generateImage'
-import { describeImage } from '@/actions/describeImage'
 import { atomizePrompt } from '@/actions/atomizePrompt'
 import { segmentPrompt, type CategorizedPrompt } from '@/actions/segmentPrompt'
+import { generateImageFromPrompt } from '@/actions/generateImage'
+import { describeImage } from '@/actions/describeImage'
 import { useModelStore } from '@/stores/modelStore'
-import { type z } from 'zod'
-import { imageStructureSchema } from '@/schema/imageStructure'
+import { z } from 'zod'
+import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
 
-export type ImageStructure = z.infer<typeof imageStructureSchema>
+export type ImageAtomization = z.infer<typeof imageAtomizationSchema>
 
 interface AIActionsState {
   isEnhancing: boolean
@@ -87,7 +89,9 @@ export const useAIActions = () => {
     }
   }
 
-  const atomize = async (prompt: string): Promise<ImageStructure | null> => {
+  const atomize = async (prompt: string): Promise<ImageAtomization | null> => {
+    if (!prompt.trim()) return null
+
     try {
       clearError()
       setOperationState('isAtomizing', true)

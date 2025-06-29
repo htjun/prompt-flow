@@ -1,6 +1,6 @@
 import { Handle, Position, useEdges } from '@xyflow/react'
 import { z } from 'zod'
-import { imageStructureSchema } from '@/schema/imageStructure'
+import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
 import { ActionGroup, type ActionItem } from '@/components/ActionGroup'
 import { useState, useEffect } from 'react'
 import { cn, calculateHandleOffset } from '@/lib/utils'
@@ -9,12 +9,12 @@ import { isHandleConnected } from '@/lib/flowHelpers'
 import { PromptCategoryTabs } from './PromptCategoryTabs'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 
-type ImageStructure = z.infer<typeof imageStructureSchema>
+type ImageAtomization = z.infer<typeof imageAtomizationSchema>
 
-type StructuredPromptNodeProps = {
+type AtomizedPromptNodeProps = {
   data: {
     nodeId: string
-    object: ImageStructure
+    object: ImageAtomization
     isLoading?: boolean
     usage?: {
       promptTokens: number
@@ -25,18 +25,18 @@ type StructuredPromptNodeProps = {
   isProcessing?: boolean
 }
 
-export const StructuredPromptNode = ({
+export const AtomizedPromptNode = ({
   data,
   isProcessing: externalIsProcessing = false,
-}: StructuredPromptNodeProps) => {
-  const { nodeId, object: initialStructuredPromptObject, isLoading = false } = data
-  const [currentData, setCurrentData] = useState<ImageStructure>(initialStructuredPromptObject)
+}: AtomizedPromptNodeProps) => {
+  const { nodeId, object: initialAtomizedPromptObject, isLoading = false } = data
+  const [currentData, setCurrentData] = useState<ImageAtomization>(initialAtomizedPromptObject)
 
   useEffect(() => {
-    setCurrentData(initialStructuredPromptObject)
-  }, [initialStructuredPromptObject])
+    setCurrentData(initialAtomizedPromptObject)
+  }, [initialAtomizedPromptObject])
 
-  const { generateImage, duplicateStructuredPrompt } = useFlowActions()
+  const { generateImage, duplicateAtomizedPrompt } = useFlowActions()
   const edges = useEdges()
 
   const isDuplicateHandleConnected = isHandleConnected(
@@ -48,12 +48,12 @@ export const StructuredPromptNode = ({
 
   const isGenerateHandleConnected = isHandleConnected(edges, nodeId, HANDLE_IDS.GENERATE, 'source')
 
-  const handleDataChange = (newData: ImageStructure) => {
+  const handleDataChange = (newData: ImageAtomization) => {
     setCurrentData(newData)
   }
 
   const handleDuplicate = () => {
-    duplicateStructuredPrompt(nodeId, currentData)
+    duplicateAtomizedPrompt(nodeId, currentData)
   }
 
   const handleGenerate = async () => {
@@ -84,11 +84,11 @@ export const StructuredPromptNode = ({
   return (
     <>
       <div className="flex flex-col gap-1">
-        <div className="node-label geist-mono">Structured Prompt</div>
+        <div className="node-label geist-mono">Atomized Prompt</div>
         <div className="node-container nodrag flex min-h-80 w-md flex-col items-stretch justify-between">
           <div className="nodrag flex flex-1 flex-col p-2">
             {isLoading ? (
-              <div className="my-auto self-center text-sm text-gray-400">Structuring prompt...</div>
+              <div className="my-auto self-center text-sm text-gray-400">Atomizing prompt...</div>
             ) : currentData && Object.keys(currentData).length > 0 ? (
               <PromptCategoryTabs data={currentData} onDataChange={handleDataChange} />
             ) : (

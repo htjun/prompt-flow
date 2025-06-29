@@ -1,4 +1,4 @@
-export const mockStructuredPromptData = {
+export const mockAtomizedPromptData = {
   scene: {
     setting: 'open park',
     time: null,
@@ -41,6 +41,6 @@ export const mockStructuredPromptData = {
 }
 
 export const mockEnhancedPromptDataWithNoSubjects = {
-  ...mockStructuredPromptData,
+  ...mockAtomizedPromptData,
   subjects: [],
 }

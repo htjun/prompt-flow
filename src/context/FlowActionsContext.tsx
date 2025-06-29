@@ -1,17 +1,13 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, ReactNode } from 'react'
 import { useFlowOperations } from '@/hooks/useFlowOperations'
-import { type ImageStructure } from '@/hooks/useAIActions'
+import { type ImageAtomization } from '@/hooks/useAIActions'
 import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 
 interface FlowActionsContextValue {
-  generateImage: (
-    prompt: string,
-    nodeId: string,
-    handleId: string
-  ) => Promise<{ nodeId: string; data?: any } | null>
-  atomizePrompt: (prompt: string, nodeId: string) => Promise<ImageStructure | null>
+  generateImage: (prompt: string, sourceNodeId: string, sourceHandleId: string) => Promise<any>
+  atomizePrompt: (prompt: string, nodeId: string) => Promise<ImageAtomization | null>
   segmentPrompt: (prompt: string, nodeId: string) => Promise<CategorizedPrompt | null>
-  duplicateStructuredPrompt: (nodeId: string, data: ImageStructure) => string | null
+  duplicateAtomizedPrompt: (nodeId: string, data: ImageAtomization) => string | null
   describeImage: (imageData: string, nodeId: string) => Promise<string | null>
   isGenerating: boolean
   isAtomizing: boolean
@@ -23,7 +19,7 @@ const FlowActionsContext = createContext<FlowActionsContextValue>({
   generateImage: async () => null,
   atomizePrompt: async () => null,
   segmentPrompt: async () => null,
-  duplicateStructuredPrompt: () => null,
+  duplicateAtomizedPrompt: () => null,
   describeImage: async () => null,
   isGenerating: false,
   isAtomizing: false,
@@ -38,7 +34,7 @@ export const FlowActionsProvider = ({ children }: { children: React.ReactNode })
     generateImage: flowOperations.generateImage,
     atomizePrompt: flowOperations.atomizePrompt,
     segmentPrompt: flowOperations.segmentPrompt,
-    duplicateStructuredPrompt: flowOperations.duplicateStructuredPrompt,
+    duplicateAtomizedPrompt: flowOperations.duplicateAtomizedPrompt,
     describeImage: flowOperations.describeImage,
     isGenerating: flowOperations.isGenerating,
     isAtomizing: flowOperations.isAtomizing,

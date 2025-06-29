@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { type ImageStructure } from '@/hooks/useAIActions'
+import { type ImageAtomization } from '@/hooks/useAIActions'
 
 // Simplified and normalized state structure
 interface OperationState {
@@ -12,46 +12,46 @@ interface OperationState {
 interface PromptEntities {
   basic: Record<string, string>
   enhanced: Record<string, string>
-  structured: Record<string, StructuredPrompt>
+  atomized: Record<string, AtomizedPrompt>
 }
 
 interface PromptState {
   // Normalized entities
   entities: PromptEntities
-  
+
   // Operation tracking per entity
   operations: Record<string, OperationState>
-  
+
   // UI state
   ui: {
     activePromptId: string | null
   }
-  
+
   // Simplified actions
   setBasicPrompt: (id: string, text: string) => void
   setEnhancedPrompt: (id: string, text: string) => void
-  setStructuredPrompt: (id: string, data: StructuredPrompt) => void
-  
+  setAtomizedPrompt: (id: string, data: AtomizedPrompt) => void
+
   // Unified operation management
   setOperationStatus: (id: string, status: Omit<OperationState, 'timestamp'>) => void
   clearOperation: (id: string) => void
-  
+
   // Selectors (kept for compatibility)
   getBasicPrompt: (id: string) => string
   getEnhancedPrompt: (id: string) => string
-  getStructuredPrompt: (id: string) => StructuredPrompt | null
+  getAtomizedPrompt: (id: string) => AtomizedPrompt | null
   getOperationStatus: (id: string) => OperationState['status']
   getOperationError: (id: string) => string | undefined
-  
+
   // UI actions
   setActivePrompt: (id: string | null) => void
-  
+
   // Cleanup
   clearPrompt: (id: string) => void
 }
 
-// Use ImageStructure type for structured prompts
-type StructuredPrompt = ImageStructure
+// Use ImageAtomization type for atomized prompts
+type AtomizedPrompt = ImageAtomization
 
 export const usePromptStore = create<PromptState>()(
   devtools(
@@ -60,7 +60,7 @@ export const usePromptStore = create<PromptState>()(
       entities: {
         basic: {},
         enhanced: {},
-        structured: {},
+        atomized: {},
       },
       operations: {},
       ui: {
@@ -92,16 +92,16 @@ export const usePromptStore = create<PromptState>()(
           'setEnhancedPrompt'
         ),
 
-      setStructuredPrompt: (id, data) =>
+      setAtomizedPrompt: (id, data) =>
         set(
           (state) => ({
             entities: {
               ...state.entities,
-              structured: { ...state.entities.structured, [id]: data },
+              atomized: { ...state.entities.atomized, [id]: data },
             },
           }),
           false,
-          'setStructuredPrompt'
+          'setAtomizedPrompt'
         ),
 
       // Unified operation management
@@ -133,7 +133,7 @@ export const usePromptStore = create<PromptState>()(
       // Selectors for compatibility
       getBasicPrompt: (id) => get().entities.basic[id] || '',
       getEnhancedPrompt: (id) => get().entities.enhanced[id] || '',
-      getStructuredPrompt: (id) => get().entities.structured[id] || null,
+      getAtomizedPrompt: (id) => get().entities.atomized[id] || null,
       getOperationStatus: (id) => get().operations[id]?.status || 'idle',
       getOperationError: (id) => get().operations[id]?.error,
 
@@ -153,14 +153,14 @@ export const usePromptStore = create<PromptState>()(
           (state) => {
             const { [id]: removedBasic, ...restBasic } = state.entities.basic
             const { [id]: removedEnhanced, ...restEnhanced } = state.entities.enhanced
-            const { [id]: removedStructured, ...restStructured } = state.entities.structured
+            const { [id]: removedAtomized, ...restAtomized } = state.entities.atomized
             const { [id]: removedOperation, ...restOperations } = state.operations
 
             return {
               entities: {
                 basic: restBasic,
                 enhanced: restEnhanced,
-                structured: restStructured,
+                atomized: restAtomized,
               },
               operations: restOperations,
             }
@@ -180,8 +180,8 @@ export const selectBasicPromptById = (id: string) => (state: PromptState) =>
 export const selectEnhancedPromptById = (id: string) => (state: PromptState) =>
   state.entities.enhanced[id] || ''
 
-export const selectStructuredPromptById = (id: string) => (state: PromptState) =>
-  state.entities.structured[id] || null
+export const selectAtomizedPromptById = (id: string) => (state: PromptState) =>
+  state.entities.atomized[id] || null
 
 export const selectOperationStatusById = (id: string) => (state: PromptState) =>
   state.operations[id]?.status || 'idle'

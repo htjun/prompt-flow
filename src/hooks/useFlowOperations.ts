@@ -1,4 +1,4 @@
-import { useAIActions, type ImageStructure } from '@/hooks/useAIActions'
+import { useAIActions, type ImageAtomization } from '@/hooks/useAIActions'
 import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { usePromptStore } from '@/stores/promptStore'
 import { useImageStore } from '@/stores/imageStore'
@@ -22,7 +22,7 @@ export const useFlowOperations = () => {
     nodeId: string,
     nodeType: string,
     nodeData: any,
-    actionType: 'enhance' | 'generate' | 'structure' | 'describe' | 'parse',
+    actionType: 'enhance' | 'generate' | 'atomize' | 'describe' | 'parse',
     sourceNodeId: string
   ) => {
     flowStore.addNodeWithPositioning(
@@ -99,21 +99,21 @@ export const useFlowOperations = () => {
   const atomizePrompt = async (
     prompt: string,
     sourceNodeId: string
-  ): Promise<ImageStructure | null> => {
+  ): Promise<ImageAtomization | null> => {
     if (!prompt.trim()) return null
 
-    const structuredPromptId = `structured-prompt-${crypto.randomUUID()}`
+    const atomizedPromptId = `atomized-prompt-${crypto.randomUUID()}`
     const sourceNode = flowStore.getNodeById(sourceNodeId)
 
     if (!sourceNode) return null
 
     // Create node with loading state
     createNodeWithPositioning(
-      structuredPromptId,
-      'structured-prompt-node',
+      atomizedPromptId,
+      'atomized-prompt-node',
       {
         object: {},
-        nodeId: structuredPromptId,
+        nodeId: atomizedPromptId,
         isLoading: true,
       },
       'parse',
@@ -122,10 +122,10 @@ export const useFlowOperations = () => {
 
     // Create edge
     flowStore.addEdge({
-      id: createEdgeId(sourceNodeId, structuredPromptId),
+      id: createEdgeId(sourceNodeId, atomizedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.STRUCTURE,
-      target: structuredPromptId,
+      sourceHandle: HANDLE_IDS.ATOMIZE,
+      target: atomizedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
     })
@@ -134,24 +134,24 @@ export const useFlowOperations = () => {
       const result = await aiActions.atomize(prompt)
 
       if (result) {
-        flowStore.updateNode(structuredPromptId, {
+        flowStore.updateNode(atomizedPromptId, {
           object: result,
           isLoading: false,
         })
 
-        // Store the result directly since new store accepts ImageStructure
-        promptStore.setStructuredPrompt(structuredPromptId, result)
-        promptStore.setOperationStatus(structuredPromptId, { status: 'success' })
+        // Store the result directly since new store accepts ImageAtomization
+        promptStore.setAtomizedPrompt(atomizedPromptId, result)
+        promptStore.setOperationStatus(atomizedPromptId, { status: 'success' })
         return result
       } else {
-        flowStore.updateNode(structuredPromptId, { isLoading: false })
-        promptStore.setOperationStatus(structuredPromptId, { status: 'error' })
+        flowStore.updateNode(atomizedPromptId, { isLoading: false })
+        promptStore.setOperationStatus(atomizedPromptId, { status: 'error' })
         return null
       }
     } catch (error) {
       console.error('Error atomizing prompt:', error)
-      flowStore.updateNode(structuredPromptId, { isLoading: false })
-      promptStore.setOperationStatus(structuredPromptId, { status: 'error' })
+      flowStore.updateNode(atomizedPromptId, { isLoading: false })
+      promptStore.setOperationStatus(atomizedPromptId, { status: 'error' })
       return null
     }
   }
@@ -206,13 +206,13 @@ export const useFlowOperations = () => {
     }
   }
 
-  const duplicateStructuredPrompt = (
+  const duplicateAtomizedPrompt = (
     sourceNodeId: string,
-    structuredData: ImageStructure
+    atomizedData: ImageAtomization
   ): string | null => {
-    if (!structuredData || Object.keys(structuredData).length === 0) return null
+    if (!atomizedData || Object.keys(atomizedData).length === 0) return null
 
-    const duplicatedNodeId = `structured-prompt-${crypto.randomUUID()}`
+    const duplicatedNodeId = `atomized-prompt-${crypto.randomUUID()}`
     const sourceNode = flowStore.getNodeById(sourceNodeId)
 
     if (!sourceNode) return null
@@ -220,9 +220,9 @@ export const useFlowOperations = () => {
     // Create duplicated node
     createNodeWithPositioning(
       duplicatedNodeId,
-      'structured-prompt-node',
+      'atomized-prompt-node',
       {
-        object: structuredData,
+        object: atomizedData,
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
@@ -265,7 +265,7 @@ export const useFlowOperations = () => {
     atomizePrompt,
     segmentPrompt,
     describeImage,
-    duplicateStructuredPrompt,
+    duplicateAtomizedPrompt,
     // Expose loading states from AI actions
     isGenerating: aiActions.isGenerating,
     isAtomizing: aiActions.isAtomizing,

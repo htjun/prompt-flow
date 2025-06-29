@@ -49,14 +49,14 @@ pnpm build-storybook   # Build storybook
 
 - **React Flow** (`@xyflow/react`) provides the visual node-based interface
 - **Node Types**: 4 main node types defined in `src/nodes/index.ts`
-  - `prompt`: Basic prompt input nodes
+  - `prompt`: Basic text prompt nodes
   - `enhanced-prompt`: AI-enhanced prompt nodes
-  - `structured-prompt-node`: Structured prompt with categories
+  - `atomized-prompt-node`: Atomized prompt with categories
   - `image`: Generated image display nodes
 
 ### Context Architecture
 
-- `FlowActionsContext` provides centralized flow actions (enhance, generate, structure)
+- `FlowActionsContext` provides centralized flow actions (enhance, generate, atomize)
 - Wraps the main app to provide actions to all nodes and components
 
 ### AI Integration
@@ -65,7 +65,7 @@ pnpm build-storybook   # Build storybook
 - **Server actions** in `src/actions/` handle AI operations:
   - `enhancePrompt.ts`: Uses language models to improve prompts
   - `generateImage.ts`: Creates images from prompts
-  - `atomizePrompt.ts`: Breaks down prompts into structured data fields
+  - `atomizePrompt.ts`: Breaks down prompts into atomized data fields
 - `segmentPrompt.ts`: Categorizes prompts into natural language segments
   - `describeImage.ts`: Analyzes and describes uploaded images
 
@@ -108,7 +108,7 @@ NEXT_PUBLIC_REPLICATE_API_TOKEN=your_replicate_api_token
 
 The `flowStore` includes intelligent node positioning logic:
 
-- **Below reference**: enhance, structure, describe actions
+- **Below reference**: enhance, atomize, describe actions
 - **To the right**: generate actions
 - Uses actual node dimensions when available
 - 50px gap between nodes

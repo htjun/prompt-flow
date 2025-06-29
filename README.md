@@ -6,7 +6,7 @@ A visual tool for creating and improving image generation prompts using AI. This
 
 1. Start with a Prompt Node and enter your initial idea
 2. Use the Enhance button to create an Enhanced Prompt Node
-3. Use the Structure button to break down a prompt
+3. Use the Atomize button to break down a prompt
 4. Generate images from any node using the Generate button
 5. Connect nodes to build complex prompt engineering workflows
 

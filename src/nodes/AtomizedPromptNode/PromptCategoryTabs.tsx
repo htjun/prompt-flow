@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   Accordion,
@@ -7,20 +8,20 @@ import {
 } from '@/components/ui/accordion'
 import { useCallback } from 'react'
 import { z } from 'zod'
-import { imageStructureSchema } from '@/schema/imageStructure'
+import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
 import { ParameterInput } from './ParameterInput'
 
-type ImageStructure = z.infer<typeof imageStructureSchema>
+type ImageAtomization = z.infer<typeof imageAtomizationSchema>
 
 export const PromptCategoryTabs = ({
   data,
   onDataChange,
 }: {
-  data?: ImageStructure
-  onDataChange: (newData: ImageStructure) => void
+  data?: ImageAtomization
+  onDataChange: (newData: ImageAtomization) => void
 }) => {
   const handleSceneChange = useCallback(
-    (field: keyof NonNullable<ImageStructure['scene']>, value: string) => {
+    (field: keyof NonNullable<ImageAtomization['scene']>, value: string) => {
       if (!data || !data.scene) return
       const newData = {
         ...data,
@@ -35,7 +36,7 @@ export const PromptCategoryTabs = ({
   )
 
   const handleStyleChange = useCallback(
-    (field: keyof NonNullable<ImageStructure['style']>, value: string) => {
+    (field: keyof NonNullable<ImageAtomization['style']>, value: string) => {
       if (!data || !data.style) return
       const newData = {
         ...data,
@@ -50,7 +51,7 @@ export const PromptCategoryTabs = ({
   )
 
   const handleCameraChange = useCallback(
-    (field: keyof NonNullable<ImageStructure['camera']>, value: string) => {
+    (field: keyof NonNullable<ImageAtomization['camera']>, value: string) => {
       if (!data || !data.camera) return
       const newData = {
         ...data,
@@ -66,7 +67,7 @@ export const PromptCategoryTabs = ({
 
   const handleSubjectChange = useCallback(
     (
-      field: keyof NonNullable<ImageStructure['subjects']>[number],
+      field: keyof NonNullable<ImageAtomization['subjects']>[number],
       index: number,
       value: string
     ) => {

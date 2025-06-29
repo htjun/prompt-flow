@@ -133,14 +133,14 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     enhanced: {
       actions: ['undo', 'parse', 'generate'],
       handles: [
-        { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
+        { id: HANDLE_IDS.ATOMIZE, actionKey: 'parse' },
         { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
       ],
     },
     longPrompt: {
       actions: ['parse', 'generate'],
       handles: [
-        { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
+        { id: HANDLE_IDS.ATOMIZE, actionKey: 'parse' },
         { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
       ],
     },
@@ -149,7 +149,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
       handles: isRootNode
         ? [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }]
         : [
-            { id: HANDLE_IDS.STRUCTURE, actionKey: 'parse' },
+            { id: HANDLE_IDS.ATOMIZE, actionKey: 'parse' },
             { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
           ],
     },

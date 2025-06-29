@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 /**
- * Schema for structured image prompts
+ * Schema for atomized image prompts
  * Defines the detailed structure for analyzing and generating images
  */
-export const imageStructureSchema = z.object({
+export const imageAtomizationSchema = z.object({
   scene: z
     .object({
       setting: z
