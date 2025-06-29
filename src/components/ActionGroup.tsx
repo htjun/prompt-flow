@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -5,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChevronDownIcon } from 'lucide-react'
 
 export type ActionItem = {
   label: string
@@ -37,34 +39,77 @@ export const ActionGroup = ({
   const internalActions = actions.filter((action) => action.isInternal)
   const externalActions = actions.filter((action) => !action.isInternal)
 
+  const DropdownAction = ({
+    action,
+    index,
+    keyPrefix,
+  }: {
+    action: ActionItem
+    index: number
+    keyPrefix: string
+  }) => {
+    const [open, setOpen] = useState(false)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+    const handleMouseEnter = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      setOpen(true)
+    }
+
+    const handleMouseLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false)
+      }, 150) // Small delay to prevent flickering
+    }
+
+    useEffect(() => {
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+        }
+      }
+    }, [])
+
+    return (
+      <DropdownMenu key={`${keyPrefix}-${index}`} open={open} onOpenChange={setOpen} modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="hover:cursor-pointer"
+            disabled={action.disabled || isProcessing || isDisabled}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {action.label}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          sideOffset={8}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {action.dropdown!.items.map((item, idx) => (
+            <DropdownMenuItem
+              key={idx}
+              onClick={item.onClick}
+              disabled={item.disabled || isProcessing || isDisabled}
+              className="text-xs"
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
   const renderAction = (action: ActionItem, index: number, keyPrefix: string) => {
     if (action.dropdown) {
-      return (
-        <DropdownMenu key={`${keyPrefix}-${index}`}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="xs"
-              className="hover:cursor-pointer"
-              disabled={action.disabled || isProcessing || isDisabled}
-            >
-              {action.label}
-              <ChevronDownIcon className="ml-1 h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {action.dropdown.items.map((item, idx) => (
-              <DropdownMenuItem
-                key={idx}
-                onClick={item.onClick}
-                disabled={item.disabled || isProcessing || isDisabled}
-              >
-                {item.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+      return <DropdownAction action={action} index={index} keyPrefix={keyPrefix} />
     }
 
     return (
