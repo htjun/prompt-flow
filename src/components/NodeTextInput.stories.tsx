@@ -9,9 +9,7 @@ const NodeTextInputWrapper = ({
   label,
   placeholder,
   actions,
-  isProcessing,
   isLoading,
-  loadingMessage,
   className,
 }: {
   initialValue: string
@@ -31,9 +29,7 @@ const NodeTextInputWrapper = ({
       value={value}
       onChange={setValue}
       actions={actions}
-      isProcessing={isProcessing}
       isLoading={isLoading}
-      loadingMessage={loadingMessage}
       className={className}
     />
   )
@@ -59,6 +55,11 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const defaultActions: ActionItem[] = [
+  {
+    label: 'Enhance',
+    onClick: fn(),
+    isInternal: true,
+  },
   {
     label: 'Clear',
     onClick: fn(),
@@ -158,7 +159,6 @@ export const Loading: Story = {
     placeholder: 'Enter your prompt',
     initialValue: 'Loading...',
     isLoading: true,
-    loadingMessage: 'Loading...',
     actions: defaultActions,
   },
 }

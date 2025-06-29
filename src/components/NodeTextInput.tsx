@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { Loader2Icon } from 'lucide-react'
 import { ActionGroup, type ActionItem } from './ActionGroup'
 
 type NodeTextInputProps = {
@@ -8,8 +9,6 @@ type NodeTextInputProps = {
   onChange: (value: string) => void
   actions: ActionItem[]
   isLoading?: boolean
-  loadingMessage?: string
-  isProcessing?: boolean
   className?: string
 }
 
@@ -20,8 +19,6 @@ export const NodeTextInput = ({
   onChange,
   actions,
   isLoading = false,
-  loadingMessage = 'Loading...',
-  isProcessing = false,
   className,
 }: NodeTextInputProps) => {
   return (
@@ -36,11 +33,11 @@ export const NodeTextInput = ({
               placeholder={placeholder}
               onChange={(e) => onChange(e.target.value)}
             />
-            <ActionGroup actions={actions} isProcessing={isProcessing} isDisabled={!value.trim()} />
+            <ActionGroup actions={actions} isDisabled={!value.trim()} />
           </>
         ) : (
-          <div className="nodrag flex min-h-28 items-center justify-center text-sm text-gray-400">
-            {loadingMessage}
+          <div className="nodrag flex min-h-28 items-center justify-center gap-2 text-sm text-gray-400">
+            <Loader2Icon className="animate-spin" />
           </div>
         )}
       </div>

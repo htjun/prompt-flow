@@ -48,7 +48,6 @@ export const EnhancedPromptNode = ({ id }: NodeProps) => {
         onChange={handleChange}
         actions={actions}
         isLoading={operationStatus === 'loading'}
-        loadingMessage="Enhancing prompt..."
       />
 
       {renderTargetHandle({
