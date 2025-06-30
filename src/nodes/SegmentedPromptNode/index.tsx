@@ -2,7 +2,7 @@ import { Handle, Position, useEdges } from '@xyflow/react'
 import { z } from 'zod'
 import { imageSegmentSchema } from '@/schema/imageSegmentSchema'
 import { ActionGroup, type ActionItem } from '@/components/ActionGroup'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn, calculateHandleOffset } from '@/lib/utils'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
@@ -11,6 +11,68 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 
 type SegmentedPrompt = z.infer<typeof imageSegmentSchema>
+
+const SegmentInput = ({
+  segment,
+  index,
+  handleSegmentTextChange,
+}: {
+  segment: SegmentedPrompt['prompts'][0]
+  index: number
+  handleSegmentTextChange: (index: number, newText: string) => void
+}) => {
+  const [isTextareaLarge, setIsTextareaLarge] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const checkHeight = () => {
+      setIsTextareaLarge(textarea.offsetHeight > 40)
+    }
+
+    checkHeight()
+
+    const resizeObserver = new ResizeObserver(checkHeight)
+    resizeObserver.observe(textarea)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
+  return (
+    <div className="relative">
+      <span
+        ref={(el) => {
+          if (el && el.offsetWidth > 0) {
+            const textarea = el.parentElement?.querySelector('textarea')
+            if (textarea) {
+              textarea.style.textIndent = `${el.offsetWidth - 4}px`
+            }
+          }
+        }}
+        className="absolute top-0 left-0 z-1"
+      >
+        <Badge
+          variant="outline"
+          className={cn(
+            'rounded-none rounded-tl-md rounded-br-md bg-neutral-50 px-2 py-1 text-xs font-medium text-neutral-500',
+            isTextareaLarge ? 'h-full' : ''
+          )}
+        >
+          {segment.category}
+        </Badge>
+      </span>
+      <Textarea
+        ref={textareaRef}
+        value={segment.text}
+        onChange={(e) => handleSegmentTextChange(index, e.target.value)}
+        className="min-h-8 resize-none text-sm"
+        placeholder="Enter description..."
+      />
+    </div>
+  )
+}
 
 type SegmentedPromptNodeProps = {
   data: {
@@ -24,18 +86,6 @@ type SegmentedPromptNodeProps = {
     }
   }
   isProcessing?: boolean
-}
-
-const categoryColors: Record<string, string> = {
-  scene: 'bg-blue-100 text-blue-800 border-blue-200',
-  style: 'bg-purple-100 text-purple-800 border-purple-200',
-  composition: 'bg-green-100 text-green-800 border-green-200',
-  camera: 'bg-orange-100 text-orange-800 border-orange-200',
-  lighting: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  color: 'bg-pink-100 text-pink-800 border-pink-200',
-  mood: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-  texture: 'bg-gray-100 text-gray-800 border-gray-200',
-  misc: 'bg-slate-100 text-slate-800 border-slate-200',
 }
 
 export const SegmentedPromptNode = ({
@@ -112,25 +162,16 @@ export const SegmentedPromptNode = ({
       <div className="flex flex-col gap-1">
         <div className="node-label geist-mono">Segmented Prompt</div>
         <div className="node-container nodrag flex min-h-80 w-md flex-col items-stretch justify-between">
-          <div className="nodrag flex max-h-96 flex-1 flex-col gap-3 overflow-y-auto p-2">
+          <div className="nodrag flex flex-1 flex-col gap-3 overflow-y-auto p-2">
             {isLoading ? (
               <div className="my-auto self-center text-sm text-gray-400">Segmenting prompt...</div>
             ) : currentData && currentData.prompts && currentData.prompts.length > 0 ? (
               currentData.prompts.map((segment, index) => (
                 <div key={index} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className={`text-xs font-medium capitalize ${categoryColors[segment.category] || categoryColors.misc}`}
-                    >
-                      {segment.category}
-                    </Badge>
-                  </div>
-                  <Textarea
-                    value={segment.text}
-                    onChange={(e) => handleSegmentTextChange(index, e.target.value)}
-                    className="min-h-[60px] resize-none text-sm"
-                    placeholder={`Enter ${segment.category} description...`}
+                  <SegmentInput
+                    segment={segment}
+                    index={index}
+                    handleSegmentTextChange={handleSegmentTextChange}
                   />
                 </div>
               ))
