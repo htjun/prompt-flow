@@ -1,6 +1,6 @@
 'use server'
 
-import { openai } from '@/lib/ai'
+import { openai, mapModelId } from '@/lib/ai'
 import { generateObject } from 'ai'
 import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
 import { atomizePromptSystemMessage } from '@/prompts/promptParse'
@@ -10,7 +10,7 @@ export const atomizePrompt = async (prompt: string) => {
   try {
     const selectedModel = useModelStore.getState().selectedLanguageModel
     const result = await generateObject({
-      model: openai(selectedModel, {
+      model: openai(mapModelId(selectedModel), {
         structuredOutputs: true,
       }),
       schemaName: 'atomized-image-prompt',

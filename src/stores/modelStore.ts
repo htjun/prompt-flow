@@ -1,30 +1,32 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { imageModels, languageModels } from '@/constants/models'
 
 // Model types for better type safety
 interface ModelConfig {
   id: string
   name: string
-  provider: 'openai' | 'google' | 'replicate'
-  type: 'language' | 'image'
-  available: boolean
-  features: string[]
+  provider?: 'openai' | 'google' | 'replicate'
+  type?: 'language' | 'image'
+  available?: boolean
+  features?: string[]
+  imageInput?: boolean
 }
 
 interface ModelState {
   // Current selections
   selectedLanguageModel: string
   selectedImageModel: string
-  
+
   // Model configurations and availability
   availableModels: {
     language: ModelConfig[]
     image: ModelConfig[]
   }
-  
+
   // Model health/status
   modelStatus: Record<string, 'healthy' | 'degraded' | 'unavailable'>
-  
+
   // User preferences
   preferences: {
     autoSelectBestModel: boolean
@@ -34,7 +36,7 @@ interface ModelState {
       image: string[]
     }
   }
-  
+
   // Actions
   setSelectedLanguageModel: (modelId: string) => void
   setSelectedImageModel: (modelId: string) => void
@@ -44,7 +46,7 @@ interface ModelState {
     key: K,
     value: ModelState['preferences'][K]
   ) => void
-  
+
   // Selectors
   getSelectedLanguageModel: () => ModelConfig | null
   getSelectedImageModel: () => ModelConfig | null
@@ -52,42 +54,24 @@ interface ModelState {
   getAvailableImageModels: () => ModelConfig[]
   getModelById: (id: string) => ModelConfig | null
   getModelStatus: (id: string) => 'healthy' | 'degraded' | 'unavailable'
-  
+
   // Utilities
   addToRecentModels: (modelId: string, type: 'language' | 'image') => void
   getRecentModels: (type: 'language' | 'image') => string[]
 }
 
-// Default model configurations
-const defaultLanguageModels: ModelConfig[] = [
-  {
-    id: 'gpt-4.1-mini',
-    name: 'GPT-4.1 Mini',
-    provider: 'openai',
-    type: 'language',
-    available: true,
-    features: ['fast', 'efficient', 'structured-output'],
-  },
-  {
-    id: 'gpt-4',
-    name: 'GPT-4',
-    provider: 'openai',
-    type: 'language',
-    available: true,
-    features: ['high-quality', 'reasoning', 'structured-output'],
-  },
-]
+// Use models from constants file
+const defaultLanguageModels: ModelConfig[] = languageModels.map((model) => ({
+  ...model,
+  type: 'language' as const,
+  available: true,
+}))
 
-const defaultImageModels: ModelConfig[] = [
-  {
-    id: 'google/imagen-4-fast',
-    name: 'Imagen 4 Fast',
-    provider: 'google',
-    type: 'image',
-    available: true,
-    features: ['fast', 'high-quality'],
-  },
-]
+const defaultImageModels: ModelConfig[] = imageModels.map((model) => ({
+  ...model,
+  type: 'image' as const,
+  available: true,
+}))
 
 export const useModelStore = create<ModelState>()(
   devtools(
@@ -95,14 +79,14 @@ export const useModelStore = create<ModelState>()(
       // Initial state
       selectedLanguageModel: 'gpt-4.1-mini',
       selectedImageModel: 'google/imagen-4-fast',
-      
+
       availableModels: {
         language: defaultLanguageModels,
         image: defaultImageModels,
       },
-      
+
       modelStatus: {},
-      
+
       preferences: {
         autoSelectBestModel: false,
         preferredProvider: 'auto',
@@ -114,25 +98,19 @@ export const useModelStore = create<ModelState>()(
 
       // Model selection actions
       setSelectedLanguageModel: (modelId) => {
-        const model = get().getModelById(modelId)
-        if (model && model.type === 'language' && model.available) {
-          set(
-            (state) => ({ selectedLanguageModel: modelId }),
-            false,
-            'setSelectedLanguageModel'
-          )
+        // Check if the model exists in the language models
+        const modelExists = get().availableModels.language.some((m) => m.id === modelId)
+        if (modelExists) {
+          set((state) => ({ selectedLanguageModel: modelId }), false, 'setSelectedLanguageModel')
           get().addToRecentModels(modelId, 'language')
         }
       },
 
       setSelectedImageModel: (modelId) => {
-        const model = get().getModelById(modelId)
-        if (model && model.type === 'image' && model.available) {
-          set(
-            (state) => ({ selectedImageModel: modelId }),
-            false,
-            'setSelectedImageModel'
-          )
+        // Check if the model exists in the image models
+        const modelExists = get().availableModels.image.some((m) => m.id === modelId)
+        if (modelExists) {
+          set((state) => ({ selectedImageModel: modelId }), false, 'setSelectedImageModel')
           get().addToRecentModels(modelId, 'image')
         }
       },
@@ -188,8 +166,7 @@ export const useModelStore = create<ModelState>()(
       getAvailableLanguageModels: () =>
         get().availableModels.language.filter((model) => model.available),
 
-      getAvailableImageModels: () =>
-        get().availableModels.image.filter((model) => model.available),
+      getAvailableImageModels: () => get().availableModels.image.filter((model) => model.available),
 
       getModelById: (id) => {
         const { availableModels } = get()
@@ -206,7 +183,7 @@ export const useModelStore = create<ModelState>()(
           (state) => {
             const currentRecent = state.preferences.lastUsedModels[type]
             const newRecent = [modelId, ...currentRecent.filter((id) => id !== modelId)].slice(0, 5)
-            
+
             return {
               preferences: {
                 ...state.preferences,
@@ -251,8 +228,7 @@ export const selectPreferences = (state: ModelState) => state.preferences
 export const selectRecentLanguageModels = (state: ModelState) =>
   state.preferences.lastUsedModels.language
 
-export const selectRecentImageModels = (state: ModelState) =>
-  state.preferences.lastUsedModels.image
+export const selectRecentImageModels = (state: ModelState) => state.preferences.lastUsedModels.image
 
 // Derived selectors
 export const selectHealthyLanguageModels = (state: ModelState) =>

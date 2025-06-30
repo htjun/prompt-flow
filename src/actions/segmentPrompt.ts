@@ -1,6 +1,6 @@
 'use server'
 
-import { openai } from '@/lib/ai'
+import { openai, mapModelId } from '@/lib/ai'
 import { generateObject } from 'ai'
 import { imageSegmentSchema } from '@/schema/imageSegmentSchema'
 import { segmentPromptSystemMessage } from '@/prompts/promptParse'
@@ -26,7 +26,7 @@ export const segmentPrompt = async (prompt: string): Promise<CategorizedPrompt> 
   try {
     const selectedModel = useModelStore.getState().selectedLanguageModel
     const result = await generateObject({
-      model: openai(selectedModel, {
+      model: openai(mapModelId(selectedModel), {
         structuredOutputs: true,
       }),
       schemaName: 'segmented-image-prompt',
