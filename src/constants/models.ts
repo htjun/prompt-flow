@@ -59,14 +59,9 @@ export const imageModels: ImageModel[] = [
     name: 'Phoenix 1.0',
     imageInput: false,
     aspectRatio: {
-      type: 'size',
-      supportedRatios: ['1:1', '16:9', '9:16'],
-      defaultRatio: '1:1',
-      customDimensions: {
-        '1:1': { width: 1024, height: 1024 },
-        '16:9': { width: 1344, height: 768 },
-        '9:16': { width: 768, height: 1344 },
-      },
+      type: 'ratio',
+      supportedRatios: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:5', '5:4', '3:4', '4:3', '2:1', '1:2', '3:1', '1:3'],
+      defaultRatio: '3:2',
     },
   },
   {
