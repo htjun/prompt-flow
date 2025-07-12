@@ -31,7 +31,7 @@ export const useAIActions = () => {
     error: null,
   })
 
-  const { selectedImageModel } = useModelStore()
+  const { selectedImageModel, selectedAspectRatio } = useModelStore()
 
   const setOperationState = (operation: keyof AIActionsState, value: boolean | Error | null) => {
     setState((prev) => ({
@@ -63,7 +63,7 @@ export const useAIActions = () => {
     try {
       clearError()
       setOperationState('isGenerating', true)
-      const result = await generateImageFromPrompt(prompt, selectedImageModel)
+      const result = await generateImageFromPrompt(prompt, selectedImageModel, selectedAspectRatio)
       return result
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to generate image')

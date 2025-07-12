@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { imageModels, languageModels } from '@/constants/models'
+import { AspectRatioService } from '@/lib/aspectRatioService'
 
 // Model types for better type safety
 interface ModelConfig {
@@ -14,9 +15,10 @@ interface ModelConfig {
 }
 
 interface ModelState {
-  // Current selections
+  // Model selection
   selectedLanguageModel: string
   selectedImageModel: string
+  selectedAspectRatio: string
 
   // Model configurations and availability
   availableModels: {
@@ -40,6 +42,7 @@ interface ModelState {
   // Actions
   setSelectedLanguageModel: (modelId: string) => void
   setSelectedImageModel: (modelId: string) => void
+  setSelectedAspectRatio: (ratio: string) => void
   updateModelStatus: (modelId: string, status: 'healthy' | 'degraded' | 'unavailable') => void
   updateModelAvailability: (modelId: string, available: boolean) => void
   setPreference: <K extends keyof ModelState['preferences']>(
@@ -58,6 +61,10 @@ interface ModelState {
   // Utilities
   addToRecentModels: (modelId: string, type: 'language' | 'image') => void
   getRecentModels: (type: 'language' | 'image') => string[]
+
+  // Aspect ratio helpers
+  getAvailableRatiosForModel: (modelId: string) => string[]
+  getDefaultRatioForModel: (modelId: string) => string
 }
 
 // Use models from constants file
@@ -79,6 +86,7 @@ export const useModelStore = create<ModelState>()(
       // Initial state
       selectedLanguageModel: 'gpt-4.1-mini',
       selectedImageModel: 'google/imagen-4-fast',
+      selectedAspectRatio: AspectRatioService.getDefaultRatio('google/imagen-4-fast'),
 
       availableModels: {
         language: defaultLanguageModels,
@@ -114,6 +122,15 @@ export const useModelStore = create<ModelState>()(
           get().addToRecentModels(modelId, 'image')
         }
       },
+
+      setSelectedAspectRatio: (ratio) =>
+        set(
+          (state) => ({
+            selectedAspectRatio: ratio,
+          }),
+          false,
+          'setSelectedAspectRatio'
+        ),
 
       // Model status management
       updateModelStatus: (modelId, status) =>
@@ -199,6 +216,18 @@ export const useModelStore = create<ModelState>()(
         ),
 
       getRecentModels: (type) => get().preferences.lastUsedModels[type],
+
+      // Aspect ratio helpers
+      getAvailableRatiosForModel: (modelId) => {
+        const model = get().getModelById(modelId)
+        if (!model) return []
+        return AspectRatioService.getAvailableRatios(model.id)
+      },
+      getDefaultRatioForModel: (modelId) => {
+        const model = get().getModelById(modelId)
+        if (!model) return '16:9'
+        return AspectRatioService.getDefaultRatio(model.id)
+      },
     }),
     { name: 'model-store' }
   )

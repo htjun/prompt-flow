@@ -1,54 +1,35 @@
 'use server'
 
 import { replicate } from '@/lib/ai'
+import { AspectRatioService } from '@/lib/aspectRatioService'
 
-export const generateImageFromPrompt = async (prompt: string, modelId?: string) => {
+export const generateImageFromPrompt = async (
+  prompt: string,
+  modelId?: string,
+  aspectRatio?: string
+) => {
   try {
     const model = modelId || 'google/imagen-4-fast'
-    let input: any = { prompt }
+    const ratio = aspectRatio || AspectRatioService.getDefaultRatio(model)
+
+    // Model-specific parameters
+    const modelSpecificParams: Record<string, any> = {}
 
     if (model.includes('flux')) {
-      input = {
-        prompt,
-        width: 1024,
-        height: 1024,
-        num_outputs: 1,
-        guidance_scale: 3.5,
-        num_inference_steps: 28,
-      }
+      modelSpecificParams.num_outputs = 1
+      modelSpecificParams.guidance_scale = 3.5
+      modelSpecificParams.num_inference_steps = 28
     } else if (model.includes('imagen')) {
-      input = {
-        prompt,
-        width: 1024,
-        height: 1024,
-        num_outputs: 1,
-      }
-    } else if (model.includes('gpt-image')) {
-      input = {
-        prompt,
-        size: '1024x1024',
-        quality: 'standard',
-        n: 1,
-      }
-    } else if (model.includes('phoenix')) {
-      input = {
-        prompt,
-        size: '1024x1024',
-      }
+      modelSpecificParams.num_outputs = 1
     } else if (model.includes('ideogram')) {
-      input = {
-        prompt,
-        aspect_ratio: '1:1',
-        model: 'V_2',
-      }
-    } else {
-      input = {
-        prompt,
-        width: 1024,
-        height: 1024,
-        num_outputs: 1,
-      }
+      modelSpecificParams.model = 'V_2'
+    } else if (model.includes('gpt-image')) {
+      modelSpecificParams.quality = 'standard'
+      modelSpecificParams.n = 1
     }
+
+    // Get input with aspect ratio handling
+    const input = AspectRatioService.getModelInput(model, ratio, prompt, modelSpecificParams)
 
     const output = await replicate.run(model as any, { input })
     let base64: string | null = null

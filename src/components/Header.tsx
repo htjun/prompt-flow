@@ -1,14 +1,18 @@
-import { ModelSelector } from './ModelSelector'
 import Image from 'next/image'
+import { ModelSelector } from './ModelSelector'
+import { AspectRatioSelector } from './AspectRatioSelector'
 
 export const Header = () => {
   return (
-    <div className="flex w-full items-center justify-between border-b bg-white/70 px-4 py-1 backdrop-blur-xs">
+    <header className="bg-background flex h-14 items-center justify-between border-b px-4">
       <div className="flex items-center gap-2">
         <Image src="/logo.svg" alt="Logo" className="h-3.5 w-3.5" width={14} height={14} />
-        <h1 className="text-xs font-medium tracking-tight">Prompt Flow</h1>
+        <h1 className="text-sm font-medium">Prompt Flow</h1>
       </div>
-      <ModelSelector />
-    </div>
+      <div className="flex items-center gap-2">
+        <ModelSelector />
+        <AspectRatioSelector />
+      </div>
+    </header>
   )
 }
