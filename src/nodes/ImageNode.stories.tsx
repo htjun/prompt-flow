@@ -3,9 +3,29 @@ import { ImageNode } from './ImageNode'
 import { ReactFlowProvider } from '@xyflow/react'
 import React from 'react'
 
-// Placeholder image - a simple colored rectangle
-const PLACEHOLDER_IMAGE =
-  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNjY2NjY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIFBsYWNlaG9sZGVyPC90ZXh0Pgo8L3N2Zz4K'
+// Helper function to create SVG placeholders for different aspect ratios
+const createPlaceholderImage = (width: number, height: number, label: string) => {
+  const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#666666"/>
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle" dy=".3em">${label}</text>
+    </svg>
+  `
+  return `data:image/svg+xml;base64,${btoa(svg)}`
+}
+
+// Aspect ratio placeholders
+const ASPECT_RATIO_IMAGES = {
+  '4:3': createPlaceholderImage(480, 360, 'Landscape (4:3)'),
+  '3:4': createPlaceholderImage(360, 480, 'Portrait (3:4)'),
+  '1:1': createPlaceholderImage(400, 400, 'Square (1:1)'),
+  '16:9': createPlaceholderImage(640, 360, 'Widescreen (16:9)'),
+  '21:9': createPlaceholderImage(560, 240, 'Ultrawide (21:9)'),
+  '1:3': createPlaceholderImage(240, 720, 'Tall Portrait (1:3)'),
+}
+
+// Original placeholder for backwards compatibility
+const PLACEHOLDER_IMAGE = ASPECT_RATIO_IMAGES['1:1']
 
 const MOCK_IMAGE_DATA = {
   nodeId: 'mock-image-node-id',
@@ -33,7 +53,7 @@ const meta = {
   tags: ['autodocs'],
   decorators: [
     (Story: React.ComponentType) => (
-      <div style={{ height: '500px', width: '500px' }}>
+      <div>
         <Story />
       </div>
     ),
@@ -45,6 +65,91 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {},
+}
+
+// Aspect Ratio Variants
+export const Landscape4x3: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="landscape-4x3-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['4:3'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
+}
+
+export const Portrait3x4: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="portrait-3x4-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['3:4'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
+}
+
+export const Square1x1: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="square-1x1-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['1:1'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
+}
+
+export const Widescreen16x9: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="widescreen-16x9-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['16:9'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
+}
+
+export const Ultrawide21x9: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="ultrawide-21x9-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['21:9'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
+}
+
+export const TallPortrait1x3: Story = {
+  render: () => (
+    <ReactFlowProvider>
+      <ImageNode
+        id="tall-portrait-1x3-image-node-id"
+        data={{
+          ...MOCK_IMAGE_DATA,
+          imageData: ASPECT_RATIO_IMAGES['1:3'],
+        }}
+      />
+    </ReactFlowProvider>
+  ),
 }
 
 export const Loading: Story = {
