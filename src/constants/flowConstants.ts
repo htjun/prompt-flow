@@ -7,7 +7,7 @@ export const HANDLE_IDS = {
   // Output handles
   ENHANCE: 'enhance',
   GENERATE: 'generate',
-  PARSE: 'parse',
+  STRUCTURE: 'structure',
   DESCRIBE: 'describe',
   DUPLICATE: 'duplicate',
 } as const

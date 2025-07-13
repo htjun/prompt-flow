@@ -178,7 +178,7 @@ export const WithDropdownAction: Story = {
         isPrimary: false,
       },
       {
-        label: 'Parse',
+        label: 'Structure',
         isPrimary: true,
         dropdown: {
           items: [
@@ -202,7 +202,7 @@ export const WithDropdownAction: Story = {
   },
 }
 
-export const ParseDropdownOnly: Story = {
+export const StructureDropdownOnly: Story = {
   args: {
     label: 'Prompt Analysis',
     placeholder: 'Enter your prompt to analyze',
@@ -210,7 +210,7 @@ export const ParseDropdownOnly: Story = {
       'A futuristic city at sunset with flying cars and neon lights reflecting on wet streets',
     actions: [
       {
-        label: 'Parse',
+        label: 'Structure',
         isPrimary: true,
         dropdown: {
           items: [

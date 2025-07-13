@@ -24,7 +24,7 @@ export const useFlowOperations = () => {
     nodeId: string,
     nodeType: string,
     nodeData: any,
-    actionType: 'enhance' | 'generate' | 'atomize' | 'describe' | 'parse',
+    actionType: 'enhance' | 'generate' | 'atomize' | 'describe' | 'structure',
     sourceNodeId: string
   ) => {
     flowStore.addNodeWithPositioning(
@@ -119,7 +119,7 @@ export const useFlowOperations = () => {
         nodeId: atomizedPromptId,
         isLoading: true,
       },
-      'parse',
+      'structure',
       sourceNodeId
     )
 
@@ -127,7 +127,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, atomizedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.PARSE,
+      sourceHandle: HANDLE_IDS.STRUCTURE,
       target: atomizedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
@@ -229,7 +229,7 @@ export const useFlowOperations = () => {
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
-      'parse',
+      'structure',
       sourceNodeId
     )
 
@@ -266,7 +266,7 @@ export const useFlowOperations = () => {
         nodeId: segmentedPromptId,
         isLoading: true,
       },
-      'parse',
+      'structure',
       sourceNodeId
     )
 
@@ -274,7 +274,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, segmentedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.PARSE,
+      sourceHandle: HANDLE_IDS.STRUCTURE,
       target: segmentedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
@@ -325,7 +325,7 @@ export const useFlowOperations = () => {
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
-      'parse',
+      'structure',
       sourceNodeId
     )
 

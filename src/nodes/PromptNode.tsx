@@ -23,7 +23,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   const { renderSourceHandle, renderTargetHandle } = useNodeHandles(nodeId)
 
-
   const handleEnhance = async () => {
     if (!prompt.trim() || isEnhancing) return
 
@@ -48,7 +47,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     }
   }
 
-
   const handleAtomize = async () => {
     if (!prompt.trim()) return
     await atomizePrompt(prompt, nodeId)
@@ -69,8 +67,8 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   // Define action configurations
   const actionConfigs = {
-    parse: {
-      label: 'Parse',
+    structure: {
+      label: 'Structure',
       isPrimary: false,
       dropdown: {
         items: [
@@ -83,11 +81,11 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     generate: { label: 'Generate', onClick: handleGenerate, isPrimary: true },
   }
 
-  // Define configuration - always show Parse and Generate
+  // Define configuration - always show Structure and Generate
   const config = {
-    actions: ['parse', 'generate'] as const,
+    actions: ['structure', 'generate'] as const,
     handles: [
-      { id: HANDLE_IDS.PARSE, actionKey: 'parse' as const },
+      { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' as const },
       { id: HANDLE_IDS.GENERATE, actionKey: 'generate' as const },
     ],
   }
