@@ -26,6 +26,7 @@ jest.mock('@/actions/segmentPrompt', () => ({
 jest.mock('@/stores/modelStore', () => ({
   useModelStore: jest.fn(() => ({
     selectedImageModel: 'test-model',
+    selectedAspectRatio: '1:1',
   })),
 }))
 
@@ -114,7 +115,7 @@ describe('useAIActions', () => {
         generateResult = await result.current.generate('test prompt')
       })
 
-      expect(mockGenerateImage).toHaveBeenCalledWith('test prompt', 'test-model')
+      expect(mockGenerateImage).toHaveBeenCalledWith('test prompt', 'test-model', '1:1')
       expect(generateResult).toEqual(mockImageResult)
       expect(result.current.isGenerating).toBe(false)
       expect(result.current.error).toBe(null)

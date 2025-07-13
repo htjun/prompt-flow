@@ -1,8 +1,14 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ReactFlowProvider } from '@xyflow/react'
 import { SegmentedPromptNode } from '.'
 import { mockSegmentedPromptData } from '@/mock/mockSegmentedPromptData'
+
+// Mock ResizeObserver
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}))
 
 // Mock the context
 jest.mock('@/context/FlowActionsContext', () => ({
@@ -17,10 +23,26 @@ jest.mock('@/lib/flowHelpers', () => ({
   isHandleConnected: jest.fn().mockReturnValue(false),
 }))
 
-// Mock the hooks
+// Mock the hooks and components from @xyflow/react
 jest.mock('@xyflow/react', () => ({
   ...jest.requireActual('@xyflow/react'),
   useEdges: () => [],
+  Handle: ({ id, type, position, className, style }: any) => (
+    <div
+      data-testid={`handle-${id}`}
+      data-type={type}
+      data-position={position}
+      className={className}
+      style={style}
+    />
+  ),
+  Position: {
+    Top: 'top',
+    Right: 'right',
+    Bottom: 'bottom',
+    Left: 'left',
+  },
+  ReactFlowProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
 const mockData = {
@@ -30,7 +52,7 @@ const mockData = {
 }
 
 const renderWithProvider = (component: React.ReactElement) => {
-  return render(<ReactFlowProvider>{component}</ReactFlowProvider>)
+  return render(component)
 }
 
 describe('SegmentedPromptNode', () => {
