@@ -3,6 +3,7 @@ import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { usePromptStore } from '@/stores/promptStore'
 import { useImageStore } from '@/stores/imageStore'
 import { useFlowStore } from '@/stores/flowStore'
+import { useModelStore } from '@/stores/modelStore'
 import { useNodeDimensions } from '@/lib/flowHelpers'
 import { HANDLE_IDS, createEdgeId } from '@/constants/flowConstants'
 
@@ -17,6 +18,7 @@ export const useFlowOperations = () => {
   const imageStore = useImageStore()
   const flowStore = useFlowStore()
   const getNodeDimensions = useNodeDimensions()
+  const { selectedAspectRatio } = useModelStore()
 
   const createNodeWithPositioning = (
     nodeId: string,
@@ -68,6 +70,7 @@ export const useFlowOperations = () => {
         flowStore.updateNode(newNodeId, {
           imageData: result.imageData,
           modelUsed: result.modelUsed,
+          aspectRatio: selectedAspectRatio,
           isLoading: false,
         })
 

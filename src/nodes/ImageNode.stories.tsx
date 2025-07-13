@@ -20,8 +20,8 @@ const ASPECT_RATIO_IMAGES = {
   '3:4': createPlaceholderImage(360, 480, 'Portrait (3:4)'),
   '1:1': createPlaceholderImage(400, 400, 'Square (1:1)'),
   '16:9': createPlaceholderImage(640, 360, 'Widescreen (16:9)'),
-  '21:9': createPlaceholderImage(560, 240, 'Ultrawide (21:9)'),
-  '1:3': createPlaceholderImage(240, 720, 'Tall Portrait (1:3)'),
+  '21:9': createPlaceholderImage(1920, 840, 'Ultrawide (21:9)'),
+  '1:3': createPlaceholderImage(640, 1920, 'Tall Portrait (1:3)'),
 }
 
 // Original placeholder for backwards compatibility
@@ -33,6 +33,7 @@ const MOCK_IMAGE_DATA = {
   isLoading: false,
   hasError: false,
   modelUsed: 'Flux Dev',
+  aspectRatio: '1:1',
 }
 
 // Wrapper component to provide required ReactFlow context
@@ -76,6 +77,7 @@ export const Landscape4x3: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['4:3'],
+          aspectRatio: '4:3',
         }}
       />
     </ReactFlowProvider>
@@ -90,6 +92,7 @@ export const Portrait3x4: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['3:4'],
+          aspectRatio: '3:4',
         }}
       />
     </ReactFlowProvider>
@@ -104,6 +107,7 @@ export const Square1x1: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['1:1'],
+          aspectRatio: '1:1',
         }}
       />
     </ReactFlowProvider>
@@ -118,6 +122,7 @@ export const Widescreen16x9: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['16:9'],
+          aspectRatio: '16:9',
         }}
       />
     </ReactFlowProvider>
@@ -132,6 +137,7 @@ export const Ultrawide21x9: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['21:9'],
+          aspectRatio: '21:9',
         }}
       />
     </ReactFlowProvider>
@@ -146,6 +152,7 @@ export const TallPortrait1x3: Story = {
         data={{
           ...MOCK_IMAGE_DATA,
           imageData: ASPECT_RATIO_IMAGES['1:3'],
+          aspectRatio: '1:3',
         }}
       />
     </ReactFlowProvider>
