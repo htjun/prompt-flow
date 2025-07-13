@@ -10,17 +10,14 @@ import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
   const setBasicPrompt = usePromptStore((s) => s.setBasicPrompt)
-  const getEnhancedPrompt = usePromptStore((s) => s.getEnhancedPrompt)
-  const setEnhancedPrompt = usePromptStore((s) => s.setEnhancedPrompt)
   const getOperationStatus = usePromptStore((s) => s.getOperationStatus)
   const setOperationStatus = usePromptStore((s) => s.setOperationStatus)
 
   const nodeId = id
   const prompt = getBasicPrompt(nodeId)
-  const enhancedPrompt = getEnhancedPrompt(nodeId)
   const operationStatus = getOperationStatus(nodeId)
   const isEnhancing = operationStatus === 'loading'
-  const hasBeenEnhanced = enhancedPrompt !== ''
+  const hasBeenEnhanced = operationStatus === 'success'
 
   const setPrompt = (text: string) => setBasicPrompt(nodeId, text)
   const { generateImage, atomizePrompt, segmentPrompt } = useFlowActions()
@@ -37,8 +34,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const handleEnhance = async () => {
     if (!prompt.trim() || isPromptLongEnough || isEnhancing) return
 
-    // Store the original prompt before enhancement
-    setEnhancedPrompt(nodeId, prompt)
     setOperationStatus(nodeId, { status: 'loading' })
 
     try {
@@ -47,16 +42,12 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
         setBasicPrompt(nodeId, enhancedText)
         setOperationStatus(nodeId, { status: 'success' })
       } else {
-        // Restore on failure
-        setEnhancedPrompt(nodeId, '')
         setOperationStatus(nodeId, {
           status: 'error',
           error: 'Failed to enhance prompt',
         })
       }
     } catch (error) {
-      // Restore on error
-      setEnhancedPrompt(nodeId, '')
       setOperationStatus(nodeId, {
         status: 'error',
         error: error instanceof Error ? error.message : 'Failed to enhance prompt',
@@ -64,17 +55,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     }
   }
 
-  const handleUndo = () => {
-    if (!hasBeenEnhanced) return
-
-    // Swap the prompts back
-    const originalPrompt = enhancedPrompt
-    setBasicPrompt(nodeId, originalPrompt)
-
-    // Clear the enhanced prompt and operation status
-    setEnhancedPrompt(nodeId, '')
-    setOperationStatus(nodeId, { status: 'idle' })
-  }
 
   const handleAtomize = async () => {
     if (!prompt.trim()) return
@@ -96,7 +76,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   // Define action configurations
   const actionConfigs = {
-    undo: { label: 'Undo', onClick: handleUndo, isInternal: true },
     enhance: {
       label: 'Enhance',
       onClick: handleEnhance,
@@ -123,7 +102,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   const stateConfigs: Record<string, StateConfig> = {
     enhanced: {
-      actions: ['undo', 'parse', 'generate'],
+      actions: ['parse', 'generate'],
       handles: [
         { id: HANDLE_IDS.PARSE, actionKey: 'parse' },
         { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },

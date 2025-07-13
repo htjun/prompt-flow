@@ -11,7 +11,6 @@ interface OperationState {
 
 interface PromptEntities {
   basic: Record<string, string>
-  enhanced: Record<string, string>
   atomized: Record<string, AtomizedPrompt>
 }
 
@@ -29,7 +28,6 @@ interface PromptState {
 
   // Simplified actions
   setBasicPrompt: (id: string, text: string) => void
-  setEnhancedPrompt: (id: string, text: string) => void
   setAtomizedPrompt: (id: string, data: AtomizedPrompt) => void
 
   // Unified operation management
@@ -38,7 +36,6 @@ interface PromptState {
 
   // Selectors (kept for compatibility)
   getBasicPrompt: (id: string) => string
-  getEnhancedPrompt: (id: string) => string
   getAtomizedPrompt: (id: string) => AtomizedPrompt | null
   getOperationStatus: (id: string) => OperationState['status']
   getOperationError: (id: string) => string | undefined
@@ -59,7 +56,6 @@ export const usePromptStore = create<PromptState>()(
       // Initial state
       entities: {
         basic: {},
-        enhanced: {},
         atomized: {},
       },
       operations: {},
@@ -80,17 +76,6 @@ export const usePromptStore = create<PromptState>()(
           'setBasicPrompt'
         ),
 
-      setEnhancedPrompt: (id, text) =>
-        set(
-          (state) => ({
-            entities: {
-              ...state.entities,
-              enhanced: { ...state.entities.enhanced, [id]: text },
-            },
-          }),
-          false,
-          'setEnhancedPrompt'
-        ),
 
       setAtomizedPrompt: (id, data) =>
         set(
@@ -132,7 +117,6 @@ export const usePromptStore = create<PromptState>()(
 
       // Selectors for compatibility
       getBasicPrompt: (id) => get().entities.basic[id] || '',
-      getEnhancedPrompt: (id) => get().entities.enhanced[id] || '',
       getAtomizedPrompt: (id) => get().entities.atomized[id] || null,
       getOperationStatus: (id) => get().operations[id]?.status || 'idle',
       getOperationError: (id) => get().operations[id]?.error,
@@ -152,14 +136,12 @@ export const usePromptStore = create<PromptState>()(
         set(
           (state) => {
             const { [id]: removedBasic, ...restBasic } = state.entities.basic
-            const { [id]: removedEnhanced, ...restEnhanced } = state.entities.enhanced
             const { [id]: removedAtomized, ...restAtomized } = state.entities.atomized
             const { [id]: removedOperation, ...restOperations } = state.operations
 
             return {
               entities: {
                 basic: restBasic,
-                enhanced: restEnhanced,
                 atomized: restAtomized,
               },
               operations: restOperations,
@@ -177,8 +159,6 @@ export const usePromptStore = create<PromptState>()(
 export const selectBasicPromptById = (id: string) => (state: PromptState) =>
   state.entities.basic[id] || ''
 
-export const selectEnhancedPromptById = (id: string) => (state: PromptState) =>
-  state.entities.enhanced[id] || ''
 
 export const selectAtomizedPromptById = (id: string) => (state: PromptState) =>
   state.entities.atomized[id] || null

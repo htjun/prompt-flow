@@ -14,11 +14,6 @@ describe('promptStore', () => {
     expect(usePromptStore.getState().getOperationStatus('test-id')).toBe('loading')
   })
 
-  it('manages enhanced prompts', () => {
-    const store = usePromptStore.getState()
-    store.setEnhancedPrompt('id', 'test enhanced prompt')
-    expect(store.getEnhancedPrompt('id')).toBe('test enhanced prompt')
-  })
 
   it('manages atomized prompts', () => {
     const data = {

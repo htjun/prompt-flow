@@ -50,11 +50,9 @@ const mockFlowStore = {
 
 const mockPromptStore = {
   setBasicPrompt: jest.fn(),
-  setEnhancedPrompt: jest.fn(),
   setAtomizedPrompt: jest.fn(),
   setOperationStatus: jest.fn(),
   getBasicPrompt: jest.fn(),
-  getEnhancedPrompt: jest.fn(),
   getAtomizedPrompt: jest.fn(),
   getOperationStatus: jest.fn(),
   getOperationError: jest.fn(),
