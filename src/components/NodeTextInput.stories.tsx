@@ -58,15 +58,17 @@ const defaultActions: ActionItem[] = [
   {
     label: 'Enhance',
     onClick: fn(),
-    isInternal: true,
+    isPrimary: false,
   },
   {
     label: 'Clear',
     onClick: fn(),
+    isPrimary: true,
   },
   {
     label: 'Submit',
     onClick: fn(),
+    isPrimary: true,
   },
 ]
 
@@ -80,7 +82,7 @@ export const Default: Story = {
   },
 }
 
-export const WithInternalActions: Story = {
+export const WithSecondaryActions: Story = {
   args: {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
@@ -89,11 +91,12 @@ export const WithInternalActions: Story = {
       {
         label: 'Enhance',
         onClick: fn(),
-        isInternal: true,
+        isPrimary: false,
       },
       {
         label: 'Generate',
         onClick: fn(),
+        isPrimary: true,
       },
     ],
   },
@@ -172,10 +175,11 @@ export const WithDropdownAction: Story = {
       {
         label: 'Enhance',
         onClick: fn(),
-        isInternal: true,
+        isPrimary: false,
       },
       {
         label: 'Parse',
+        isPrimary: true,
         dropdown: {
           items: [
             {
@@ -192,6 +196,7 @@ export const WithDropdownAction: Story = {
       {
         label: 'Generate',
         onClick: fn(),
+        isPrimary: true,
       },
     ],
   },
@@ -206,6 +211,7 @@ export const ParseDropdownOnly: Story = {
     actions: [
       {
         label: 'Parse',
+        isPrimary: true,
         dropdown: {
           items: [
             {

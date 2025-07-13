@@ -93,6 +93,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     {
       label: 'Describe',
       onClick: handleDescribe,
+      isPrimary: true,
     },
   ]
 

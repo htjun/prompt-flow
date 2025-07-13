@@ -79,11 +79,12 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     enhance: {
       label: 'Enhance',
       onClick: handleEnhance,
-      isInternal: true,
+      isPrimary: false,
       disabled: isPromptLongEnough,
     },
     parse: {
       label: 'Parse',
+      isPrimary: true,
       dropdown: {
         items: [
           { label: 'Atomize', onClick: handleAtomize },
@@ -91,7 +92,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
         ],
       },
     },
-    generate: { label: 'Generate', onClick: handleGenerate },
+    generate: { label: 'Generate', onClick: handleGenerate, isPrimary: true },
   }
 
   // Define state-based configurations

@@ -13,7 +13,7 @@ export type ActionItem = {
   label: string
   onClick?: () => void
   disabled?: boolean
-  isInternal?: boolean
+  isPrimary?: boolean
   dropdown?: {
     items: Array<{
       label: string
@@ -36,8 +36,8 @@ export const ActionGroup = ({
   isDisabled = false,
   className,
 }: ActionGroupProps) => {
-  const internalActions = actions.filter((action) => action.isInternal)
-  const externalActions = actions.filter((action) => !action.isInternal)
+  const secondaryActions = actions.filter((action) => !action.isPrimary)
+  const primaryActions = actions.filter((action) => action.isPrimary)
 
   const DropdownAction = ({
     action,
@@ -130,11 +130,11 @@ export const ActionGroup = ({
   return (
     <div className={`flex justify-between p-1 ${className || ''}`}>
       <div className="flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        {internalActions.map((action, index) => renderAction(action, index, 'internal'))}
+        {secondaryActions.map((action, index) => renderAction(action, index, 'secondary'))}
       </div>
 
       <div className="flex gap-1">
-        {externalActions.map((action, index) => renderAction(action, index, 'external'))}
+        {primaryActions.map((action, index) => renderAction(action, index, 'primary'))}
       </div>
     </div>
   )
