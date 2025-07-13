@@ -17,22 +17,15 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const prompt = getBasicPrompt(nodeId)
   const operationStatus = getOperationStatus(nodeId)
   const isEnhancing = operationStatus === 'loading'
-  const hasBeenEnhanced = operationStatus === 'success'
 
   const setPrompt = (text: string) => setBasicPrompt(nodeId, text)
   const { generateImage, atomizePrompt, segmentPrompt } = useFlowActions()
 
   const { renderSourceHandle, renderTargetHandle } = useNodeHandles(nodeId)
 
-  // Count words in the prompt
-  const wordCount = prompt
-    .trim()
-    .split(/\s+/)
-    .filter((word) => word.length > 0).length
-  const isPromptLongEnough = wordCount > 20
 
   const handleEnhance = async () => {
-    if (!prompt.trim() || isPromptLongEnough || isEnhancing) return
+    if (!prompt.trim() || isEnhancing) return
 
     setOperationStatus(nodeId, { status: 'loading' })
 
@@ -76,17 +69,12 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   // Define action configurations
   const actionConfigs = {
-    enhance: {
-      label: 'Enhance',
-      onClick: handleEnhance,
-      isPrimary: false,
-      disabled: isPromptLongEnough,
-    },
     parse: {
       label: 'Parse',
-      isPrimary: true,
+      isPrimary: false,
       dropdown: {
         items: [
+          { label: 'Enhance', onClick: handleEnhance },
           { label: 'Atomize', onClick: handleAtomize },
           { label: 'Segment', onClick: handleSegment },
         ],
@@ -95,42 +83,14 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     generate: { label: 'Generate', onClick: handleGenerate, isPrimary: true },
   }
 
-  // Define state-based configurations
-  type StateConfig = {
-    actions: (keyof typeof actionConfigs)[]
-    handles: Array<{ id: string; actionKey: keyof typeof actionConfigs }>
+  // Define configuration - always show Parse and Generate
+  const config = {
+    actions: ['parse', 'generate'] as const,
+    handles: [
+      { id: HANDLE_IDS.PARSE, actionKey: 'parse' as const },
+      { id: HANDLE_IDS.GENERATE, actionKey: 'generate' as const },
+    ],
   }
-
-  const stateConfigs: Record<string, StateConfig> = {
-    enhanced: {
-      actions: ['parse', 'generate'],
-      handles: [
-        { id: HANDLE_IDS.PARSE, actionKey: 'parse' },
-        { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
-      ],
-    },
-    longPrompt: {
-      actions: ['parse', 'generate'],
-      handles: [
-        { id: HANDLE_IDS.PARSE, actionKey: 'parse' },
-        { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
-      ],
-    },
-    default: {
-      actions: isRootNode ? ['enhance', 'generate'] : ['parse', 'generate'],
-      handles: isRootNode
-        ? [{ id: HANDLE_IDS.GENERATE, actionKey: 'generate' }]
-        : [
-            { id: HANDLE_IDS.PARSE, actionKey: 'parse' },
-            { id: HANDLE_IDS.GENERATE, actionKey: 'generate' },
-          ],
-    },
-  }
-
-  // Determine current state
-  const currentState = hasBeenEnhanced ? 'enhanced' : isPromptLongEnough ? 'longPrompt' : 'default'
-
-  const config = stateConfigs[currentState]
 
   // Build actions from config
   const actions: ActionItem[] = config.actions.map((key) => actionConfigs[key])

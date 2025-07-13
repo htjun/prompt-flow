@@ -129,7 +129,7 @@ export const ActionGroup = ({
 
   return (
     <div className={`flex justify-between p-1 ${className || ''}`}>
-      <div className="flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+      <div className="flex gap-1">
         {secondaryActions.map((action, index) => renderAction(action, index, 'secondary'))}
       </div>
 
