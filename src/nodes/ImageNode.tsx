@@ -103,7 +103,7 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="node-label geist-mono">Generated Image</div>
+      <div className="node-label geist-mono">Image</div>
       <div
         className={cn(
           'node-container nodrag flex flex-col items-center justify-center gap-2',
