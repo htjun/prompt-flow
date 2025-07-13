@@ -1,10 +1,11 @@
+import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useModelStore } from '@/stores/modelStore'
 import { AspectRatioService } from '@/lib/aspectRatioService'
 import { useEffect } from 'react'
@@ -38,18 +39,26 @@ export const AspectRatioSelector = () => {
     '2:3': 'Portrait (2:3)',
   }
 
+  const getSelectedRatioLabel = () => {
+    return ratioLabels[selectedAspectRatio] || selectedAspectRatio
+  }
+
   return (
-    <Select value={selectedAspectRatio} onValueChange={setSelectedAspectRatio}>
-      <SelectTrigger className="w-40">
-        <SelectValue placeholder="Aspect Ratio" />
-      </SelectTrigger>
-      <SelectContent>
-        {availableRatios.map((ratio) => (
-          <SelectItem key={ratio} value={ratio}>
-            {ratioLabels[ratio] || ratio}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="xs" className="text-gray-500">
+          <span className="text-xs">{getSelectedRatioLabel()}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuRadioGroup value={selectedAspectRatio} onValueChange={setSelectedAspectRatio}>
+          {availableRatios.map((ratio) => (
+            <DropdownMenuRadioItem key={ratio} value={ratio} className="text-xs">
+              {ratioLabels[ratio] || ratio}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
