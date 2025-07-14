@@ -16,9 +16,7 @@ const NodeTextInputWrapper = ({
   label?: string
   placeholder?: string
   children: ReactNode
-  isProcessing?: boolean
   isLoading?: boolean
-  loadingMessage?: string
   className?: string
 }) => {
   const [value, setValue] = useState(initialValue)
@@ -46,7 +44,7 @@ const meta = {
     initialValue: { control: 'text' },
     label: { control: 'text' },
     placeholder: { control: 'text' },
-    isProcessing: { control: 'boolean' },
+    isLoading: { control: 'boolean' },
     className: { control: 'text' },
   },
   tags: ['autodocs'],
@@ -71,7 +69,7 @@ export const Default: Story = {
     placeholder: 'Enter your prompt',
     initialValue: '',
     children: <DefaultActions />,
-    isProcessing: false,
+    isLoading: false,
   },
 }
 
@@ -82,17 +80,17 @@ export const WithContent: Story = {
     initialValue:
       'This is a sample prompt text that demonstrates how the component looks with content.',
     children: <DefaultActions />,
-    isProcessing: false,
+    isLoading: false,
   },
 }
 
-export const Processing: Story = {
+export const Loading: Story = {
   args: {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
     initialValue: 'Processing this prompt...',
     children: <DefaultActions />,
-    isProcessing: true,
+    isLoading: true,
   },
 }
 
@@ -102,35 +100,7 @@ export const CustomLabel: Story = {
     placeholder: 'Type something here',
     initialValue: '',
     children: <DefaultActions />,
-    isProcessing: false,
-  },
-}
-
-export const CustomActions: Story = {
-  args: {
-    label: 'Prompt',
-    placeholder: 'Enter your prompt',
-    initialValue: '',
-    children: (
-      <>
-        <div>
-          <ActionButton onClick={fn()}>Save</ActionButton>
-          <ActionButton onClick={fn()}>Copy</ActionButton>
-        </div>
-        <ActionButton onClick={fn()}>Export</ActionButton>
-      </>
-    ),
-    isProcessing: false,
-  },
-}
-
-export const Loading: Story = {
-  args: {
-    label: 'Prompt',
-    placeholder: 'Enter your prompt',
-    initialValue: 'Loading...',
-    isLoading: true,
-    children: <DefaultActions />,
+    isLoading: false,
   },
 }
 
@@ -141,30 +111,13 @@ export const WithDropdownAction: Story = {
     initialValue: 'A serene landscape with mountains and a lake',
     children: (
       <>
-        <div className="flex gap-1">
-          <ActionButton onClick={fn()}>Enhance</ActionButton>
-          <ActionDropdown label="Structure">
-            <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
-            <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
-          </ActionDropdown>
-        </div>
+        <ActionDropdown label="Structure">
+          <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
+          <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
+        </ActionDropdown>
         <ActionButton onClick={fn()}>Generate</ActionButton>
       </>
     ),
-  },
-}
-
-export const StructureDropdownOnly: Story = {
-  args: {
-    label: 'Prompt Analysis',
-    placeholder: 'Enter your prompt to analyze',
-    initialValue:
-      'A futuristic city at sunset with flying cars and neon lights reflecting on wet streets',
-    children: (
-      <ActionDropdown label="Structure">
-        <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
-        <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
-      </ActionDropdown>
-    ),
+    isLoading: false,
   },
 }
