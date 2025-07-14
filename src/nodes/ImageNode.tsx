@@ -6,7 +6,7 @@ import {
   calculateHandleOffset,
   cn,
 } from '@/lib/utils'
-import { ActionGroup } from '@/components/ActionGroup'
+import { ActionGroup, ActionButton } from '@/components/ActionGroup'
 import { Button } from '@/components/ui/button'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -89,16 +89,8 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
     }
   }, [copySuccess])
 
-  const actions = [
-    {
-      label: 'Describe',
-      onClick: handleDescribe,
-      isPrimary: true,
-    },
-  ]
-
-  // Define action labels for handle positioning (matches the filtered actions)
-  const actionLabels = actions.map((action) => action.label)
+  // Define action labels for handle positioning
+  const actionLabels = ['Describe']
 
   const isDescribeHandleConnected = isHandleConnected(edges, id, HANDLE_IDS.DESCRIBE, 'source')
 
@@ -158,7 +150,11 @@ export const ImageNode = ({ data, id }: ImageNodeProps) => {
               {modelUsed && (
                 <div className="px-2.5 text-xs text-gray-400">{getModelDisplayName(modelUsed)}</div>
               )}
-              <ActionGroup actions={actions} />
+              <ActionGroup>
+                <ActionButton onClick={handleDescribe}>
+                  Describe
+                </ActionButton>
+              </ActionGroup>
             </div>
           </div>
         ) : isLoading ? (

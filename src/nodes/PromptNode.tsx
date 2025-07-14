@@ -1,6 +1,6 @@
 import { type NodeProps } from '@xyflow/react'
 import { NodeTextInput } from '@/components/NodeTextInput'
-import { type ActionItem } from '@/components/ActionGroup'
+import { ActionButton, ActionDropdown, ActionDropdownItem } from '@/components/ActionGroup'
 import { usePromptStore } from '@/stores/promptStore'
 import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
@@ -65,22 +65,6 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   // Check if this is the root prompt node
   const isRootNode = nodeId === 'prompt'
 
-  // Define action configurations
-  const actionConfigs = {
-    structure: {
-      label: 'Structure',
-      isPrimary: false,
-      dropdown: {
-        items: [
-          { label: 'Enhance', onClick: handleEnhance },
-          { label: 'Atomize', onClick: handleAtomize },
-          { label: 'Segment', onClick: handleSegment },
-        ],
-      },
-    },
-    generate: { label: 'Generate', onClick: handleGenerate, isPrimary: true },
-  }
-
   // Define configuration - always show Structure and Generate
   const config = {
     actions: ['structure', 'generate'] as const,
@@ -90,9 +74,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
     ],
   }
 
-  // Build actions from config
-  const actions: ActionItem[] = config.actions.map((key) => actionConfigs[key])
-  const actionLabels = actions.map((action) => action.label)
+  const actionLabels = ['Structure', 'Generate']
 
   // Render handles from config
   const handles = config.handles.map(({ id, actionKey }) =>
@@ -108,9 +90,24 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
       <NodeTextInput
         value={prompt}
         onChange={setPrompt}
-        actions={actions}
         isLoading={isEnhancing}
-      />
+      >
+        <ActionDropdown label="Structure">
+          <ActionDropdownItem onClick={handleEnhance}>
+            Enhance
+          </ActionDropdownItem>
+          <ActionDropdownItem onClick={handleAtomize}>
+            Atomize
+          </ActionDropdownItem>
+          <ActionDropdownItem onClick={handleSegment}>
+            Segment
+          </ActionDropdownItem>
+        </ActionDropdown>
+        
+        <ActionButton onClick={handleGenerate}>
+          Generate
+        </ActionButton>
+      </NodeTextInput>
 
       {/* Render target handle for non-root nodes */}
       {!isRootNode &&

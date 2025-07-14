@@ -1,21 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
-import { useState } from 'react'
+import { useState, ReactNode } from 'react'
 import { NodeTextInput } from './NodeTextInput'
-import { type ActionItem } from './ActionGroup'
+import { ActionButton, ActionDropdown, ActionDropdownItem } from './ActionGroup'
 
 const NodeTextInputWrapper = ({
   initialValue,
   label,
   placeholder,
-  actions,
+  children,
   isLoading,
   className,
 }: {
   initialValue: string
   label?: string
   placeholder?: string
-  actions: ActionItem[]
+  children: ReactNode
   isProcessing?: boolean
   isLoading?: boolean
   loadingMessage?: string
@@ -28,10 +28,11 @@ const NodeTextInputWrapper = ({
       placeholder={placeholder}
       value={value}
       onChange={setValue}
-      actions={actions}
       isLoading={isLoading}
       className={className}
-    />
+    >
+      {children}
+    </NodeTextInput>
   )
 }
 
@@ -54,51 +55,23 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const defaultActions: ActionItem[] = [
-  {
-    label: 'Enhance',
-    onClick: fn(),
-    isPrimary: false,
-  },
-  {
-    label: 'Clear',
-    onClick: fn(),
-    isPrimary: true,
-  },
-  {
-    label: 'Submit',
-    onClick: fn(),
-    isPrimary: true,
-  },
-]
+const DefaultActions = () => (
+  <>
+    <div>
+      <ActionButton onClick={fn()}>Enhance</ActionButton>
+      <ActionButton onClick={fn()}>Clear</ActionButton>
+    </div>
+    <ActionButton onClick={fn()}>Submit</ActionButton>
+  </>
+)
 
 export const Default: Story = {
   args: {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
     initialValue: '',
-    actions: defaultActions,
+    children: <DefaultActions />,
     isProcessing: false,
-  },
-}
-
-export const WithSecondaryActions: Story = {
-  args: {
-    label: 'Prompt',
-    placeholder: 'Enter your prompt',
-    initialValue: '',
-    actions: [
-      {
-        label: 'Enhance',
-        onClick: fn(),
-        isPrimary: false,
-      },
-      {
-        label: 'Generate',
-        onClick: fn(),
-        isPrimary: true,
-      },
-    ],
   },
 }
 
@@ -108,7 +81,7 @@ export const WithContent: Story = {
     placeholder: 'Enter your prompt',
     initialValue:
       'This is a sample prompt text that demonstrates how the component looks with content.',
-    actions: defaultActions,
+    children: <DefaultActions />,
     isProcessing: false,
   },
 }
@@ -118,7 +91,7 @@ export const Processing: Story = {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
     initialValue: 'Processing this prompt...',
-    actions: defaultActions,
+    children: <DefaultActions />,
     isProcessing: true,
   },
 }
@@ -128,7 +101,7 @@ export const CustomLabel: Story = {
     label: 'Custom Input',
     placeholder: 'Type something here',
     initialValue: '',
-    actions: defaultActions,
+    children: <DefaultActions />,
     isProcessing: false,
   },
 }
@@ -138,20 +111,15 @@ export const CustomActions: Story = {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
     initialValue: '',
-    actions: [
-      {
-        label: 'Save',
-        onClick: fn(),
-      },
-      {
-        label: 'Copy',
-        onClick: fn(),
-      },
-      {
-        label: 'Export',
-        onClick: fn(),
-      },
-    ],
+    children: (
+      <>
+        <div>
+          <ActionButton onClick={fn()}>Save</ActionButton>
+          <ActionButton onClick={fn()}>Copy</ActionButton>
+        </div>
+        <ActionButton onClick={fn()}>Export</ActionButton>
+      </>
+    ),
     isProcessing: false,
   },
 }
@@ -162,7 +130,7 @@ export const Loading: Story = {
     placeholder: 'Enter your prompt',
     initialValue: 'Loading...',
     isLoading: true,
-    actions: defaultActions,
+    children: <DefaultActions />,
   },
 }
 
@@ -171,34 +139,18 @@ export const WithDropdownAction: Story = {
     label: 'Prompt',
     placeholder: 'Enter your prompt',
     initialValue: 'A serene landscape with mountains and a lake',
-    actions: [
-      {
-        label: 'Enhance',
-        onClick: fn(),
-        isPrimary: false,
-      },
-      {
-        label: 'Structure',
-        isPrimary: true,
-        dropdown: {
-          items: [
-            {
-              label: 'Segment',
-              onClick: fn(),
-            },
-            {
-              label: 'Atomize',
-              onClick: fn(),
-            },
-          ],
-        },
-      },
-      {
-        label: 'Generate',
-        onClick: fn(),
-        isPrimary: true,
-      },
-    ],
+    children: (
+      <>
+        <div className="flex gap-1">
+          <ActionButton onClick={fn()}>Enhance</ActionButton>
+          <ActionDropdown label="Structure">
+            <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
+            <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
+          </ActionDropdown>
+        </div>
+        <ActionButton onClick={fn()}>Generate</ActionButton>
+      </>
+    ),
   },
 }
 
@@ -208,23 +160,11 @@ export const StructureDropdownOnly: Story = {
     placeholder: 'Enter your prompt to analyze',
     initialValue:
       'A futuristic city at sunset with flying cars and neon lights reflecting on wet streets',
-    actions: [
-      {
-        label: 'Structure',
-        isPrimary: true,
-        dropdown: {
-          items: [
-            {
-              label: 'Segment',
-              onClick: fn(),
-            },
-            {
-              label: 'Atomize',
-              onClick: fn(),
-            },
-          ],
-        },
-      },
-    ],
+    children: (
+      <ActionDropdown label="Structure">
+        <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
+        <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
+      </ActionDropdown>
+    ),
   },
 }

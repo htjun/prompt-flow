@@ -1,7 +1,7 @@
 import { Handle, Position, useEdges } from '@xyflow/react'
 import { z } from 'zod'
 import { imageSegmentSchema } from '@/schema/imageSegmentSchema'
-import { ActionGroup, type ActionItem } from '@/components/ActionGroup'
+import { ActionGroup, ActionButton } from '@/components/ActionGroup'
 import { useState, useEffect, useRef } from 'react'
 import { cn, calculateHandleOffset } from '@/lib/utils'
 import { useFlowActions } from '@/context/FlowActionsContext'
@@ -140,22 +140,10 @@ export const SegmentedPromptNode = ({
     await generateImage(combinedPrompt, nodeId, 'generate')
   }
 
-  const duplicateAction: ActionItem = {
-    label: 'Duplicate',
-    onClick: handleDuplicate,
-    disabled: !currentData || !currentData.prompts || currentData.prompts.length === 0,
-  }
-
-  const generateAction: ActionItem = {
-    label: 'Generate',
-    onClick: handleGenerate,
-    disabled: !currentData || !currentData.prompts || currentData.prompts.length === 0,
-  }
-
-  const allActions = [duplicateAction, generateAction]
-
   // Define action labels for handle positioning
   const actionLabels = ['Duplicate', 'Generate']
+
+  const isDisabled = !currentData || !currentData.prompts || currentData.prompts.length === 0
 
   return (
     <>
@@ -180,15 +168,22 @@ export const SegmentedPromptNode = ({
             )}
           </div>
           <ActionGroup
-            actions={allActions}
             isProcessing={externalIsProcessing}
-            isDisabled={
-              externalIsProcessing ||
-              !currentData ||
-              !currentData.prompts ||
-              currentData.prompts.length === 0
-            }
-          />
+            isDisabled={externalIsProcessing || isDisabled}
+          >
+            <ActionButton
+              onClick={handleDuplicate}
+              disabled={isDisabled}
+            >
+              Duplicate
+            </ActionButton>
+            <ActionButton
+              onClick={handleGenerate}
+              disabled={isDisabled}
+            >
+              Generate
+            </ActionButton>
+          </ActionGroup>
         </div>
         <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />
         <Handle

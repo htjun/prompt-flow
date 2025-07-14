@@ -1,13 +1,14 @@
 import { cn } from '@/lib/utils'
 import { Loader2Icon } from 'lucide-react'
-import { ActionGroup, type ActionItem } from './ActionGroup'
+import { ActionGroup } from './ActionGroup'
+import { ReactNode } from 'react'
 
 type NodeTextInputProps = {
   label?: string
   placeholder?: string
   value: string
   onChange: (value: string) => void
-  actions: ActionItem[]
+  children: ReactNode
   isLoading?: boolean
   className?: string
 }
@@ -17,7 +18,7 @@ export const NodeTextInput = ({
   placeholder = 'Enter your prompt',
   value,
   onChange,
-  actions,
+  children,
   isLoading = false,
   className,
 }: NodeTextInputProps) => {
@@ -33,7 +34,9 @@ export const NodeTextInput = ({
               placeholder={placeholder}
               onChange={(e) => onChange(e.target.value)}
             />
-            <ActionGroup actions={actions} isDisabled={!value.trim()} />
+            <ActionGroup isDisabled={!value.trim()}>
+              {children}
+            </ActionGroup>
           </>
         ) : (
           <div className="nodrag flex min-h-28 items-center justify-center gap-2 text-sm text-gray-400">

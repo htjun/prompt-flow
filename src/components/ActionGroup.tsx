@@ -1,6 +1,14 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  ReactNode,
+  cloneElement,
+  isValidElement,
+  Children,
+} from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,126 +17,135 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export type ActionItem = {
-  label: string
-  onClick?: () => void
-  disabled?: boolean
-  isPrimary?: boolean
-  dropdown?: {
-    items: Array<{
-      label: string
-      onClick: () => void
-      disabled?: boolean
-    }>
-  }
-}
-
 type ActionGroupProps = {
-  actions: ActionItem[]
+  children: ReactNode
   isProcessing?: boolean
   isDisabled?: boolean
   className?: string
 }
 
+type ActionButtonProps = {
+  children: ReactNode
+  onClick?: () => void
+  disabled?: boolean
+  className?: string
+}
+
+type ActionDropdownProps = {
+  label: string
+  children: ReactNode
+  disabled?: boolean
+  className?: string
+}
+
+type ActionDropdownItemProps = {
+  children: ReactNode
+  onClick: () => void
+  disabled?: boolean
+}
+
+// Individual action components
+export const ActionButton = ({ children, onClick, disabled, className }: ActionButtonProps) => {
+  return (
+    <Button
+      variant="ghost"
+      size="xs"
+      className={`hover:cursor-pointer ${className || ''}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export const ActionDropdownItem = ({ children, onClick, disabled }: ActionDropdownItemProps) => {
+  return (
+    <DropdownMenuItem
+      onClick={onClick}
+      disabled={disabled}
+      className="text-xs font-medium hover:cursor-pointer"
+    >
+      {children}
+    </DropdownMenuItem>
+  )
+}
+
+export const ActionDropdown = ({ label, children, disabled, className }: ActionDropdownProps) => {
+  const [open, setOpen] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false)
+    }, 150) // Small delay to prevent flickering
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="xs"
+          disabled={disabled}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={className}
+        >
+          {label}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        sideOffset={8}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        align="start"
+      >
+        {children}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+// Main ActionGroup component
 export const ActionGroup = ({
-  actions,
+  children,
   isProcessing = false,
   isDisabled = false,
   className,
 }: ActionGroupProps) => {
-  const secondaryActions = actions.filter((action) => !action.isPrimary)
-  const primaryActions = actions.filter((action) => action.isPrimary)
-
-  const DropdownAction = ({ action }: { action: ActionItem }) => {
-    const [open, setOpen] = useState(false)
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-    const handleMouseEnter = () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-      setOpen(true)
-    }
-
-    const handleMouseLeave = () => {
-      timeoutRef.current = setTimeout(() => {
-        setOpen(false)
-      }, 150) // Small delay to prevent flickering
-    }
-
-    useEffect(() => {
-      return () => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
+  const processChildren = (children: ReactNode) => {
+    return Children.map(children, (child) => {
+      if (isValidElement(child)) {
+        // Apply global disabled/processing state to action components
+        if (child.type === ActionButton || child.type === ActionDropdown) {
+          return cloneElement(child, {
+            ...(child.props as any),
+            disabled: (child.props as any).disabled || isProcessing || isDisabled,
+          })
         }
       }
-    }, [])
-
-    return (
-      <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="xs"
-            disabled={action.disabled || isProcessing || isDisabled}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {action.label}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          sideOffset={8}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          align="start"
-        >
-          {action.dropdown!.items.map((item, idx) => (
-            <DropdownMenuItem
-              key={`${action.label}-item-${idx}-${item.label}`}
-              onClick={item.onClick}
-              disabled={item.disabled || isProcessing || isDisabled}
-              className="text-xs font-medium hover:cursor-pointer"
-            >
-              {item.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
+      return child
+    })
   }
 
-  const renderAction = (action: ActionItem, index: number, keyPrefix: string) => {
-    const actionKey = `${keyPrefix}-${index}`
+  const processedChildren = processChildren(children)
 
-    if (action.dropdown) {
-      return <DropdownAction key={actionKey} action={action} />
-    }
-
-    return (
-      <Button
-        key={actionKey}
-        variant="ghost"
-        size="xs"
-        className="hover:cursor-pointer"
-        onClick={action.onClick}
-        disabled={action.disabled || isProcessing || isDisabled}
-      >
-        {action.label}
-      </Button>
-    )
-  }
-
-  return (
-    <div className={`flex justify-between p-1 ${className || ''}`}>
-      <div className="flex gap-1">
-        {secondaryActions.map((action, index) => renderAction(action, index, 'secondary'))}
-      </div>
-
-      <div className="flex gap-1">
-        {primaryActions.map((action, index) => renderAction(action, index, 'primary'))}
-      </div>
-    </div>
-  )
+  return <div className={`flex justify-between p-1 ${className || ''}`}>{processedChildren}</div>
 }
