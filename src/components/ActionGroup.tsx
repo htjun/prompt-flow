@@ -39,15 +39,7 @@ export const ActionGroup = ({
   const secondaryActions = actions.filter((action) => !action.isPrimary)
   const primaryActions = actions.filter((action) => action.isPrimary)
 
-  const DropdownAction = ({
-    action,
-    index,
-    keyPrefix,
-  }: {
-    action: ActionItem
-    index: number
-    keyPrefix: string
-  }) => {
+  const DropdownAction = ({ action }: { action: ActionItem }) => {
     const [open, setOpen] = useState(false)
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -90,6 +82,7 @@ export const ActionGroup = ({
           sideOffset={8}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          align="start"
         >
           {action.dropdown!.items.map((item, idx) => (
             <DropdownMenuItem
@@ -110,7 +103,7 @@ export const ActionGroup = ({
     const actionKey = `${keyPrefix}-${index}`
 
     if (action.dropdown) {
-      return <DropdownAction key={actionKey} action={action} index={index} keyPrefix={keyPrefix} />
+      return <DropdownAction key={actionKey} action={action} />
     }
 
     return (
