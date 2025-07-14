@@ -32,7 +32,7 @@ type ActionButtonProps = {
 }
 
 type ActionDropdownProps = {
-  label: string
+  label: ReactNode
   children: ReactNode
   disabled?: boolean
   className?: string
@@ -44,7 +44,6 @@ type ActionDropdownItemProps = {
   disabled?: boolean
 }
 
-// Individual action components
 export const ActionButton = ({ children, onClick, disabled, className }: ActionButtonProps) => {
   return (
     <Button
@@ -123,7 +122,6 @@ export const ActionDropdown = ({ label, children, disabled, className }: ActionD
   )
 }
 
-// Main ActionGroup component
 export const ActionGroup = ({
   children,
   isProcessing = false,

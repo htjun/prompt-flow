@@ -6,6 +6,7 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
+import { Settings2 } from 'lucide-react'
 
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
@@ -87,26 +88,19 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
 
   return (
     <div className="flex flex-col gap-1">
-      <NodeTextInput
-        value={prompt}
-        onChange={setPrompt}
-        isLoading={isEnhancing}
-      >
+      <NodeTextInput value={prompt} onChange={setPrompt} isLoading={isEnhancing}>
         <ActionDropdown label="Structure">
-          <ActionDropdownItem onClick={handleEnhance}>
-            Enhance
-          </ActionDropdownItem>
-          <ActionDropdownItem onClick={handleAtomize}>
-            Atomize
-          </ActionDropdownItem>
-          <ActionDropdownItem onClick={handleSegment}>
-            Segment
-          </ActionDropdownItem>
+          <ActionDropdownItem onClick={handleEnhance}>Enhance</ActionDropdownItem>
+          <ActionDropdownItem onClick={handleAtomize}>Atomize</ActionDropdownItem>
+          <ActionDropdownItem onClick={handleSegment}>Segment</ActionDropdownItem>
         </ActionDropdown>
-        
-        <ActionButton onClick={handleGenerate}>
-          Generate
-        </ActionButton>
+
+        <div className="flex items-center">
+          <ActionButton onClick={() => {}}>
+            <Settings2 className="h-3 w-3" />
+          </ActionButton>
+          <ActionButton onClick={handleGenerate}>Generate</ActionButton>
+        </div>
       </NodeTextInput>
 
       {/* Render target handle for non-root nodes */}
