@@ -1,8 +1,6 @@
-import { useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuGroup,
@@ -12,10 +10,18 @@ import { RadioGroupSubmenu } from './ui/RadioGroupSubmenu'
 import { Button } from './ui/button'
 import { Settings2 } from 'lucide-react'
 import { imageModels, languageModels } from '@/constants/models'
+import { useModelStore } from '@/stores/modelStore'
+import { AspectRatioService } from '@/lib/aspectRatioService'
 
 const SettingsDropdown = () => {
-  const [selectedImageModel, setSelectedImageModel] = useState<string>('google/imagen-4-fast')
-  const [selectedLanguageModel, setSelectedLanguageModel] = useState<string>('gpt-4o')
+  const {
+    selectedImageModel,
+    selectedLanguageModel,
+    selectedAspectRatio,
+    setSelectedImageModel,
+    setSelectedLanguageModel,
+    setSelectedAspectRatio,
+  } = useModelStore()
 
   const getSelectedImageModelName = () => {
     return imageModels.find((model) => model.id === selectedImageModel)?.name || ''
@@ -23,6 +29,22 @@ const SettingsDropdown = () => {
 
   const getSelectedLanguageModelName = () => {
     return languageModels.find((model) => model.id === selectedLanguageModel)?.name || ''
+  }
+
+  const availableRatios = AspectRatioService.getAvailableRatios(selectedImageModel)
+  
+  const ratioLabels: Record<string, string> = {
+    '1:1': 'Square (1:1)',
+    '16:9': 'Landscape (16:9)',
+    '9:16': 'Portrait (9:16)',
+    '4:3': 'Landscape (4:3)',
+    '3:4': 'Portrait (3:4)',
+    '3:2': 'Landscape (3:2)',
+    '2:3': 'Portrait (2:3)',
+  }
+
+  const getSelectedAspectRatioLabel = () => {
+    return ratioLabels[selectedAspectRatio] || selectedAspectRatio
   }
 
   return (
@@ -55,7 +77,17 @@ const SettingsDropdown = () => {
           />
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Image Options</DropdownMenuLabel>
-          <DropdownMenuGroup></DropdownMenuGroup>
+          <DropdownMenuGroup>
+            <RadioGroupSubmenu
+              label={getSelectedAspectRatioLabel()}
+              value={selectedAspectRatio}
+              onValueChange={setSelectedAspectRatio}
+              options={availableRatios.map((ratio) => ({
+                value: ratio,
+                label: ratioLabels[ratio] || ratio,
+              }))}
+            />
+          </DropdownMenuGroup>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
