@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  ReactNode,
-  cloneElement,
-  isValidElement,
-  Children,
-} from 'react'
+import { ReactNode, cloneElement, isValidElement, Children } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useHoverDropdown } from '@/hooks/useHoverDropdown'
 
 type ActionGroupProps = {
   children: ReactNode
@@ -71,40 +64,17 @@ export const ActionDropdownItem = ({ children, onClick, disabled }: ActionDropdo
 }
 
 export const ActionDropdown = ({ label, children, disabled, className }: ActionDropdownProps) => {
-  const [open, setOpen] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
-    setOpen(true)
-  }
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setOpen(false)
-    }, 150) // Small delay to prevent flickering
-  }
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
+  const { open, onOpenChange, onPointerEnter, onPointerLeave } = useHoverDropdown(150)
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
+    <DropdownMenu open={open} onOpenChange={onOpenChange} modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="xs"
           disabled={disabled}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
           className={className}
         >
           {label}
@@ -112,8 +82,8 @@ export const ActionDropdown = ({ label, children, disabled, className }: ActionD
       </DropdownMenuTrigger>
       <DropdownMenuContent
         sideOffset={8}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
         align="start"
       >
         {children}
