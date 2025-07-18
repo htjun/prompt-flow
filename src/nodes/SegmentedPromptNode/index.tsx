@@ -9,6 +9,7 @@ import { isHandleConnected } from '@/lib/flowHelpers'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
+import SettingsDropdown from '@/components/SettingsDropdown'
 
 type SegmentedPrompt = z.infer<typeof imageSegmentSchema>
 
@@ -177,12 +178,15 @@ export const SegmentedPromptNode = ({
             >
               Duplicate
             </ActionButton>
-            <ActionButton
-              onClick={handleGenerate}
-              disabled={isDisabled}
-            >
-              Generate
-            </ActionButton>
+            <div className="flex items-center">
+              <SettingsDropdown nodeId={nodeId} />
+              <ActionButton
+                onClick={handleGenerate}
+                disabled={isDisabled}
+              >
+                Generate
+              </ActionButton>
+            </div>
           </ActionGroup>
         </div>
         <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />

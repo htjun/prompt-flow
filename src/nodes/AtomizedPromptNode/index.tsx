@@ -8,6 +8,7 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 import { PromptCategoryTabs } from './PromptCategoryTabs'
 import { HANDLE_IDS } from '@/constants/flowConstants'
+import SettingsDropdown from '@/components/SettingsDropdown'
 
 type ImageAtomization = z.infer<typeof imageAtomizationSchema>
 
@@ -93,12 +94,15 @@ export const AtomizedPromptNode = ({
             >
               Duplicate
             </ActionButton>
-            <ActionButton
-              onClick={handleGenerate}
-              disabled={isDisabled}
-            >
-              Generate
-            </ActionButton>
+            <div className="flex items-center">
+              <SettingsDropdown nodeId={nodeId} />
+              <ActionButton
+                onClick={handleGenerate}
+                disabled={isDisabled}
+              >
+                Generate
+              </ActionButton>
+            </div>
           </ActionGroup>
         </div>
         <Handle type="target" position={Position.Left} id={HANDLE_IDS.PROMPT_INPUT} />
