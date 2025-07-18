@@ -88,18 +88,12 @@ export const AtomizedPromptNode = ({
             isProcessing={externalIsProcessing}
             isDisabled={externalIsProcessing || isDisabled}
           >
-            <ActionButton
-              onClick={handleDuplicate}
-              disabled={isDisabled}
-            >
-              Duplicate
-            </ActionButton>
+            <SettingsDropdown nodeId={nodeId} />
             <div className="flex items-center">
-              <SettingsDropdown nodeId={nodeId} />
-              <ActionButton
-                onClick={handleGenerate}
-                disabled={isDisabled}
-              >
+              <ActionButton onClick={handleDuplicate} disabled={isDisabled}>
+                Duplicate
+              </ActionButton>
+              <ActionButton onClick={handleGenerate} disabled={isDisabled}>
                 Generate
               </ActionButton>
             </div>

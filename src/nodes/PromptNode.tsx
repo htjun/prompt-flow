@@ -89,14 +89,13 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   return (
     <div className="flex flex-col gap-1">
       <NodeTextInput value={prompt} onChange={setPrompt} isLoading={isEnhancing}>
-        <ActionDropdown label="Structure">
-          <ActionDropdownItem onClick={handleEnhance}>Enhance</ActionDropdownItem>
-          <ActionDropdownItem onClick={handleAtomize}>Atomize</ActionDropdownItem>
-          <ActionDropdownItem onClick={handleSegment}>Segment</ActionDropdownItem>
-        </ActionDropdown>
-
+        <SettingsDropdown nodeId={nodeId} />
         <div className="flex items-center">
-          <SettingsDropdown nodeId={nodeId} />
+          <ActionDropdown label="Structure">
+            <ActionDropdownItem onClick={handleEnhance}>Enhance</ActionDropdownItem>
+            <ActionDropdownItem onClick={handleAtomize}>Atomize</ActionDropdownItem>
+            <ActionDropdownItem onClick={handleSegment}>Segment</ActionDropdownItem>
+          </ActionDropdown>
           <ActionButton onClick={handleGenerate}>Generate</ActionButton>
         </div>
       </NodeTextInput>
