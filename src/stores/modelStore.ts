@@ -20,6 +20,13 @@ interface ModelState {
   selectedImageModel: string
   selectedAspectRatio: string
 
+  // Per-node settings
+  nodeSettings: Record<string, {
+    selectedLanguageModel?: string
+    selectedImageModel?: string
+    selectedAspectRatio?: string
+  }>
+
   // Model configurations and availability
   availableModels: {
     language: ModelConfig[]
@@ -49,6 +56,15 @@ interface ModelState {
     key: K,
     value: ModelState['preferences'][K]
   ) => void
+
+  // Node-specific actions
+  setNodeSelectedLanguageModel: (nodeId: string, modelId: string) => void
+  setNodeSelectedImageModel: (nodeId: string, modelId: string) => void
+  setNodeSelectedAspectRatio: (nodeId: string, ratio: string) => void
+  getNodeSelectedLanguageModel: (nodeId: string) => string
+  getNodeSelectedImageModel: (nodeId: string) => string
+  getNodeSelectedAspectRatio: (nodeId: string) => string
+  clearNodeSettings: (nodeId: string) => void
 
   // Selectors
   getSelectedLanguageModel: () => ModelConfig | null
@@ -87,6 +103,8 @@ export const useModelStore = create<ModelState>()(
       selectedLanguageModel: 'gpt-4.1-mini',
       selectedImageModel: 'google/imagen-4-fast',
       selectedAspectRatio: AspectRatioService.getDefaultRatio('google/imagen-4-fast'),
+
+      nodeSettings: {},
 
       availableModels: {
         language: defaultLanguageModels,
@@ -228,6 +246,87 @@ export const useModelStore = create<ModelState>()(
         if (!model) return '16:9'
         return AspectRatioService.getDefaultRatio(model.id)
       },
+
+      // Node-specific actions
+      setNodeSelectedLanguageModel: (nodeId, modelId) => {
+        const modelExists = get().availableModels.language.some((m) => m.id === modelId)
+        if (modelExists) {
+          set(
+            (state) => ({
+              nodeSettings: {
+                ...state.nodeSettings,
+                [nodeId]: {
+                  ...state.nodeSettings[nodeId],
+                  selectedLanguageModel: modelId,
+                },
+              },
+            }),
+            false,
+            'setNodeSelectedLanguageModel'
+          )
+          get().addToRecentModels(modelId, 'language')
+        }
+      },
+
+      setNodeSelectedImageModel: (nodeId, modelId) => {
+        const modelExists = get().availableModels.image.some((m) => m.id === modelId)
+        if (modelExists) {
+          set(
+            (state) => ({
+              nodeSettings: {
+                ...state.nodeSettings,
+                [nodeId]: {
+                  ...state.nodeSettings[nodeId],
+                  selectedImageModel: modelId,
+                },
+              },
+            }),
+            false,
+            'setNodeSelectedImageModel'
+          )
+          get().addToRecentModels(modelId, 'image')
+        }
+      },
+
+      setNodeSelectedAspectRatio: (nodeId, ratio) =>
+        set(
+          (state) => ({
+            nodeSettings: {
+              ...state.nodeSettings,
+              [nodeId]: {
+                ...state.nodeSettings[nodeId],
+                selectedAspectRatio: ratio,
+              },
+            },
+          }),
+          false,
+          'setNodeSelectedAspectRatio'
+        ),
+
+      getNodeSelectedLanguageModel: (nodeId) => {
+        const { nodeSettings, selectedLanguageModel } = get()
+        return nodeSettings[nodeId]?.selectedLanguageModel ?? selectedLanguageModel
+      },
+
+      getNodeSelectedImageModel: (nodeId) => {
+        const { nodeSettings, selectedImageModel } = get()
+        return nodeSettings[nodeId]?.selectedImageModel ?? selectedImageModel
+      },
+
+      getNodeSelectedAspectRatio: (nodeId) => {
+        const { nodeSettings, selectedAspectRatio } = get()
+        return nodeSettings[nodeId]?.selectedAspectRatio ?? selectedAspectRatio
+      },
+
+      clearNodeSettings: (nodeId) =>
+        set(
+          (state) => {
+            const { [nodeId]: _, ...rest } = state.nodeSettings
+            return { nodeSettings: rest }
+          },
+          false,
+          'clearNodeSettings'
+        ),
     }),
     { name: 'model-store' }
   )

@@ -6,7 +6,7 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
-import { Settings2 } from 'lucide-react'
+import SettingsDropdown from '@/components/SettingsDropdown'
 
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
@@ -96,9 +96,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
         </ActionDropdown>
 
         <div className="flex items-center">
-          <ActionButton onClick={() => {}}>
-            <Settings2 className="h-3 w-3" />
-          </ActionButton>
+          <SettingsDropdown nodeId={nodeId} />
           <ActionButton onClick={handleGenerate}>Generate</ActionButton>
         </div>
       </NodeTextInput>

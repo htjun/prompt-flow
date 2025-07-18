@@ -13,7 +13,11 @@ import { imageModels, languageModels } from '@/constants/models'
 import { useModelStore } from '@/stores/modelStore'
 import { AspectRatioService } from '@/lib/aspectRatioService'
 
-const SettingsDropdown = () => {
+interface SettingsDropdownProps {
+  nodeId?: string
+}
+
+const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   const {
     selectedImageModel,
     selectedLanguageModel,
@@ -21,17 +25,52 @@ const SettingsDropdown = () => {
     setSelectedImageModel,
     setSelectedLanguageModel,
     setSelectedAspectRatio,
+    getNodeSelectedImageModel,
+    getNodeSelectedLanguageModel,
+    getNodeSelectedAspectRatio,
+    setNodeSelectedImageModel,
+    setNodeSelectedLanguageModel,
+    setNodeSelectedAspectRatio,
   } = useModelStore()
 
+  // Use node-specific settings if nodeId is provided, otherwise use global settings
+  const currentImageModel = nodeId ? getNodeSelectedImageModel(nodeId) : selectedImageModel
+  const currentLanguageModel = nodeId ? getNodeSelectedLanguageModel(nodeId) : selectedLanguageModel
+  const currentAspectRatio = nodeId ? getNodeSelectedAspectRatio(nodeId) : selectedAspectRatio
+
+  const handleImageModelChange = (modelId: string) => {
+    if (nodeId) {
+      setNodeSelectedImageModel(nodeId, modelId)
+    } else {
+      setSelectedImageModel(modelId)
+    }
+  }
+
+  const handleLanguageModelChange = (modelId: string) => {
+    if (nodeId) {
+      setNodeSelectedLanguageModel(nodeId, modelId)
+    } else {
+      setSelectedLanguageModel(modelId)
+    }
+  }
+
+  const handleAspectRatioChange = (ratio: string) => {
+    if (nodeId) {
+      setNodeSelectedAspectRatio(nodeId, ratio)
+    } else {
+      setSelectedAspectRatio(ratio)
+    }
+  }
+
   const getSelectedImageModelName = () => {
-    return imageModels.find((model) => model.id === selectedImageModel)?.name || ''
+    return imageModels.find((model) => model.id === currentImageModel)?.name || ''
   }
 
   const getSelectedLanguageModelName = () => {
-    return languageModels.find((model) => model.id === selectedLanguageModel)?.name || ''
+    return languageModels.find((model) => model.id === currentLanguageModel)?.name || ''
   }
 
-  const availableRatios = AspectRatioService.getAvailableRatios(selectedImageModel)
+  const availableRatios = AspectRatioService.getAvailableRatios(currentImageModel)
   
   const ratioLabels: Record<string, string> = {
     '1:1': 'Square (1:1)',
@@ -44,7 +83,7 @@ const SettingsDropdown = () => {
   }
 
   const getSelectedAspectRatioLabel = () => {
-    return ratioLabels[selectedAspectRatio] || selectedAspectRatio
+    return ratioLabels[currentAspectRatio] || currentAspectRatio
   }
 
   return (
@@ -59,8 +98,8 @@ const SettingsDropdown = () => {
         <DropdownMenuGroup>
           <RadioGroupSubmenu
             label={getSelectedImageModelName()}
-            value={selectedImageModel}
-            onValueChange={setSelectedImageModel}
+            value={currentImageModel}
+            onValueChange={handleImageModelChange}
             options={imageModels.map((model) => ({
               value: model.id,
               label: model.name,
@@ -68,8 +107,8 @@ const SettingsDropdown = () => {
           />
           <RadioGroupSubmenu
             label={getSelectedLanguageModelName()}
-            value={selectedLanguageModel}
-            onValueChange={setSelectedLanguageModel}
+            value={currentLanguageModel}
+            onValueChange={handleLanguageModelChange}
             options={languageModels.map((model) => ({
               value: model.id,
               label: model.name,
@@ -80,8 +119,8 @@ const SettingsDropdown = () => {
           <DropdownMenuGroup>
             <RadioGroupSubmenu
               label={getSelectedAspectRatioLabel()}
-              value={selectedAspectRatio}
-              onValueChange={setSelectedAspectRatio}
+              value={currentAspectRatio}
+              onValueChange={handleAspectRatioChange}
               options={availableRatios.map((ratio) => ({
                 value: ratio,
                 label: ratioLabels[ratio] || ratio,

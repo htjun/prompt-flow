@@ -18,7 +18,7 @@ export const useFlowOperations = () => {
   const imageStore = useImageStore()
   const flowStore = useFlowStore()
   const getNodeDimensions = useNodeDimensions()
-  const { selectedAspectRatio } = useModelStore()
+  const { selectedAspectRatio, getNodeSelectedAspectRatio } = useModelStore()
 
   const createNodeWithPositioning = (
     nodeId: string,
@@ -65,12 +65,15 @@ export const useFlowOperations = () => {
     })
 
     try {
-      const result = await aiActions.generate(prompt)
+      const result = await aiActions.generate(prompt, sourceNodeId)
       if (result) {
+        // Use node-specific aspect ratio if available, otherwise use global
+        const aspectRatio = getNodeSelectedAspectRatio(sourceNodeId)
+        
         flowStore.updateNode(newNodeId, {
           imageData: result.imageData,
           modelUsed: result.modelUsed,
-          aspectRatio: selectedAspectRatio,
+          aspectRatio: aspectRatio,
           isLoading: false,
         })
 
