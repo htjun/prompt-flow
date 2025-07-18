@@ -10,6 +10,7 @@ import { RadioGroupSubmenu } from './ui/RadioGroupSubmenu'
 import { Button } from './ui/button'
 import { Settings2 } from 'lucide-react'
 import { useModelSystem } from '@/hooks/useModelSystem'
+import { useHoverDropdown } from '@/hooks/useHoverDropdown'
 
 interface SettingsDropdownProps {
   nodeId?: string
@@ -17,6 +18,7 @@ interface SettingsDropdownProps {
 
 const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   const modelSystem = useModelSystem()
+  const { open, onOpenChange, onPointerEnter, onPointerLeave } = useHoverDropdown(150)
 
   // Get effective settings (node-specific or global)
   const currentImageModel = modelSystem.getEffectiveImageModel(nodeId)
@@ -61,13 +63,20 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
+      <DropdownMenuTrigger asChild onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave}>
         <Button variant="ghost" size="xs" className="data-[state=open]:bg-accent">
           <Settings2 className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-40" align="start" sideOffset={8}>
+      <DropdownMenuContent
+        className="min-w-40"
+        align="start"
+        sideOffset={8}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+      >
         <DropdownMenuLabel>Models</DropdownMenuLabel>
         <DropdownMenuGroup>
           <RadioGroupSubmenu

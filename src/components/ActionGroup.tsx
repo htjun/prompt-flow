@@ -68,7 +68,7 @@ export const ActionDropdown = ({ label, children, disabled, className }: ActionD
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange} modal={false}>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="data-[state=open]:bg-accent">
         <Button
           variant="ghost"
           size="xs"
@@ -84,6 +84,7 @@ export const ActionDropdown = ({ label, children, disabled, className }: ActionD
         sideOffset={8}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
+        onCloseAutoFocus={(event) => event.preventDefault()}
         align="start"
       >
         {children}
