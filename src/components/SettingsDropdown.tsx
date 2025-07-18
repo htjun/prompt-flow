@@ -63,11 +63,11 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="xs" className="data-[state=open]:bg-accent">
           <Settings2 className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="start" sideOffset={8}>
+      <DropdownMenuContent className="min-w-40" align="start" sideOffset={8}>
         <DropdownMenuLabel>Models</DropdownMenuLabel>
         <DropdownMenuGroup>
           <RadioGroupSubmenu
