@@ -22,11 +22,11 @@ jest.mock('@/actions/segmentPrompt', () => ({
   segmentPrompt: jest.fn(),
 }))
 
-// Mock the model store with a simpler approach
-jest.mock('@/stores/modelStore', () => ({
-  useModelStore: jest.fn(() => ({
-    selectedImageModel: 'test-model',
-    selectedAspectRatio: '1:1',
+// Mock the model system with a simpler approach
+jest.mock('@/hooks/useModelSystem', () => ({
+  useModelSystem: jest.fn(() => ({
+    getEffectiveImageModel: jest.fn(() => 'test-model'),
+    getEffectiveAspectRatio: jest.fn(() => '1:1'),
   })),
 }))
 

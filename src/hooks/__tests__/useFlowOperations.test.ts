@@ -124,7 +124,7 @@ describe('useFlowOperations', () => {
         )
       })
 
-      expect(mockAIActions.generate).toHaveBeenCalledWith('test prompt')
+      expect(mockAIActions.generate).toHaveBeenCalledWith('test prompt', 'source-node')
       expect(mockFlowStore.addNodeWithPositioning).toHaveBeenCalled()
       expect(mockFlowStore.addEdge).toHaveBeenCalled()
       expect(generateResult).toEqual({

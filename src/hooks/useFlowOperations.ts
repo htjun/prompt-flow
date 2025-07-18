@@ -3,7 +3,7 @@ import { type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { usePromptStore } from '@/stores/promptStore'
 import { useImageStore } from '@/stores/imageStore'
 import { useFlowStore } from '@/stores/flowStore'
-import { useModelStore } from '@/stores/modelStore'
+import { useModelSystem } from '@/hooks/useModelSystem'
 import { useNodeDimensions } from '@/lib/flowHelpers'
 import { HANDLE_IDS, createEdgeId } from '@/constants/flowConstants'
 
@@ -18,7 +18,7 @@ export const useFlowOperations = () => {
   const imageStore = useImageStore()
   const flowStore = useFlowStore()
   const getNodeDimensions = useNodeDimensions()
-  const { selectedAspectRatio, getNodeSelectedAspectRatio } = useModelStore()
+  const modelSystem = useModelSystem()
 
   const createNodeWithPositioning = (
     nodeId: string,
@@ -67,8 +67,8 @@ export const useFlowOperations = () => {
     try {
       const result = await aiActions.generate(prompt, sourceNodeId)
       if (result) {
-        // Use node-specific aspect ratio if available, otherwise use global
-        const aspectRatio = getNodeSelectedAspectRatio(sourceNodeId)
+        // Use effective aspect ratio (node-specific or global)
+        const aspectRatio = modelSystem.getEffectiveAspectRatio(sourceNodeId)
         
         flowStore.updateNode(newNodeId, {
           imageData: result.imageData,

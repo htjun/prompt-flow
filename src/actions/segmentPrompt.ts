@@ -4,7 +4,7 @@ import { openai, mapModelId } from '@/lib/ai'
 import { generateObject } from 'ai'
 import { imageSegmentSchema } from '@/schema/imageSegmentSchema'
 import { segmentPromptSystemMessage } from '@/prompts/promptParse'
-import { useModelStore } from '@/stores/modelStore'
+import { useGlobalModelStore } from '@/stores/globalModelStore'
 
 export type CategorizedPrompt = {
   prompts: Array<{
@@ -24,7 +24,7 @@ export type CategorizedPrompt = {
 
 export const segmentPrompt = async (prompt: string): Promise<CategorizedPrompt> => {
   try {
-    const selectedModel = useModelStore.getState().selectedLanguageModel
+    const selectedModel = useGlobalModelStore.getState().selectedLanguageModel
     const result = await generateObject({
       model: openai(mapModelId(selectedModel), {
         structuredOutputs: true,

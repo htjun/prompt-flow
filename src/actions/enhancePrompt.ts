@@ -3,10 +3,10 @@
 import { openai, mapModelId } from '@/lib/ai'
 import { generateText } from 'ai'
 import { enhancePromptSystemMessage } from '@/prompts/promptEnhance'
-import { useModelStore } from '@/stores/modelStore'
+import { useGlobalModelStore } from '@/stores/globalModelStore'
 
 export const enhancePrompt = async (prompt: string) => {
-  const selectedModel = useModelStore.getState().selectedLanguageModel
+  const selectedModel = useGlobalModelStore.getState().selectedLanguageModel
   const result = await generateText({
     model: openai(mapModelId(selectedModel)),
     temperature: 1.2,

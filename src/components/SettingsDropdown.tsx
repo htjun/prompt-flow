@@ -9,68 +9,42 @@ import {
 import { RadioGroupSubmenu } from './ui/RadioGroupSubmenu'
 import { Button } from './ui/button'
 import { Settings2 } from 'lucide-react'
-import { imageModels, languageModels } from '@/constants/models'
-import { useModelStore } from '@/stores/modelStore'
-import { AspectRatioService } from '@/lib/aspectRatioService'
+import { useModelSystem } from '@/hooks/useModelSystem'
 
 interface SettingsDropdownProps {
   nodeId?: string
 }
 
 const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
-  const {
-    selectedImageModel,
-    selectedLanguageModel,
-    selectedAspectRatio,
-    setSelectedImageModel,
-    setSelectedLanguageModel,
-    setSelectedAspectRatio,
-    getNodeSelectedImageModel,
-    getNodeSelectedLanguageModel,
-    getNodeSelectedAspectRatio,
-    setNodeSelectedImageModel,
-    setNodeSelectedLanguageModel,
-    setNodeSelectedAspectRatio,
-  } = useModelStore()
+  const modelSystem = useModelSystem()
 
-  // Use node-specific settings if nodeId is provided, otherwise use global settings
-  const currentImageModel = nodeId ? getNodeSelectedImageModel(nodeId) : selectedImageModel
-  const currentLanguageModel = nodeId ? getNodeSelectedLanguageModel(nodeId) : selectedLanguageModel
-  const currentAspectRatio = nodeId ? getNodeSelectedAspectRatio(nodeId) : selectedAspectRatio
+  // Get effective settings (node-specific or global)
+  const currentImageModel = modelSystem.getEffectiveImageModel(nodeId)
+  const currentLanguageModel = modelSystem.getEffectiveLanguageModel(nodeId)
+  const currentAspectRatio = modelSystem.getEffectiveAspectRatio(nodeId)
 
+  // Handler functions using the unified API
   const handleImageModelChange = (modelId: string) => {
-    if (nodeId) {
-      setNodeSelectedImageModel(nodeId, modelId)
-    } else {
-      setSelectedImageModel(modelId)
-    }
+    modelSystem.setImageModel(modelId, nodeId)
   }
 
   const handleLanguageModelChange = (modelId: string) => {
-    if (nodeId) {
-      setNodeSelectedLanguageModel(nodeId, modelId)
-    } else {
-      setSelectedLanguageModel(modelId)
-    }
+    modelSystem.setLanguageModel(modelId, nodeId)
   }
 
   const handleAspectRatioChange = (ratio: string) => {
-    if (nodeId) {
-      setNodeSelectedAspectRatio(nodeId, ratio)
-    } else {
-      setSelectedAspectRatio(ratio)
-    }
+    modelSystem.setAspectRatio(ratio, nodeId)
   }
 
   const getSelectedImageModelName = () => {
-    return imageModels.find((model) => model.id === currentImageModel)?.name || ''
+    return modelSystem.service.getModelName(currentImageModel)
   }
 
   const getSelectedLanguageModelName = () => {
-    return languageModels.find((model) => model.id === currentLanguageModel)?.name || ''
+    return modelSystem.service.getModelName(currentLanguageModel)
   }
 
-  const availableRatios = AspectRatioService.getAvailableRatios(currentImageModel)
+  const availableRatios = modelSystem.service.getAvailableRatiosForModel(currentImageModel)
   
   const ratioLabels: Record<string, string> = {
     '1:1': 'Square (1:1)',
@@ -100,7 +74,7 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
             label={getSelectedImageModelName()}
             value={currentImageModel}
             onValueChange={handleImageModelChange}
-            options={imageModels.map((model) => ({
+            options={modelSystem.service.getAvailableImageModels().map((model) => ({
               value: model.id,
               label: model.name,
             }))}
@@ -109,7 +83,7 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
             label={getSelectedLanguageModelName()}
             value={currentLanguageModel}
             onValueChange={handleLanguageModelChange}
-            options={languageModels.map((model) => ({
+            options={modelSystem.service.getAvailableLanguageModels().map((model) => ({
               value: model.id,
               label: model.name,
             }))}

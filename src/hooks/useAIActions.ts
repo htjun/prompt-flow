@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import { generateObject, generateText, streamText } from 'ai'
-import { openai } from '@/lib/ai'
 import { enhancePrompt } from '@/actions/enhancePrompt'
 import { atomizePrompt } from '@/actions/atomizePrompt'
 import { segmentPrompt, type CategorizedPrompt } from '@/actions/segmentPrompt'
 import { generateImageFromPrompt } from '@/actions/generateImage'
 import { describeImage } from '@/actions/describeImage'
-import { useModelStore } from '@/stores/modelStore'
+import { useModelSystem } from '@/hooks/useModelSystem'
 import { z } from 'zod'
 import { imageAtomizationSchema } from '@/schema/imageAtomizationSchema'
 
@@ -31,7 +29,7 @@ export const useAIActions = () => {
     error: null,
   })
 
-  const { selectedImageModel, selectedAspectRatio, getNodeSelectedImageModel, getNodeSelectedAspectRatio } = useModelStore()
+  const modelSystem = useModelSystem()
 
   const setOperationState = (operation: keyof AIActionsState, value: boolean | Error | null) => {
     setState((prev) => ({
@@ -64,9 +62,9 @@ export const useAIActions = () => {
       clearError()
       setOperationState('isGenerating', true)
       
-      // Use node-specific settings if nodeId is provided, otherwise use global settings
-      const imageModel = nodeId ? getNodeSelectedImageModel(nodeId) : selectedImageModel
-      const aspectRatio = nodeId ? getNodeSelectedAspectRatio(nodeId) : selectedAspectRatio
+      // Use effective settings (node-specific or global)
+      const imageModel = modelSystem.getEffectiveImageModel(nodeId)
+      const aspectRatio = modelSystem.getEffectiveAspectRatio(nodeId)
       
       const result = await generateImageFromPrompt(prompt, imageModel, aspectRatio)
       return result

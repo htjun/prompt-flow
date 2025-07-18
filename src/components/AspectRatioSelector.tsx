@@ -6,15 +6,18 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useModelStore } from '@/stores/modelStore'
-import { AspectRatioService } from '@/lib/aspectRatioService'
+import { useModelSystem } from '@/hooks/useModelSystem'
 import { useEffect } from 'react'
 
 export const AspectRatioSelector = () => {
-  const { selectedImageModel, selectedAspectRatio, setSelectedAspectRatio } = useModelStore()
+  const modelSystem = useModelSystem()
+  
+  const selectedImageModel = modelSystem.global.selectedImageModel
+  const selectedAspectRatio = modelSystem.global.selectedAspectRatio
+  const setSelectedAspectRatio = modelSystem.global.setSelectedAspectRatio
 
-  const availableRatios = AspectRatioService.getAvailableRatios(selectedImageModel)
-  const defaultRatio = AspectRatioService.getDefaultRatio(selectedImageModel)
+  const availableRatios = modelSystem.service.getAvailableRatiosForModel(selectedImageModel)
+  const defaultRatio = modelSystem.service.getDefaultRatioForModel(selectedImageModel)
 
   // Update aspect ratio when model changes
   useEffect(() => {

@@ -9,23 +9,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useModelStore } from '@/stores/modelStore'
-import { imageModels, languageModels } from '@/constants/models'
+import { useModelSystem } from '@/hooks/useModelSystem'
 
 export const ModelSelector = () => {
-  const {
-    selectedLanguageModel,
-    setSelectedLanguageModel,
-    selectedImageModel,
-    setSelectedImageModel,
-  } = useModelStore()
+  const modelSystem = useModelSystem()
+  
+  const selectedLanguageModel = modelSystem.global.selectedLanguageModel
+  const selectedImageModel = modelSystem.global.selectedImageModel
+  
+  const setSelectedLanguageModel = modelSystem.global.setSelectedLanguageModel
+  const setSelectedImageModel = modelSystem.global.setSelectedImageModel
 
   const getSelectedImageModelName = () => {
-    return imageModels.find((model) => model.id === selectedImageModel)?.name || ''
+    return modelSystem.service.getModelName(selectedImageModel)
   }
 
   const getSelectedLanguageModelName = () => {
-    return languageModels.find((model) => model.id === selectedLanguageModel)?.name || ''
+    return modelSystem.service.getModelName(selectedLanguageModel)
   }
 
   return (
@@ -41,7 +41,7 @@ export const ModelSelector = () => {
         <DropdownMenuGroup>
           <DropdownMenuLabel className="text-xs">Image Model</DropdownMenuLabel>
           <DropdownMenuRadioGroup value={selectedImageModel} onValueChange={setSelectedImageModel}>
-            {imageModels.map((model) => (
+            {modelSystem.service.getAvailableImageModels().map((model) => (
               <DropdownMenuRadioItem key={model.id} value={model.id} className="text-xs">
                 {model.name}
               </DropdownMenuRadioItem>
@@ -55,7 +55,7 @@ export const ModelSelector = () => {
             value={selectedLanguageModel}
             onValueChange={setSelectedLanguageModel}
           >
-            {languageModels.map((model) => (
+            {modelSystem.service.getAvailableLanguageModels().map((model) => (
               <DropdownMenuRadioItem key={model.id} value={model.id} className="text-xs">
                 {model.name}
               </DropdownMenuRadioItem>
