@@ -45,7 +45,7 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   }
 
   const availableRatios = modelSystem.service.getAvailableRatiosForModel(currentImageModel)
-  
+
   const ratioLabels: Record<string, string> = {
     '1:1': 'Square (1:1)',
     '16:9': 'Landscape (16:9)',
@@ -67,7 +67,7 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
           <Settings2 className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="start">
+      <DropdownMenuContent className="w-56" align="start" sideOffset={8}>
         <DropdownMenuLabel>Models</DropdownMenuLabel>
         <DropdownMenuGroup>
           <RadioGroupSubmenu
