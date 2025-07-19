@@ -111,7 +111,7 @@ export const WithDropdownAction: Story = {
     initialValue: 'A serene landscape with mountains and a lake',
     children: (
       <>
-        <ActionDropdown label="Structure">
+        <ActionDropdown label="Format">
           <ActionDropdownItem onClick={fn()}>Segment</ActionDropdownItem>
           <ActionDropdownItem onClick={fn()}>Atomize</ActionDropdownItem>
         </ActionDropdown>

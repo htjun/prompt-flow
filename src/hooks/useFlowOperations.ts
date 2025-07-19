@@ -24,7 +24,7 @@ export const useFlowOperations = () => {
     nodeId: string,
     nodeType: string,
     nodeData: any,
-    actionType: 'enhance' | 'generate' | 'atomize' | 'describe' | 'structure',
+    actionType: 'enhance' | 'generate' | 'atomize' | 'describe' | 'format',
     sourceNodeId: string
   ) => {
     flowStore.addNodeWithPositioning(
@@ -69,7 +69,7 @@ export const useFlowOperations = () => {
       if (result) {
         // Use effective aspect ratio (node-specific or global)
         const aspectRatio = modelSystem.getEffectiveAspectRatio(sourceNodeId)
-        
+
         flowStore.updateNode(newNodeId, {
           imageData: result.imageData,
           modelUsed: result.modelUsed,
@@ -122,7 +122,7 @@ export const useFlowOperations = () => {
         nodeId: atomizedPromptId,
         isLoading: true,
       },
-      'structure',
+      'format',
       sourceNodeId
     )
 
@@ -130,7 +130,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, atomizedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.STRUCTURE,
+      sourceHandle: HANDLE_IDS.FORMAT,
       target: atomizedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
@@ -232,7 +232,7 @@ export const useFlowOperations = () => {
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
-      'structure',
+      'format',
       sourceNodeId
     )
 
@@ -269,7 +269,7 @@ export const useFlowOperations = () => {
         nodeId: segmentedPromptId,
         isLoading: true,
       },
-      'structure',
+      'format',
       sourceNodeId
     )
 
@@ -277,7 +277,7 @@ export const useFlowOperations = () => {
     flowStore.addEdge({
       id: createEdgeId(sourceNodeId, segmentedPromptId),
       source: sourceNodeId,
-      sourceHandle: HANDLE_IDS.STRUCTURE,
+      sourceHandle: HANDLE_IDS.FORMAT,
       target: segmentedPromptId,
       targetHandle: HANDLE_IDS.PROMPT_INPUT,
       animated: true,
@@ -328,7 +328,7 @@ export const useFlowOperations = () => {
         nodeId: duplicatedNodeId,
         isLoading: false,
       },
-      'structure',
+      'format',
       sourceNodeId
     )
 

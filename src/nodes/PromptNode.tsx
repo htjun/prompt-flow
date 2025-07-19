@@ -66,16 +66,16 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   // Check if this is the root prompt node
   const isRootNode = nodeId === 'prompt'
 
-  // Define configuration - always show Structure and Generate
+  // Define configuration - always show Format and Generate
   const config = {
-    actions: ['structure', 'generate'] as const,
+    actions: ['format', 'generate'] as const,
     handles: [
-      { id: HANDLE_IDS.STRUCTURE, actionKey: 'structure' as const },
+      { id: HANDLE_IDS.FORMAT, actionKey: 'format' as const },
       { id: HANDLE_IDS.GENERATE, actionKey: 'generate' as const },
     ],
   }
 
-  const actionLabels = ['Structure', 'Generate']
+  const actionLabels = ['Format', 'Generate']
 
   // Render handles from config
   const handles = config.handles.map(({ id, actionKey }) =>
@@ -91,7 +91,7 @@ export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
       <NodeTextInput value={prompt} onChange={setPrompt} isLoading={isEnhancing}>
         <SettingsDropdown nodeId={nodeId} />
         <div className="flex items-center">
-          <ActionDropdown label="Structure">
+          <ActionDropdown label="Format">
             <ActionDropdownItem onClick={handleEnhance}>Enhance</ActionDropdownItem>
             <ActionDropdownItem onClick={handleAtomize}>Atomize</ActionDropdownItem>
             <ActionDropdownItem onClick={handleSegment}>Segment</ActionDropdownItem>
