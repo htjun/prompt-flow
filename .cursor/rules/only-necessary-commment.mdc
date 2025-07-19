@@ -1,0 +1,19 @@
+# Only Necessary Comments
+
+Comment only when needed for understanding:
+
+- Complex business logic
+- Non-obvious edge cases
+- Why (not what) something was done
+- External API quirks
+- Performance considerations
+
+Don't comment obvious code or restate what code does.
+
+Be concise. Explain "why", not "what".
+
+description:
+globs:
+alwaysApply: true
+
+---
