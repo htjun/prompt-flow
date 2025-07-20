@@ -5,6 +5,7 @@ import { nodeTypes } from '@/nodes'
 import { useFlowControls } from '@/hooks/useFlowControls'
 import { FlowActionsProvider } from '@/context/FlowActionsContext'
 import ActionPanel from '@/components/ActionPanel'
+import MenuPanel from '@/components/MenuPanel'
 
 export default function HomePage() {
   const { nodes, edges, handleNodesChange, handleEdgesChange, onConnect } = useFlowControls()
@@ -22,6 +23,9 @@ export default function HomePage() {
           snapToGrid={true}
         >
           <Background bgColor="#fcfcfd" />
+          <Panel position="top-left">
+            <MenuPanel />
+          </Panel>
           <Panel position="top-right">
             <ActionPanel />
           </Panel>

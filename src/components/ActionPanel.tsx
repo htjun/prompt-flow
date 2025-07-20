@@ -16,7 +16,7 @@ const ActionPanelButton = ({ icon, label }: ActionPanelButtonProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer text-slate-900/50 transition-colors hover:text-slate-900"
+            className="cursor-pointer rounded-full text-slate-900/50 transition-colors hover:text-slate-900"
           >
             {icon}
           </Button>
@@ -31,9 +31,9 @@ const ActionPanelButton = ({ icon, label }: ActionPanelButtonProps) => {
 
 const ActionPanel = () => {
   return (
-    <div className="flex items-center justify-center rounded-xl border border-slate-400/30 bg-white p-2">
+    <div className="flex items-center justify-center rounded-full border border-slate-400/30 bg-white p-1">
       <ActionPanelButton icon={<PlusIcon className="size-4" />} label="Add Node" />
-      <ActionPanelButton icon={<Images className="size-4" />} label="Style Library" />
+      <ActionPanelButton icon={<Images className="size-4" />} label="Inspiration" />
       <ActionPanelButton icon={<BookText className="size-4" />} label="Prompt Library" />
       <ActionPanelButton icon={<Settings2Icon className="size-4" />} label="Default Options" />
     </div>
