@@ -12,10 +12,6 @@ export default function HomePage() {
   return (
     <div className="relative h-screen w-screen">
       <FlowActionsProvider>
-        <div className="absolute top-0 z-10 w-full">
-          <Header />
-        </div>
-
         <ReactFlow
           nodes={nodes}
           nodeTypes={nodeTypes}
@@ -23,6 +19,7 @@ export default function HomePage() {
           onConnect={onConnect}
           onNodesChange={handleNodesChange}
           onEdgesChange={handleEdgesChange}
+          snapToGrid={true}
         >
           <Background />
           <Controls />
