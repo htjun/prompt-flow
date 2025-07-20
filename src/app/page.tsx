@@ -1,10 +1,10 @@
 'use client'
 
-import { ReactFlow, Background, Controls } from '@xyflow/react'
+import { ReactFlow, Background, Controls, Panel } from '@xyflow/react'
 import { nodeTypes } from '@/nodes'
 import { useFlowControls } from '@/hooks/useFlowControls'
 import { FlowActionsProvider } from '@/context/FlowActionsContext'
-import { Header } from '@/components/Header'
+import ActionPanel from '@/components/ActionPanel'
 
 export default function HomePage() {
   const { nodes, edges, handleNodesChange, handleEdgesChange, onConnect } = useFlowControls()
@@ -21,8 +21,10 @@ export default function HomePage() {
           onEdgesChange={handleEdgesChange}
           snapToGrid={true}
         >
-          <Background />
-          <Controls />
+          <Background bgColor="#fcfcfd" />
+          <Panel position="top-right">
+            <ActionPanel />
+          </Panel>
         </ReactFlow>
       </FlowActionsProvider>
     </div>

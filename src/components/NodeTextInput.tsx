@@ -29,14 +29,12 @@ export const NodeTextInput = ({
         {!isLoading ? (
           <>
             <textarea
-              className="field-sizing-content min-h-16 w-full flex-1 resize-none border-none bg-transparent px-2.5 py-1.5 text-sm text-gray-800 outline-none"
+              className="field-sizing-content min-h-20 w-full flex-1 resize-none border-none bg-transparent px-2.5 pt-2 text-sm text-gray-800 outline-none"
               value={value}
               placeholder={placeholder}
               onChange={(e) => onChange(e.target.value)}
             />
-            <ActionGroup isDisabled={!value.trim()}>
-              {children}
-            </ActionGroup>
+            <ActionGroup isDisabled={!value.trim()}>{children}</ActionGroup>
           </>
         ) : (
           <div className="nodrag flex min-h-28 items-center justify-center gap-2 text-sm text-gray-400">
