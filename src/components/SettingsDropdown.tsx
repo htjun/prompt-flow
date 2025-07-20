@@ -65,7 +65,7 @@ const SettingsDropdown = ({ nodeId }: SettingsDropdownProps) => {
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave}>
-        <Button variant="ghost" size="xs" className="data-[state=open]:bg-accent">
+        <Button variant="ghost" size="xs" className="data-[state=open]:bg-accent rounded-lg">
           <Settings2 className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>

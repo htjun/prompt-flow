@@ -3,5 +3,5 @@
 }
 
 .node-container {
-  @apply h-auto min-w-80 rounded-lg border border-gray-400/30 bg-white transition-all hover:border-gray-400/50 [.selected_&]:border-gray-400;
+  @apply h-auto min-w-80 rounded-xl border border-gray-400/30 bg-white transition-all hover:border-gray-400/50 [.selected_&]:border-gray-400;
 }

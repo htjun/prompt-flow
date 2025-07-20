@@ -14,7 +14,7 @@ interface FlowState {
   // Core state
   nodes: Node[]
   edges: Edge[]
-  
+
   // UI state
   ui: {
     selectedNodeIds: string[]
@@ -25,17 +25,17 @@ interface FlowState {
     }
     isSelectionMode: boolean
   }
-  
+
   // Core actions
   addNode: (node: Omit<Node, 'position'> & { position?: { x: number; y: number } }) => void
   updateNode: (id: string, data: Record<string, unknown>) => void
   removeNode: (id: string) => void
   clearAllNodes: () => void
-  
+
   addEdge: (edge: Edge) => void
   removeEdge: (id: string) => void
   clearAllEdges: () => void
-  
+
   // Flow-specific actions with positioning
   addNodeWithPositioning: (
     node: Omit<Node, 'position'> & { position?: { x: number; y: number } },
@@ -43,17 +43,17 @@ interface FlowState {
     referenceNodeId?: string,
     getNodeDimensions?: (nodeId: string) => { width: number; height: number } | null
   ) => void
-  
+
   // React Flow handlers
   handleNodesChange: (changes: NodeChange[]) => void
   handleEdgesChange: (changes: EdgeChange[]) => void
-  
+
   // Selectors
   getNodeById: (id: string) => Node | undefined
   getNodesByType: (type: string) => Node[]
   getConnectedNodes: (nodeId: string) => { incoming: Node[]; outgoing: Node[] }
   getEdgesByNodeId: (nodeId: string) => { incoming: Edge[]; outgoing: Edge[] }
-  
+
   // UI actions
   setSelectedNodes: (nodeIds: string[]) => void
   addToSelection: (nodeId: string) => void
@@ -61,11 +61,11 @@ interface FlowState {
   clearSelection: () => void
   setViewportState: (viewport: { x: number; y: number; zoom: number }) => void
   setSelectionMode: (enabled: boolean) => void
-  
+
   // Bulk operations
   duplicateNodes: (nodeIds: string[]) => void
   deleteSelectedNodes: () => void
-  
+
   // Layout utilities
   arrangeNodesInGrid: (nodeIds: string[]) => void
   autoLayoutNodes: () => void
@@ -79,7 +79,7 @@ export const useFlowStore = create<FlowState>()(
         {
           id: 'prompt',
           type: 'prompt',
-          position: { x: 100, y: 100 },
+          position: { x: 100, y: 200 },
           data: {},
         },
       ],
@@ -159,12 +159,7 @@ export const useFlowStore = create<FlowState>()(
           'removeEdge'
         ),
 
-      clearAllEdges: () =>
-        set(
-          (state) => ({ edges: [] }),
-          false,
-          'clearAllEdges'
-        ),
+      clearAllEdges: () => set((state) => ({ edges: [] }), false, 'clearAllEdges'),
 
       // Flow-specific positioning action
       addNodeWithPositioning: (node, actionType, referenceNodeId, getNodeDimensions) => {
@@ -206,14 +201,14 @@ export const useFlowStore = create<FlowState>()(
 
       // Selectors
       getNodeById: (id) => get().nodes.find((node) => node.id === id),
-      
+
       getNodesByType: (type) => get().nodes.filter((node) => node.type === type),
-      
+
       getConnectedNodes: (nodeId) => {
         const { nodes, edges } = get()
         const incomingEdges = edges.filter((edge) => edge.target === nodeId)
         const outgoingEdges = edges.filter((edge) => edge.source === nodeId)
-        
+
         return {
           incoming: incomingEdges
             .map((edge) => nodes.find((node) => node.id === edge.source))
@@ -223,7 +218,7 @@ export const useFlowStore = create<FlowState>()(
             .filter(Boolean) as Node[],
         }
       },
-      
+
       getEdgesByNodeId: (nodeId) => {
         const { edges } = get()
         return {
@@ -299,14 +294,14 @@ export const useFlowStore = create<FlowState>()(
       duplicateNodes: (nodeIds) => {
         const { nodes } = get()
         const nodesToDuplicate = nodes.filter((node) => nodeIds.includes(node.id))
-        
+
         nodesToDuplicate.forEach((node, index) => {
           const newId = `${node.id}-copy-${Date.now()}-${index}`
           const newPosition = {
             x: node.position.x + 50,
             y: node.position.y + 50,
           }
-          
+
           get().addNode({
             ...node,
             id: newId,
@@ -327,7 +322,7 @@ export const useFlowStore = create<FlowState>()(
       arrangeNodesInGrid: (nodeIds) => {
         const { nodes } = get()
         const nodesToArrange = nodes.filter((node) => nodeIds.includes(node.id))
-        
+
         nodesToArrange.forEach((node, index) => {
           const position = NodePositioningService.calculateGridPosition(index)
           get().updateNode(node.id, { position })
@@ -341,9 +336,7 @@ export const useFlowStore = create<FlowState>()(
           const position = NodePositioningService.calculateGridPosition(index)
           set(
             (state) => ({
-              nodes: state.nodes.map((n) =>
-                n.id === node.id ? { ...n, position } : n
-              ),
+              nodes: state.nodes.map((n) => (n.id === node.id ? { ...n, position } : n)),
             }),
             false,
             'autoLayoutNodes'

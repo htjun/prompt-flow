@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useHoverDropdown } from '@/hooks/useHoverDropdown'
+import { cn } from '@/lib/utils'
 
 type ActionGroupProps = {
   children: ReactNode
@@ -42,7 +43,7 @@ export const ActionButton = ({ children, onClick, disabled, className }: ActionB
     <Button
       variant="ghost"
       size="xs"
-      className={`hover:cursor-pointer ${className || ''}`}
+      className={cn('rounded-lg hover:cursor-pointer', className)}
       onClick={onClick}
       disabled={disabled}
     >
@@ -75,7 +76,7 @@ export const ActionDropdown = ({ label, children, disabled, className }: ActionD
           disabled={disabled}
           onPointerEnter={onPointerEnter}
           onPointerLeave={onPointerLeave}
-          className={className}
+          className={cn('rounded-lg', className)}
         >
           {label}
         </Button>
