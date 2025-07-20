@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
+@import url('./react-flow-overrides.css');
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './extends.css';
