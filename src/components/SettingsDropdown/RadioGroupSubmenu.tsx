@@ -30,7 +30,11 @@ export const RadioGroupSubmenu = ({
         <DropdownMenuSubContent>
           <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
             {options.map((option) => (
-              <DropdownMenuRadioItem key={option.value} value={option.value}>
+              <DropdownMenuRadioItem
+                key={option.value}
+                value={option.value}
+                onSelect={(event) => event.preventDefault()}
+              >
                 {option.label}
               </DropdownMenuRadioItem>
             ))}
