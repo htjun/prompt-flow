@@ -8,7 +8,7 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { isHandleConnected } from '@/lib/flowHelpers'
 import { PromptCategoryTabs } from './PromptCategoryTabs'
 import { HANDLE_IDS } from '@/constants/flowConstants'
-import SettingsDropdown from '@/components/SettingsDropdown'
+import SettingsDropdown from '@/components/SettingsDropdown/SettingsDropdown'
 
 type ImageAtomization = z.infer<typeof imageAtomizationSchema>
 

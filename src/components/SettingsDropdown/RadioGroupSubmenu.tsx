@@ -5,7 +5,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from './dropdown-menu'
+} from '../ui/dropdown-menu'
 
 interface RadioGroupSubmenuProps {
   label: string

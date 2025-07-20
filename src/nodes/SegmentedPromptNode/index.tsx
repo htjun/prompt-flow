@@ -9,7 +9,7 @@ import { isHandleConnected } from '@/lib/flowHelpers'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import SettingsDropdown from '@/components/SettingsDropdown'
+import SettingsDropdown from '@/components/SettingsDropdown/SettingsDropdown'
 
 type SegmentedPrompt = z.infer<typeof imageSegmentSchema>
 

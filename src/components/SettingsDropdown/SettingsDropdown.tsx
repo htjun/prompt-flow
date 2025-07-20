@@ -5,9 +5,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
   DropdownMenuSeparator,
-} from './ui/dropdown-menu'
-import { RadioGroupSubmenu } from './ui/RadioGroupSubmenu'
-import { Button } from './ui/button'
+} from '../ui/dropdown-menu'
+import { RadioGroupSubmenu } from './RadioGroupSubmenu'
+import { Button } from '../ui/button'
 import { Settings2 } from 'lucide-react'
 import { useModelSystem } from '@/hooks/useModelSystem'
 import { useHoverDropdown } from '@/hooks/useHoverDropdown'

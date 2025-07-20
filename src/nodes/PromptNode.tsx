@@ -6,7 +6,7 @@ import { useFlowActions } from '@/context/FlowActionsContext'
 import { useNodeHandles } from '@/hooks/useNodeHandles'
 import { HANDLE_IDS } from '@/constants/flowConstants'
 import { enhancePrompt as enhancePromptAction } from '@/actions/enhancePrompt'
-import SettingsDropdown from '@/components/SettingsDropdown'
+import SettingsDropdown from '@/components/SettingsDropdown/SettingsDropdown'
 
 export const PromptNode = ({ id = 'prompt' }: Partial<NodeProps>) => {
   const getBasicPrompt = usePromptStore((s) => s.getBasicPrompt)
