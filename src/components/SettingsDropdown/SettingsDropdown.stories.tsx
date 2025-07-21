@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import SettingsDropdown from './SettingsDropdown/SettingsDropdown'
+import SettingsDropdown from './SettingsDropdown'
 
 const meta = {
   title: 'Components/SettingsDropdown',
