@@ -21,15 +21,17 @@ describe('flowStore', () => {
         width: 80,
         height: 40,
       }))
-    expect(useFlowStore.getState().getNodeById('n2')?.position).toEqual({ x: 230, y: 100 })
+    expect(useFlowStore.getState().getNodeById('n2')?.position).toEqual({ x: 230, y: 200 })
   })
 
   it('positions enhance nodes below', () => {
-    useFlowStore.getState().addNodeWithPositioning({ id: 'n3', type: 'x', data: {} }, 'enhance', 'prompt', () => ({
-      width: 80,
-      height: 40,
-    }))
-    expect(useFlowStore.getState().getNodeById('n3')?.position).toEqual({ x: 100, y: 190 })
+    useFlowStore
+      .getState()
+      .addNodeWithPositioning({ id: 'n3', type: 'x', data: {} }, 'enhance', 'prompt', () => ({
+        width: 80,
+        height: 40,
+      }))
+    expect(useFlowStore.getState().getNodeById('n3')?.position).toEqual({ x: 100, y: 290 })
   })
 
   it('updates and removes nodes and edges', () => {
