@@ -1,0 +1,43 @@
+# Quick Review
+
+Perform a fast, focused code review of current changes.
+
+## Auto-Analysis
+
+Run immediately WITHOUT asking:
+
+1. `git diff --cached` - staged changes
+2. `git diff` - unstaged changes
+3. `git status --porcelain` - affected files
+
+## Output
+
+```
+🚨 Issues (Critical → High → Medium)
+• Brief issue description
+
+💡 Quick Fixes
+• Actionable improvement
+
+✅ Good
+• What works well
+```
+
+## Focus Areas
+
+- **Critical**: Security, breaking changes
+- **High**: Performance, logic errors
+- **Medium**: Code quality, maintainability
+
+## Style
+
+- Ultra-concise bullets
+- Priority-based ordering
+- Actionable suggestions only
+- No verbose explanations
+
+description: Fast code review with prioritized issues
+globs:
+alwaysApply: false
+
+---
