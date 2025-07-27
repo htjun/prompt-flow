@@ -1,0 +1,32 @@
+# Sanity Check
+
+Execute commands:
+
+1. `git diff HEAD`
+2. `git status --porcelain`
+
+Report:
+🚨 Issues  
+• Brief description
+
+💡 Quick Fixes  
+• Actionable improvement
+
+✅ Good  
+• What works
+
+🗑️ Remove  
+• Unrelated changes
+
+Focus:
+
+- Critical: security, breaking changes
+- High: logic errors, performance
+- Medium: code quality, maintainability
+- Cleanup: unrelated edits
+
+Style: ultra-concise bullets, priority order, actionable only.
+
+description: AI-powered pre-commit sanity check  
+globs:  
+alwaysApply: false

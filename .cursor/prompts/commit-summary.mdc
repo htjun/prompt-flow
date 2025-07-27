@@ -1,0 +1,26 @@
+# Git Commit Summary
+
+Execute commands:
+
+1. `git diff HEAD`
+2. `git status --porcelain`
+
+Generate commit:
+**Summary** (≤50 chars): `type(scope): description`  
+**Description** (optional): why and impact
+
+Types:
+
+- feat: new feature
+- fix: bug fix
+- docs: documentation
+- style: formatting
+- refactor: code change
+- test: add/update tests
+- chore: maintenance
+
+Execute command: `git commit -m "summary" -m "description"`
+
+description: Generate and execute git commits with proper messages  
+globs:  
+alwaysApply: false
