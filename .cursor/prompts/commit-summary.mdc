@@ -19,7 +19,13 @@ Types:
 - test: add/update tests
 - chore: maintenance
 
-Execute command: `git commit -m "summary" -m "description"`
+Action steps:
+
+1. Display the summary and description
+2. Ask Y/N for confirmation
+3. If Y, then execute:
+   - `git add .`
+   - `git commit -m "summary" -m "description"`
 
 description: Generate and execute git commits with proper messages  
 globs:  
