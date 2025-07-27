@@ -1,0 +1,37 @@
+---
+description: Comprehensive PR-style review of branch changes
+globs:
+alwaysApply: false
+---
+
+# Branch Review
+
+Perform a comprehensive PR-style review of the current branch changes against the main branch. Use ONLY the four sections specified in the Review Format below: Change Summary, Issues, Recommendations, and Verdict.
+
+## Execute commands:
+
+1. `git diff main...HEAD`
+2. `git log main..HEAD --oneline`
+3. `git status --porcelain`
+
+## Review Format:
+
+### 📊 **Change Summary**
+
+• Overview of files modified, commits, and scope of changes
+• Brief description of what was implemented
+
+### 🚨 **Issues**
+
+• Critical problems and concerns requiring attention
+• Include priority level (High/Medium/Low) and specific fixes
+
+### 💡 **Recommendations**
+
+• Improvements and optimizations
+• Best practice suggestions and code quality enhancements
+
+### ✅ **Verdict**
+
+• Approve/Request Changes/Comment
+• One-line key takeaway

@@ -1,3 +1,9 @@
+---
+description: Quick diff review for issues and improvements
+globs:
+alwaysApply: false
+---
+
 # Sanity Check
 
 Review the current diff and provide a concise report highlighting only ‘Issues’ and ‘Quick Fixes’, without additional commentary.
@@ -23,7 +29,3 @@ Style: ultra-concise bullets, priority order, actionable only.
 
 💡 Quick Fixes
 • actionable improvement
-
-description: Quick diff review for issues and improvements
-globs:  
-alwaysApply: false

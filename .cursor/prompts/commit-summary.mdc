@@ -1,3 +1,9 @@
+---
+description: Generate and execute git commits with proper messages
+globs:
+alwaysApply: false
+---
+
 # Git Commit Summary
 
 Review the current diff and generate a commit message with proper formatting.
@@ -29,7 +35,3 @@ Types:
 3. If Y, then execute:
    - `git add .`
    - `git commit -m "summary" -m "description"`
-
-description: Generate and execute git commits with proper messages  
-globs:  
-alwaysApply: false
