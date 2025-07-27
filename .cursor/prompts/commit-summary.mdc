@@ -1,11 +1,14 @@
 # Git Commit Summary
 
-Execute commands:
+Review the current diff and generate a commit message with proper formatting.
+
+## Execute commands:
 
 1. `git diff HEAD`
 2. `git status --porcelain`
 
-Generate commit:
+## Generate commit:
+
 **Summary** (≤50 chars): `type(scope): description`  
 **Description** (optional): why and impact
 
@@ -19,7 +22,7 @@ Types:
 - test: add/update tests
 - chore: maintenance
 
-Action steps:
+## Action steps:
 
 1. Display the summary and description
 2. Ask Y/N for confirmation
