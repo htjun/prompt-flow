@@ -177,7 +177,20 @@ export const useFlowStore = create<FlowState>()(
           }
         }
 
-        get().addNode({ ...node, position })
+        // Check for collisions and find non-overlapping position
+        const existingNodes = get().nodes.map((existingNode) => ({
+          position: existingNode.position,
+          dimensions: getNodeDimensions 
+            ? getNodeDimensions(existingNode.id) || { width: 320, height: 160 }
+            : { width: 320, height: 160 }
+        }))
+
+        const finalPosition = NodePositioningService.findNonOverlappingPosition(
+          position,
+          existingNodes
+        )
+
+        get().addNode({ ...node, position: finalPosition })
       },
 
       // React Flow handlers
@@ -297,15 +310,26 @@ export const useFlowStore = create<FlowState>()(
 
         nodesToDuplicate.forEach((node, index) => {
           const newId = `${node.id}-copy-${Date.now()}-${index}`
-          const newPosition = {
+          const targetPosition = {
             x: node.position.x + 50,
             y: node.position.y + 50,
           }
 
+          // Check for collisions and find non-overlapping position
+          const existingNodes = get().nodes.map((existingNode) => ({
+            position: existingNode.position,
+            dimensions: { width: 320, height: 160 }
+          }))
+
+          const finalPosition = NodePositioningService.findNonOverlappingPosition(
+            targetPosition,
+            existingNodes
+          )
+
           get().addNode({
             ...node,
             id: newId,
-            position: newPosition,
+            position: finalPosition,
           })
         })
       },

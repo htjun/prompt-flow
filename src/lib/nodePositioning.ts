@@ -107,11 +107,55 @@ export class NodePositioningService {
       height: this.DEFAULT_NODE_HEIGHT,
     }
   ): Position {
-    let position = { ...targetPosition }
+    // First check if the target position is already free
+    const hasInitialOverlap = existingNodes.some((node) =>
+      this.doNodesOverlap(targetPosition, newNodeDimensions, node.position, node.dimensions)
+    )
+
+    if (!hasInitialOverlap) {
+      return targetPosition
+    }
+
+    // If there's overlap, try positions with 20px increments
     let attempts = 0
-    const maxAttempts = 20
+    const maxAttempts = 100
+    const offset = 20
 
     while (attempts < maxAttempts) {
+      const offsetMultiplier = Math.floor(attempts / 4) + 1
+      const direction = attempts % 4
+
+      let position: Position
+
+      switch (direction) {
+        case 0: // right and down
+          position = {
+            x: targetPosition.x + offset * offsetMultiplier,
+            y: targetPosition.y + offset * offsetMultiplier,
+          }
+          break
+        case 1: // down only
+          position = {
+            x: targetPosition.x,
+            y: targetPosition.y + offset * offsetMultiplier,
+          }
+          break
+        case 2: // right only
+          position = {
+            x: targetPosition.x + offset * offsetMultiplier,
+            y: targetPosition.y,
+          }
+          break
+        case 3: // left and down
+          position = {
+            x: targetPosition.x - offset * offsetMultiplier,
+            y: targetPosition.y + offset * offsetMultiplier,
+          }
+          break
+        default:
+          position = targetPosition
+      }
+
       const hasOverlap = existingNodes.some((node) =>
         this.doNodesOverlap(position, newNodeDimensions, node.position, node.dimensions)
       )
@@ -120,17 +164,13 @@ export class NodePositioningService {
         return position
       }
 
-      // Try different offsets
-      const offset = (attempts + 1) * this.NODE_GAP
-      position = {
-        x: targetPosition.x + offset,
-        y: targetPosition.y + (attempts % 2 === 0 ? 0 : offset),
-      }
-
       attempts++
     }
 
-    // Fallback: return original position
-    return targetPosition
+    // Fallback: return position with a simple offset
+    return {
+      x: targetPosition.x + offset,
+      y: targetPosition.y + offset,
+    }
   }
 }
