@@ -5,28 +5,23 @@ Execute commands:
 1. `git diff HEAD`
 2. `git status --porcelain`
 
-Report:
-🚨 Issues  
-• Brief description
+Report issues and quick fixes:
 
-💡 Quick Fixes  
-• Actionable improvement
+🚨 Issues
+• brief description
 
-✅ Good  
-• What works
-
-🗑️ Remove  
-• Unrelated changes
+💡 Quick Fixes
+• actionable improvement
 
 Focus:
 
-- Critical: security, breaking changes
-- High: logic errors, performance
-- Medium: code quality, maintainability
-- Cleanup: unrelated edits
+- security, breaking changes
+- logic errors, performance
+- code quality, maintainability
+- unrelated edits
 
 Style: ultra-concise bullets, priority order, actionable only.
 
-description: AI-powered pre-commit sanity check  
+description: Quick diff review for issues and improvements
 globs:  
 alwaysApply: false
