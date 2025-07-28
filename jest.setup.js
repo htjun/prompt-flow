@@ -31,5 +31,5 @@ jest.mock('@xyflow/react', () => ({
 }))
 
 // Setup environment variables for tests
-process.env.NEXT_PUBLIC_OPENAI_API_KEY = 'test-openai-key'
-process.env.NEXT_PUBLIC_REPLICATE_API_TOKEN = 'test-replicate-token'
+process.env.OPENAI_API_KEY = 'test-openai-key'
+process.env.REPLICATE_API_TOKEN = 'test-replicate-token'

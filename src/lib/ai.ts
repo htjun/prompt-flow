@@ -11,10 +11,10 @@ export const mapModelId = (modelId: string): string => {
 }
 
 export const openai = createOpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
   compatibility: 'strict',
 })
 
 export const replicate = new Replicate({
-  auth: process.env.NEXT_PUBLIC_REPLICATE_API_TOKEN,
+  auth: process.env.REPLICATE_API_TOKEN,
 })

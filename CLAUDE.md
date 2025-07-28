@@ -90,8 +90,8 @@ All complex logic is abstracted into custom hooks in `src/hooks/`:
 Required environment variables in `.env.local`:
 
 ```
-NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-NEXT_PUBLIC_REPLICATE_API_TOKEN=your_replicate_api_token
+OPENAI_API_KEY=your_openai_api_key
+REPLICATE_API_TOKEN=your_replicate_api_token
 ```
 
 ## Key Technologies

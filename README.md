@@ -15,8 +15,8 @@ A visual tool for creating and improving image generation prompts using AI. This
 Create a `.env.local` file in the root directory with the following variables:
 
 ```
-NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-NEXT_PUBLIC_REPLICATE_API_TOKEN=your_replicate_api_token
+OPENAI_API_KEY=your_openai_api_key
+REPLICATE_API_TOKEN=your_replicate_api_token
 ```
 
 ## Technologies
