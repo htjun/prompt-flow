@@ -46,8 +46,11 @@ interface ImageState {
   setSelectedImage: (nodeId: string | null) => void
   setViewMode: (mode: 'grid' | 'list') => void
   
-  // Cleanup
+  // Cleanup and memory management
   clearAllImages: () => void
+  pruneOldImages: (maxAge: number) => void
+  limitImageCount: (maxImages: number) => void
+  cleanup: () => void
 }
 
 export const useImageStore = create<ImageState>()(
@@ -146,7 +149,7 @@ export const useImageStore = create<ImageState>()(
           'setViewMode'
         ),
 
-      // Cleanup
+      // Cleanup and memory management
       clearAllImages: () =>
         set(
           {
@@ -160,6 +163,76 @@ export const useImageStore = create<ImageState>()(
           false,
           'clearAllImages'
         ),
+
+      pruneOldImages: (maxAge) => {
+        const cutoffTime = Date.now() - maxAge
+        set(
+          (state) => {
+            const filteredImages: Record<string, ImageData> = {}
+            const filteredOperations: Record<string, OperationState> = {}
+
+            Object.entries(state.images).forEach(([nodeId, imageData]) => {
+              if (imageData.createdAt > cutoffTime) {
+                filteredImages[nodeId] = imageData
+                if (state.operations[nodeId]) {
+                  filteredOperations[nodeId] = state.operations[nodeId]
+                }
+              }
+            })
+
+            return {
+              images: filteredImages,
+              operations: filteredOperations,
+              ui: {
+                ...state.ui,
+                selectedImageId: filteredImages[state.ui.selectedImageId || ''] 
+                  ? state.ui.selectedImageId 
+                  : null,
+              },
+            }
+          },
+          false,
+          'pruneOldImages'
+        )
+      },
+
+      limitImageCount: (maxImages) => {
+        const { images } = get()
+        const imageEntries = Object.entries(images)
+        
+        if (imageEntries.length <= maxImages) return
+
+        const sortedImages = imageEntries.sort(([, a], [, b]) => b.createdAt - a.createdAt)
+        const imagesToKeep = sortedImages.slice(0, maxImages)
+        
+        const filteredImages: Record<string, ImageData> = {}
+        const filteredOperations: Record<string, OperationState> = {}
+        
+        imagesToKeep.forEach(([nodeId, imageData]) => {
+          filteredImages[nodeId] = imageData
+          const operation = get().operations[nodeId]
+          if (operation) {
+            filteredOperations[nodeId] = operation
+          }
+        })
+
+        set(
+          (state) => ({
+            images: filteredImages,
+            operations: filteredOperations,
+            ui: {
+              ...state.ui,
+              selectedImageId: filteredImages[state.ui.selectedImageId || ''] 
+                ? state.ui.selectedImageId 
+                : null,
+            },
+          }),
+          false,
+          'limitImageCount'
+        )
+      },
+
+      cleanup: () => get().clearAllImages(),
     }),
     { name: 'image-store' }
   )

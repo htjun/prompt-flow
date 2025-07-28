@@ -69,6 +69,11 @@ interface FlowState {
   // Layout utilities
   arrangeNodesInGrid: (nodeIds: string[]) => void
   autoLayoutNodes: () => void
+
+  // Memory management
+  cleanup: () => void
+  pruneOldNodes: (maxAge: number) => void
+  limitNodeCount: (maxNodes: number) => void
 }
 
 export const useFlowStore = create<FlowState>()(
@@ -366,6 +371,87 @@ export const useFlowStore = create<FlowState>()(
             'autoLayoutNodes'
           )
         })
+      },
+
+      // Memory management
+      cleanup: () =>
+        set(
+          {
+            nodes: [
+              {
+                id: 'prompt',
+                type: 'prompt',
+                position: { x: 100, y: 200 },
+                data: {},
+              },
+            ],
+            edges: [],
+            ui: {
+              selectedNodeIds: [],
+              viewportState: { x: 0, y: 0, zoom: 1 },
+              isSelectionMode: false,
+            },
+          },
+          false,
+          'cleanup'
+        ),
+
+      pruneOldNodes: (maxAge) => {
+        const cutoffTime = Date.now() - maxAge
+        set(
+          (state) => {
+            const filteredNodes = state.nodes.filter((node) => {
+              const nodeData = node.data as any
+              const createdAt = nodeData?.createdAt || Date.now()
+              return createdAt > cutoffTime
+            })
+            
+            const validNodeIds = new Set(filteredNodes.map(n => n.id))
+            const filteredEdges = state.edges.filter(
+              edge => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
+            )
+
+            return {
+              nodes: filteredNodes,
+              edges: filteredEdges,
+              ui: {
+                ...state.ui,
+                selectedNodeIds: state.ui.selectedNodeIds.filter(id => validNodeIds.has(id)),
+              },
+            }
+          },
+          false,
+          'pruneOldNodes'
+        )
+      },
+
+      limitNodeCount: (maxNodes) => {
+        const { nodes } = get()
+        if (nodes.length <= maxNodes) return
+
+        const sortedNodes = [...nodes].sort((a, b) => {
+          const aCreated = (a.data as any)?.createdAt || 0
+          const bCreated = (b.data as any)?.createdAt || 0
+          return bCreated - aCreated
+        })
+
+        const nodesToKeep = sortedNodes.slice(0, maxNodes)
+        const validNodeIds = new Set(nodesToKeep.map(n => n.id))
+
+        set(
+          (state) => ({
+            nodes: nodesToKeep,
+            edges: state.edges.filter(
+              edge => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
+            ),
+            ui: {
+              ...state.ui,
+              selectedNodeIds: state.ui.selectedNodeIds.filter(id => validNodeIds.has(id)),
+            },
+          }),
+          false,
+          'limitNodeCount'
+        )
       },
     }),
     { name: 'flow-store' }

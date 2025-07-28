@@ -43,8 +43,12 @@ interface PromptState {
   // UI actions
   setActivePrompt: (id: string | null) => void
 
-  // Cleanup
+  // Cleanup and memory management
   clearPrompt: (id: string) => void
+  clearAllPrompts: () => void
+  pruneOldPrompts: (maxAge: number) => void
+  limitPromptCount: (maxPrompts: number) => void
+  cleanup: () => void
 }
 
 // Use ImageAtomization type for atomized prompts
@@ -131,7 +135,7 @@ export const usePromptStore = create<PromptState>()(
           'setActivePrompt'
         ),
 
-      // Cleanup
+      // Cleanup and memory management
       clearPrompt: (id) =>
         set(
           (state) => {
@@ -145,11 +149,132 @@ export const usePromptStore = create<PromptState>()(
                 atomized: restAtomized,
               },
               operations: restOperations,
+              ui: {
+                ...state.ui,
+                activePromptId: state.ui.activePromptId === id ? null : state.ui.activePromptId,
+              },
             }
           },
           false,
           'clearPrompt'
         ),
+
+      clearAllPrompts: () =>
+        set(
+          {
+            entities: {
+              basic: {},
+              atomized: {},
+            },
+            operations: {},
+            ui: {
+              activePromptId: null,
+            },
+          },
+          false,
+          'clearAllPrompts'
+        ),
+
+      pruneOldPrompts: (maxAge) => {
+        const cutoffTime = Date.now() - maxAge
+        set(
+          (state) => {
+            const filteredOperations: Record<string, OperationState> = {}
+            
+            Object.entries(state.operations).forEach(([id, operation]) => {
+              if (operation.timestamp > cutoffTime) {
+                filteredOperations[id] = operation
+              }
+            })
+
+            const validIds = new Set(Object.keys(filteredOperations))
+            const filteredBasic: Record<string, string> = {}
+            const filteredAtomized: Record<string, AtomizedPrompt> = {}
+
+            Object.entries(state.entities.basic).forEach(([id, prompt]) => {
+              if (validIds.has(id)) {
+                filteredBasic[id] = prompt
+              }
+            })
+
+            Object.entries(state.entities.atomized).forEach(([id, prompt]) => {
+              if (validIds.has(id)) {
+                filteredAtomized[id] = prompt
+              }
+            })
+
+            return {
+              entities: {
+                basic: filteredBasic,
+                atomized: filteredAtomized,
+              },
+              operations: filteredOperations,
+              ui: {
+                ...state.ui,
+                activePromptId: validIds.has(state.ui.activePromptId || '') 
+                  ? state.ui.activePromptId 
+                  : null,
+              },
+            }
+          },
+          false,
+          'pruneOldPrompts'
+        )
+      },
+
+      limitPromptCount: (maxPrompts) => {
+        const { operations } = get()
+        const operationEntries = Object.entries(operations)
+        
+        if (operationEntries.length <= maxPrompts) return
+
+        const sortedOperations = operationEntries.sort(([, a], [, b]) => b.timestamp - a.timestamp)
+        const idsToKeep = new Set(sortedOperations.slice(0, maxPrompts).map(([id]) => id))
+
+        set(
+          (state) => {
+            const filteredBasic: Record<string, string> = {}
+            const filteredAtomized: Record<string, AtomizedPrompt> = {}
+            const filteredOperations: Record<string, OperationState> = {}
+
+            Object.entries(state.entities.basic).forEach(([id, prompt]) => {
+              if (idsToKeep.has(id)) {
+                filteredBasic[id] = prompt
+              }
+            })
+
+            Object.entries(state.entities.atomized).forEach(([id, prompt]) => {
+              if (idsToKeep.has(id)) {
+                filteredAtomized[id] = prompt
+              }
+            })
+
+            Object.entries(state.operations).forEach(([id, operation]) => {
+              if (idsToKeep.has(id)) {
+                filteredOperations[id] = operation
+              }
+            })
+
+            return {
+              entities: {
+                basic: filteredBasic,
+                atomized: filteredAtomized,
+              },
+              operations: filteredOperations,
+              ui: {
+                ...state.ui,
+                activePromptId: idsToKeep.has(state.ui.activePromptId || '') 
+                  ? state.ui.activePromptId 
+                  : null,
+              },
+            }
+          },
+          false,
+          'limitPromptCount'
+        )
+      },
+
+      cleanup: () => get().clearAllPrompts(),
     }),
     { name: 'prompt-store' }
   )

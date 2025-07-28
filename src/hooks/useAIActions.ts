@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { enhancePrompt } from '@/actions/enhancePrompt'
 import { atomizePrompt } from '@/actions/atomizePrompt'
 import { segmentPrompt, type CategorizedPrompt } from '@/actions/segmentPrompt'
@@ -30,6 +30,17 @@ export const useAIActions = () => {
   })
 
   const modelSystem = useModelSystem()
+  const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      const controller = abortControllerRef.current
+      if (controller) {
+        controller.abort()
+      }
+    }
+  }, [])
 
   const setOperationState = (operation: keyof AIActionsState, value: boolean | Error | null) => {
     setState((prev) => ({
@@ -40,6 +51,20 @@ export const useAIActions = () => {
 
   const clearError = () => {
     setState((prev) => ({ ...prev, error: null }))
+  }
+
+  const cleanup = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    setState({
+      isEnhancing: false,
+      isGenerating: false,
+      isDescribing: false,
+      isAtomizing: false,
+      isSegmenting: false,
+      error: null,
+    })
   }
 
   const enhance = async (prompt: string) => {
@@ -130,6 +155,7 @@ export const useAIActions = () => {
     describe,
     atomize,
     segment,
+    cleanup,
     isEnhancing: state.isEnhancing,
     isGenerating: state.isGenerating,
     isDescribing: state.isDescribing,
