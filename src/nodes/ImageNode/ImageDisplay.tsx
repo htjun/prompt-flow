@@ -1,6 +1,5 @@
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CopyIcon, DownloadIcon, CheckIcon } from 'lucide-react'
 import { getImageSrc } from './utils'
 
@@ -47,18 +46,11 @@ export const ImageDisplay = ({ imageData, copySuccess, onCopy, onDownload }: Ima
           <TooltipContent>Download image</TooltipContent>
         </Tooltip>
       </div>
-      <Image
+      <img
         src={getImageSrc(imageData)}
         alt="Generated image"
         className="h-auto w-full rounded-sm"
-        width={0}
-        height={0}
-        sizes="100vw"
-        style={{
-          width: '100%',
-          height: 'auto',
-          objectFit: 'contain',
-        }}
+        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
       />
     </div>
   )
