@@ -9,6 +9,12 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 })
 
-const eslintConfig = [...compat.extends('next/core-web-vitals', 'plugin:storybook/recommended')]
+const eslintConfig = [
+  ...compat.extends(
+    'eslint:recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:storybook/recommended'
+  ),
+]
 
 export default eslintConfig

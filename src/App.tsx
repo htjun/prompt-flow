@@ -1,13 +1,11 @@
-'use client'
-
-import { ReactFlow, Background, Controls, Panel } from '@xyflow/react'
+import { ReactFlow, Background, Panel } from '@xyflow/react'
 import { nodeTypes } from '@/nodes'
 import { useFlowControls } from '@/hooks/useFlowControls'
 import { FlowActionsProvider } from '@/context/FlowActionsContext'
 import ActionPanel from '@/components/ActionPanel'
 import MenuPanel from '@/components/MenuPanel'
 
-export default function HomePage() {
+export default function App() {
   const { nodes, edges, handleNodesChange, handleEdgesChange, onConnect } = useFlowControls()
 
   return (

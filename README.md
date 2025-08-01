@@ -1,6 +1,7 @@
 # Image Prompt Flow
 
-A visual tool for creating and improving image generation prompts using AI. This flow-based interface allows you to iteratively refine your prompts through AI enhancement, structured decomposition, and immediate visual feedback through image generation.
+A visual tool for creating and improving image generation prompts using AI. This flow-based interface allows you to iteratively
+refine your prompts through AI enhancement, structured decomposition, and immediate visual feedback through image generation.
 
 ## Getting Started
 
@@ -12,7 +13,7 @@ A visual tool for creating and improving image generation prompts using AI. This
 
 ## Environment Setup
 
-Create a `.env.local` file in the root directory with the following variables:
+Create a `.env` file in the root directory with the following variables:
 
 ```
 OPENAI_API_KEY=your_openai_api_key
@@ -21,7 +22,8 @@ REPLICATE_API_TOKEN=your_replicate_api_token
 
 ## Technologies
 
-- Next.js (App Router)
+- Electron
+- Vite
 - React
 - TypeScript
 - React Flow
@@ -34,14 +36,11 @@ REPLICATE_API_TOKEN=your_replicate_api_token
 # Install dependencies
 pnpm install
 
-# Run the development server with Turbopack
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Start production server
+# Run the Electron app in development
 pnpm start
+
+# Package the application
+pnpm make
 
 # Run tests
 pnpm test
