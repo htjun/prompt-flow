@@ -155,7 +155,6 @@ export const useFlowOperations = () => {
         return null
       }
     } catch (error) {
-      console.error('Error atomizing prompt:', error)
       flowStore.updateNode(atomizedPromptId, { isLoading: false })
       promptStore.setOperationStatus(atomizedPromptId, { status: 'error' })
       return null
@@ -301,7 +300,6 @@ export const useFlowOperations = () => {
         return null
       }
     } catch (error) {
-      console.error('Error segmenting prompt:', error)
       flowStore.updateNode(segmentedPromptId, { isLoading: false })
       promptStore.setOperationStatus(segmentedPromptId, { status: 'error' })
       return null

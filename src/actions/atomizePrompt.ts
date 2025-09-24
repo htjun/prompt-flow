@@ -45,7 +45,6 @@ export const atomizePrompt = async (prompt: string) => {
       usage: JSON.parse(JSON.stringify(result.usage)),
     }
   } catch (error) {
-    console.error('Error in atomizePrompt server action:', error)
     throw error
   }
 }

@@ -83,14 +83,7 @@ export class MemoryManager {
       flowStore.limitNodeCount(MEMORY_CONFIG.MAX_NODES)
       imageStore.limitImageCount(MEMORY_CONFIG.MAX_IMAGES)
       promptStore.limitPromptCount(MEMORY_CONFIG.MAX_PROMPTS)
-
-      console.log('Memory cleanup completed', {
-        timestamp: new Date().toISOString(),
-        aggressiveMode: this.isAggressiveMode,
-      })
-    } catch (error) {
-      console.error('Memory cleanup failed:', error)
-    }
+    } catch (error) {}
   }
 
   getMemoryStats() {
@@ -124,8 +117,6 @@ export class MemoryManager {
     imageStore.cleanup()
     promptStore.cleanup()
     modelStore.reset()
-
-    console.log('All stores reset')
   }
 
   // Check if memory usage is high and enable aggressive cleanup
@@ -138,7 +129,6 @@ export class MemoryManager {
       (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.8
     ) {
       if (!this.isAggressiveMode) {
-        console.warn('High memory usage detected, enabling aggressive cleanup')
         this.enableAggressiveMode()
       }
     } else if (
@@ -146,7 +136,6 @@ export class MemoryManager {
       totalItems <
         (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.5
     ) {
-      console.log('Memory usage normalized, disabling aggressive cleanup')
       this.disableAggressiveMode()
     }
   }

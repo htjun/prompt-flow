@@ -37,7 +37,6 @@ export function MemoryProvider({ children }: MemoryProviderProps) {
           const entries = list.getEntries()
           for (const entry of entries) {
             if (entry.name === 'memory-pressure') {
-              console.warn('Memory pressure detected, forcing cleanup')
               memoryManager.enableAggressiveMode()
               memoryManager.forceCleanup()
             }
@@ -50,9 +49,7 @@ export function MemoryProvider({ children }: MemoryProviderProps) {
           clearInterval(monitoringInterval)
           memoryManager.stopAutoCleanup()
         }
-      } catch (error) {
-        console.warn('Performance observer not supported:', error)
-      }
+      } catch (error) {}
     }
 
     return () => {

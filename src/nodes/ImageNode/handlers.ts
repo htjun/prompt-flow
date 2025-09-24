@@ -17,9 +17,7 @@ export const useImageHandlers = (imageData?: string, nodeId?: string) => {
     try {
       await copyImageToClipboard(imageData)
       setCopySuccess(true)
-    } catch (error) {
-      console.error('Failed to copy image:', error)
-    }
+    } catch (error) {}
   }
 
   const handleDownload = () => {
@@ -27,9 +25,7 @@ export const useImageHandlers = (imageData?: string, nodeId?: string) => {
 
     try {
       downloadImage(imageData)
-    } catch (error) {
-      console.error('Failed to download image:', error)
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {

@@ -46,7 +46,6 @@ export const useModelSystem = () => {
   const setImageModel = (modelId: string, nodeId?: string) => {
     // Validate model exists
     if (!ModelService.validateImageModel(modelId)) {
-      console.warn(`Invalid image model ID: ${modelId}`)
       return
     }
 
@@ -63,7 +62,6 @@ export const useModelSystem = () => {
   const setLanguageModel = (modelId: string, nodeId?: string) => {
     // Validate model exists
     if (!ModelService.validateLanguageModel(modelId)) {
-      console.warn(`Invalid language model ID: ${modelId}`)
       return
     }
 

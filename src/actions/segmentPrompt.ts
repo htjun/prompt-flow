@@ -60,7 +60,6 @@ export const segmentPrompt = async (prompt: string): Promise<CategorizedPrompt> 
       prompts: JSON.parse(JSON.stringify(result.object.prompts)),
     }
   } catch (error) {
-    console.error('Error in segmentPrompt server action:', error)
     throw error
   }
 }
