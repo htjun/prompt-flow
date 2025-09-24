@@ -11,7 +11,7 @@ import { useEffect } from 'react'
 
 export const AspectRatioSelector = () => {
   const modelSystem = useModelSystem()
-  
+
   const selectedImageModel = modelSystem.global.selectedImageModel
   const selectedAspectRatio = modelSystem.global.selectedAspectRatio
   const setSelectedAspectRatio = modelSystem.global.setSelectedAspectRatio

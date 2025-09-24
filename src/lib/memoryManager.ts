@@ -9,12 +9,12 @@ export const MEMORY_CONFIG = {
   MAX_NODE_AGE: 24 * 60 * 60 * 1000, // 24 hours
   MAX_IMAGE_AGE: 12 * 60 * 60 * 1000, // 12 hours
   MAX_PROMPT_AGE: 24 * 60 * 60 * 1000, // 24 hours
-  
+
   // Count limits
   MAX_NODES: 100,
   MAX_IMAGES: 50,
   MAX_PROMPTS: 100,
-  
+
   // Cleanup intervals
   CLEANUP_INTERVAL: 5 * 60 * 1000, // 5 minutes
   AGGRESSIVE_CLEANUP_INTERVAL: 60 * 1000, // 1 minute when memory usage is high
@@ -37,8 +37,8 @@ export class MemoryManager {
   startAutoCleanup() {
     if (this.cleanupInterval) return
 
-    const interval = this.isAggressiveMode 
-      ? MEMORY_CONFIG.AGGRESSIVE_CLEANUP_INTERVAL 
+    const interval = this.isAggressiveMode
+      ? MEMORY_CONFIG.AGGRESSIVE_CLEANUP_INTERVAL
       : MEMORY_CONFIG.CLEANUP_INTERVAL
 
     this.cleanupInterval = setInterval(() => {
@@ -86,7 +86,7 @@ export class MemoryManager {
 
       console.log('Memory cleanup completed', {
         timestamp: new Date().toISOString(),
-        aggressiveMode: this.isAggressiveMode
+        aggressiveMode: this.isAggressiveMode,
       })
     } catch (error) {
       console.error('Memory cleanup failed:', error)
@@ -106,7 +106,7 @@ export class MemoryManager {
       basicPrompts: Object.keys(promptStore.entities.basic).length,
       atomizedPrompts: Object.keys(promptStore.entities.atomized).length,
       promptOperations: Object.keys(promptStore.operations).length,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 
@@ -133,12 +133,19 @@ export class MemoryManager {
     const stats = this.getMemoryStats()
     const totalItems = stats.nodes + stats.images + stats.basicPrompts + stats.atomizedPrompts
 
-    if (totalItems > (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.8) {
+    if (
+      totalItems >
+      (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.8
+    ) {
       if (!this.isAggressiveMode) {
         console.warn('High memory usage detected, enabling aggressive cleanup')
         this.enableAggressiveMode()
       }
-    } else if (this.isAggressiveMode && totalItems < (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.5) {
+    } else if (
+      this.isAggressiveMode &&
+      totalItems <
+        (MEMORY_CONFIG.MAX_NODES + MEMORY_CONFIG.MAX_IMAGES + MEMORY_CONFIG.MAX_PROMPTS) * 0.5
+    ) {
       console.log('Memory usage normalized, disabling aggressive cleanup')
       this.disableAggressiveMode()
     }

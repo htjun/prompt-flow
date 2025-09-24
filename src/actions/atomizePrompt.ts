@@ -8,14 +8,16 @@ import { useGlobalModelStore } from '@/stores/globalModelStore'
 import { z } from 'zod'
 
 const atomizePromptInputSchema = z.object({
-  prompt: z.string().min(1, 'Prompt cannot be empty').max(10000, 'Prompt is too long')
+  prompt: z.string().min(1, 'Prompt cannot be empty').max(10000, 'Prompt is too long'),
 })
 
 export const atomizePrompt = async (prompt: string) => {
   const validationResult = atomizePromptInputSchema.safeParse({ prompt })
-  
+
   if (!validationResult.success) {
-    throw new Error(`Invalid input: ${validationResult.error.errors.map(e => e.message).join(', ')}`)
+    throw new Error(
+      `Invalid input: ${validationResult.error.errors.map((e) => e.message).join(', ')}`
+    )
   }
   try {
     const selectedModel = useGlobalModelStore.getState().selectedLanguageModel

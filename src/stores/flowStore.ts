@@ -11,11 +11,9 @@ import {
 import { NodePositioningService, type ActionType } from '@/lib/nodePositioning'
 
 interface FlowState {
-  // Core state
   nodes: Node[]
   edges: Edge[]
 
-  // UI state
   ui: {
     selectedNodeIds: string[]
     viewportState: {
@@ -26,7 +24,6 @@ interface FlowState {
     isSelectionMode: boolean
   }
 
-  // Core actions
   addNode: (node: Omit<Node, 'position'> & { position?: { x: number; y: number } }) => void
   updateNode: (id: string, data: Record<string, unknown>) => void
   removeNode: (id: string) => void
@@ -36,7 +33,6 @@ interface FlowState {
   removeEdge: (id: string) => void
   clearAllEdges: () => void
 
-  // Flow-specific actions with positioning
   addNodeWithPositioning: (
     node: Omit<Node, 'position'> & { position?: { x: number; y: number } },
     actionType?: ActionType,
@@ -44,17 +40,14 @@ interface FlowState {
     getNodeDimensions?: (nodeId: string) => { width: number; height: number } | null
   ) => void
 
-  // React Flow handlers
   handleNodesChange: (changes: NodeChange[]) => void
   handleEdgesChange: (changes: EdgeChange[]) => void
 
-  // Selectors
   getNodeById: (id: string) => Node | undefined
   getNodesByType: (type: string) => Node[]
   getConnectedNodes: (nodeId: string) => { incoming: Node[]; outgoing: Node[] }
   getEdgesByNodeId: (nodeId: string) => { incoming: Edge[]; outgoing: Edge[] }
 
-  // UI actions
   setSelectedNodes: (nodeIds: string[]) => void
   addToSelection: (nodeId: string) => void
   removeFromSelection: (nodeId: string) => void
@@ -62,15 +55,12 @@ interface FlowState {
   setViewportState: (viewport: { x: number; y: number; zoom: number }) => void
   setSelectionMode: (enabled: boolean) => void
 
-  // Bulk operations
   duplicateNodes: (nodeIds: string[]) => void
   deleteSelectedNodes: () => void
 
-  // Layout utilities
   arrangeNodesInGrid: (nodeIds: string[]) => void
   autoLayoutNodes: () => void
 
-  // Memory management
   cleanup: () => void
   pruneOldNodes: (maxAge: number) => void
   limitNodeCount: (maxNodes: number) => void
@@ -79,7 +69,6 @@ interface FlowState {
 export const useFlowStore = create<FlowState>()(
   devtools(
     (set, get) => ({
-      // Initial state
       nodes: [
         {
           id: 'prompt',
@@ -95,7 +84,6 @@ export const useFlowStore = create<FlowState>()(
         isSelectionMode: false,
       },
 
-      // Core node actions
       addNode: (node) =>
         set(
           (state) => ({
@@ -145,7 +133,6 @@ export const useFlowStore = create<FlowState>()(
           'clearAllNodes'
         ),
 
-      // Core edge actions
       addEdge: (edge) =>
         set(
           (state) => ({
@@ -166,11 +153,9 @@ export const useFlowStore = create<FlowState>()(
 
       clearAllEdges: () => set((state) => ({ edges: [] }), false, 'clearAllEdges'),
 
-      // Flow-specific positioning action
       addNodeWithPositioning: (node, actionType, referenceNodeId, getNodeDimensions) => {
         let position = node.position || { x: 100, y: 100 }
 
-        // Calculate position if actionType and referenceNodeId are provided
         if (actionType && referenceNodeId) {
           const referenceNode = get().getNodeById(referenceNodeId)
           if (referenceNode) {
@@ -182,12 +167,11 @@ export const useFlowStore = create<FlowState>()(
           }
         }
 
-        // Check for collisions and find non-overlapping position
         const existingNodes = get().nodes.map((existingNode) => ({
           position: existingNode.position,
-          dimensions: getNodeDimensions 
+          dimensions: getNodeDimensions
             ? getNodeDimensions(existingNode.id) || { width: 320, height: 160 }
-            : { width: 320, height: 160 }
+            : { width: 320, height: 160 },
         }))
 
         const finalPosition = NodePositioningService.findNonOverlappingPosition(
@@ -198,7 +182,6 @@ export const useFlowStore = create<FlowState>()(
         get().addNode({ ...node, position: finalPosition })
       },
 
-      // React Flow handlers
       handleNodesChange: (changes) =>
         set(
           (state) => ({
@@ -217,7 +200,6 @@ export const useFlowStore = create<FlowState>()(
           'handleEdgesChange'
         ),
 
-      // Selectors
       getNodeById: (id) => get().nodes.find((node) => node.id === id),
 
       getNodesByType: (type) => get().nodes.filter((node) => node.type === type),
@@ -245,7 +227,6 @@ export const useFlowStore = create<FlowState>()(
         }
       },
 
-      // UI actions
       setSelectedNodes: (nodeIds) =>
         set(
           (state) => ({
@@ -308,7 +289,6 @@ export const useFlowStore = create<FlowState>()(
           'setSelectionMode'
         ),
 
-      // Bulk operations
       duplicateNodes: (nodeIds) => {
         const { nodes } = get()
         const nodesToDuplicate = nodes.filter((node) => nodeIds.includes(node.id))
@@ -320,10 +300,9 @@ export const useFlowStore = create<FlowState>()(
             y: node.position.y + 50,
           }
 
-          // Check for collisions and find non-overlapping position
           const existingNodes = get().nodes.map((existingNode) => ({
             position: existingNode.position,
-            dimensions: { width: 320, height: 160 }
+            dimensions: { width: 320, height: 160 },
           }))
 
           const finalPosition = NodePositioningService.findNonOverlappingPosition(
@@ -347,7 +326,6 @@ export const useFlowStore = create<FlowState>()(
         get().clearSelection()
       },
 
-      // Layout utilities
       arrangeNodesInGrid: (nodeIds) => {
         const { nodes } = get()
         const nodesToArrange = nodes.filter((node) => nodeIds.includes(node.id))
@@ -359,7 +337,6 @@ export const useFlowStore = create<FlowState>()(
       },
 
       autoLayoutNodes: () => {
-        // Simple auto-layout: arrange all nodes in a grid
         const { nodes } = get()
         nodes.forEach((node, index) => {
           const position = NodePositioningService.calculateGridPosition(index)
@@ -373,7 +350,6 @@ export const useFlowStore = create<FlowState>()(
         })
       },
 
-      // Memory management
       cleanup: () =>
         set(
           {
@@ -405,10 +381,10 @@ export const useFlowStore = create<FlowState>()(
               const createdAt = nodeData?.createdAt || Date.now()
               return createdAt > cutoffTime
             })
-            
-            const validNodeIds = new Set(filteredNodes.map(n => n.id))
+
+            const validNodeIds = new Set(filteredNodes.map((n) => n.id))
             const filteredEdges = state.edges.filter(
-              edge => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
+              (edge) => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
             )
 
             return {
@@ -416,7 +392,7 @@ export const useFlowStore = create<FlowState>()(
               edges: filteredEdges,
               ui: {
                 ...state.ui,
-                selectedNodeIds: state.ui.selectedNodeIds.filter(id => validNodeIds.has(id)),
+                selectedNodeIds: state.ui.selectedNodeIds.filter((id) => validNodeIds.has(id)),
               },
             }
           },
@@ -436,17 +412,17 @@ export const useFlowStore = create<FlowState>()(
         })
 
         const nodesToKeep = sortedNodes.slice(0, maxNodes)
-        const validNodeIds = new Set(nodesToKeep.map(n => n.id))
+        const validNodeIds = new Set(nodesToKeep.map((n) => n.id))
 
         set(
           (state) => ({
             nodes: nodesToKeep,
             edges: state.edges.filter(
-              edge => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
+              (edge) => validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
             ),
             ui: {
               ...state.ui,
-              selectedNodeIds: state.ui.selectedNodeIds.filter(id => validNodeIds.has(id)),
+              selectedNodeIds: state.ui.selectedNodeIds.filter((id) => validNodeIds.has(id)),
             },
           }),
           false,
@@ -458,7 +434,6 @@ export const useFlowStore = create<FlowState>()(
   )
 )
 
-// Reusable selectors for better performance
 export const selectNodes = (state: FlowState) => state.nodes
 export const selectEdges = (state: FlowState) => state.edges
 export const selectSelectedNodeIds = (state: FlowState) => state.ui.selectedNodeIds
@@ -474,7 +449,6 @@ export const selectNodesByType = (type: string) => (state: FlowState) =>
 export const selectSelectedNodes = (state: FlowState) =>
   state.nodes.filter((node) => state.ui.selectedNodeIds.includes(node.id))
 
-// Derived selectors
 export const selectNodeCount = (state: FlowState) => state.nodes.length
 export const selectEdgeCount = (state: FlowState) => state.edges.length
 export const selectSelectedNodeCount = (state: FlowState) => state.ui.selectedNodeIds.length

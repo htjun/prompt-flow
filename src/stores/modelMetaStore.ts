@@ -89,8 +89,7 @@ export const useModelMetaStore = create<ModelMetaState>()(
       getAvailableLanguageModels: () =>
         get().availableModels.language.filter((model) => model.available),
 
-      getAvailableImageModels: () => 
-        get().availableModels.image.filter((model) => model.available),
+      getAvailableImageModels: () => get().availableModels.image.filter((model) => model.available),
 
       getModelById: (id) => {
         const { availableModels } = get()

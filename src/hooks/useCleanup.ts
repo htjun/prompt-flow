@@ -20,7 +20,7 @@ export function useMemoryCleanup() {
 
   const runCleanup = () => {
     const flowStore = useFlowStore.getState()
-    const imageStore = useImageStore.getState()  
+    const imageStore = useImageStore.getState()
     const promptStore = usePromptStore.getState()
 
     // Prune old data
@@ -57,7 +57,7 @@ export function useComponentCleanup(nodeId?: string) {
       if (nodeId) {
         const imageStore = useImageStore.getState()
         const promptStore = usePromptStore.getState()
-        
+
         // Clean up associated data when component unmounts
         imageStore.removeImage(nodeId)
         promptStore.clearPrompt(nodeId)

@@ -11,12 +11,12 @@ type ImageNodeContentProps = {
   onDescribe: () => void
 }
 
-export const ImageNodeContent = ({ 
-  data, 
-  copySuccess, 
-  onCopy, 
-  onDownload, 
-  onDescribe 
+export const ImageNodeContent = ({
+  data,
+  copySuccess,
+  onCopy,
+  onDownload,
+  onDescribe,
 }: ImageNodeContentProps) => {
   const { imageData, isLoading, hasError, modelUsed } = data
 
@@ -42,9 +42,7 @@ export const ImageNodeContent = ({
             <div className="px-2.5 text-xs text-gray-400">{getModelDisplayName(modelUsed)}</div>
           )}
           <ActionGroup>
-            <ActionButton onClick={onDescribe}>
-              Describe
-            </ActionButton>
+            <ActionButton onClick={onDescribe}>Describe</ActionButton>
           </ActionGroup>
         </div>
       </div>

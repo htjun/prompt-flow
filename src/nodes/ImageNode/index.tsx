@@ -10,9 +10,9 @@ import { ImageNodeContent } from './ImageNodeContent'
 export const ImageNode = ({ data, id }: ImageNodeProps) => {
   const { aspectRatio } = data
   const edges = useEdges()
-  
+
   const { copySuccess, handleDescribe, handleCopy, handleDownload } = useImageHandlers(
-    data.imageData, 
+    data.imageData,
     id
   )
 

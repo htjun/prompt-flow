@@ -4,11 +4,14 @@ import { useGlobalModelStore } from './globalModelStore'
 
 interface NodeModelState {
   // Per-node settings storage
-  nodeSettings: Record<string, {
-    selectedLanguageModel?: string
-    selectedImageModel?: string
-    selectedAspectRatio?: string
-  }>
+  nodeSettings: Record<
+    string,
+    {
+      selectedLanguageModel?: string
+      selectedImageModel?: string
+      selectedAspectRatio?: string
+    }
+  >
 
   // Actions
   setNodeSelectedLanguageModel: (nodeId: string, modelId: string) => void

@@ -7,8 +7,8 @@ describe('NodePositioningService', () => {
       const existingNodes = [
         {
           position: { x: 500, y: 500 },
-          dimensions: { width: 320, height: 160 }
-        }
+          dimensions: { width: 320, height: 160 },
+        },
       ]
 
       const result = NodePositioningService.findNonOverlappingPosition(
@@ -24,8 +24,8 @@ describe('NodePositioningService', () => {
       const existingNodes = [
         {
           position: { x: 100, y: 100 },
-          dimensions: { width: 320, height: 160 }
-        }
+          dimensions: { width: 320, height: 160 },
+        },
       ]
 
       const result = NodePositioningService.findNonOverlappingPosition(
@@ -44,12 +44,12 @@ describe('NodePositioningService', () => {
       const existingNodes = [
         {
           position: { x: 100, y: 100 },
-          dimensions: { width: 320, height: 160 }
+          dimensions: { width: 320, height: 160 },
         },
         {
           position: { x: 120, y: 120 },
-          dimensions: { width: 320, height: 160 }
-        }
+          dimensions: { width: 320, height: 160 },
+        },
       ]
 
       const result = NodePositioningService.findNonOverlappingPosition(
@@ -58,7 +58,7 @@ describe('NodePositioningService', () => {
       )
 
       // Verify no overlap with any existing nodes
-      const hasOverlap = existingNodes.some(node =>
+      const hasOverlap = existingNodes.some((node) =>
         NodePositioningService.doNodesOverlap(
           result,
           { width: 320, height: 160 },

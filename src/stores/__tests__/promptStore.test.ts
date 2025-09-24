@@ -14,7 +14,6 @@ describe('promptStore', () => {
     expect(usePromptStore.getState().getOperationStatus('test-id')).toBe('loading')
   })
 
-
   it('manages atomized prompts', () => {
     const data = {
       scene: { setting: 'forest', time: 'dawn', weather: null, background: null, context: null },

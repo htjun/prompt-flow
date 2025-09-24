@@ -86,11 +86,11 @@ export const useAIActions = () => {
     try {
       clearError()
       setOperationState('isGenerating', true)
-      
+
       // Use effective settings (node-specific or global)
       const imageModel = modelSystem.getEffectiveImageModel(nodeId)
       const aspectRatio = modelSystem.getEffectiveAspectRatio(nodeId)
-      
+
       const result = await generateImageFromPrompt(prompt, imageModel, aspectRatio)
       return result
     } catch (err) {

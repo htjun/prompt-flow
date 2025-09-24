@@ -11,13 +11,13 @@ import { ModelService } from '@/services/ModelService'
 export const useModelSystem = () => {
   // Global model state
   const globalStore = useGlobalModelStore()
-  
+
   // Node-specific model state
   const nodeStore = useNodeModelStore()
-  
+
   // Model metadata and availability
   const metaStore = useModelMetaStore()
-  
+
   // User preferences
   const preferencesStore = useModelPreferencesStore()
 
@@ -55,7 +55,7 @@ export const useModelSystem = () => {
     } else {
       globalStore.setSelectedImageModel(modelId)
     }
-    
+
     // Track in preferences
     preferencesStore.addToRecentModels(modelId, 'image')
   }
@@ -72,7 +72,7 @@ export const useModelSystem = () => {
     } else {
       globalStore.setSelectedLanguageModel(modelId)
     }
-    
+
     // Track in preferences
     preferencesStore.addToRecentModels(modelId, 'language')
   }
@@ -88,19 +88,19 @@ export const useModelSystem = () => {
   return {
     // Global state
     global: globalStore,
-    
+
     // Node state
     node: nodeStore,
-    
+
     // Meta state
     meta: metaStore,
-    
+
     // Preferences
     preferences: preferencesStore,
-    
+
     // Service methods
     service: ModelService,
-    
+
     // Convenience methods
     getEffectiveImageModel,
     getEffectiveLanguageModel,

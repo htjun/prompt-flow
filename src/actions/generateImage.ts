@@ -7,7 +7,7 @@ import { z } from 'zod'
 const generateImageSchema = z.object({
   prompt: z.string().min(1, 'Prompt cannot be empty').max(10000, 'Prompt is too long'),
   modelId: z.string().optional(),
-  aspectRatio: z.string().optional()
+  aspectRatio: z.string().optional(),
 })
 
 export const generateImageFromPrompt = async (
@@ -16,9 +16,11 @@ export const generateImageFromPrompt = async (
   aspectRatio?: string
 ) => {
   const validationResult = generateImageSchema.safeParse({ prompt, modelId, aspectRatio })
-  
+
   if (!validationResult.success) {
-    throw new Error(`Invalid input: ${validationResult.error.errors.map(e => e.message).join(', ')}`)
+    throw new Error(
+      `Invalid input: ${validationResult.error.errors.map((e) => e.message).join(', ')}`
+    )
   }
   try {
     const model = modelId || 'google/imagen-4-fast'

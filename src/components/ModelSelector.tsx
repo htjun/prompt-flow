@@ -13,10 +13,10 @@ import { useModelSystem } from '@/hooks/useModelSystem'
 
 export const ModelSelector = () => {
   const modelSystem = useModelSystem()
-  
+
   const selectedLanguageModel = modelSystem.global.selectedLanguageModel
   const selectedImageModel = modelSystem.global.selectedImageModel
-  
+
   const setSelectedLanguageModel = modelSystem.global.setSelectedLanguageModel
   const setSelectedImageModel = modelSystem.global.setSelectedImageModel
 

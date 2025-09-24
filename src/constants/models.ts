@@ -1,19 +1,46 @@
+/**
+ * Supported AI Models by Provider
+ *
+ * LANGUAGE MODELS
+ * OpenAI:
+ * - gpt-4.1-mini: Fast prompt processing
+ * - gpt-4o: Advanced with vision capabilities
+ *
+ * IMAGE MODELS
+ * Google:
+ * - imagen-4-fast: Fast generation
+ * - imagen-4: Higher quality
+ *
+ * Black Forest Labs:
+ * - flux-dev-lora: LoRA + image input
+ * - flux-kontext-pro: Image input + wide ratios
+ *
+ * Leonardo AI:
+ * - phoenix-1.0: Extensive aspect ratios
+ *
+ * Ideogram:
+ * - ideogram-v3-turbo: Text rendering
+ *
+ * ByteDance:
+ * - seedream-3: Creative outputs
+ */
+
 interface AspectRatioConfig {
-  type: 'dimensions' | 'ratio' | 'size' // How the model expects aspect ratio
-  supportedRatios: string[] // e.g., ['1:1', '16:9', '9:16', '4:3', '3:4']
+  type: 'dimensions' | 'ratio' | 'size'
+  supportedRatios: string[]
   defaultRatio: string
-  // Optional custom dimensions for specific ratios
   customDimensions?: Record<string, { width: number; height: number }>
 }
 
 interface ImageModel {
   id: string
   name: string
-  imageInput: boolean
+  imageInput: boolean // Accepts image input
   aspectRatio: AspectRatioConfig
 }
 
 export const imageModels: ImageModel[] = [
+  // Google Models
   {
     id: 'google/imagen-4-fast',
     name: 'Imagen 4 Fast',
@@ -34,6 +61,8 @@ export const imageModels: ImageModel[] = [
       defaultRatio: '1:1',
     },
   },
+
+  // Black Forest Labs Models
   {
     id: 'black-forest-labs/flux-dev-lora',
     name: 'Flux Dev',
@@ -78,6 +107,8 @@ export const imageModels: ImageModel[] = [
       defaultRatio: '1:1',
     },
   },
+
+  // Leonardo AI
   {
     id: 'leonardoai/phoenix-1.0',
     name: 'Phoenix 1.0',
@@ -102,6 +133,8 @@ export const imageModels: ImageModel[] = [
       defaultRatio: '3:2',
     },
   },
+
+  // Ideogram
   {
     id: 'ideogram-ai/ideogram-v3-turbo',
     name: 'Ideogram V3 Turbo',
@@ -112,6 +145,8 @@ export const imageModels: ImageModel[] = [
       defaultRatio: '1:1',
     },
   },
+
+  // ByteDance
   {
     id: 'bytedance/seedream-3',
     name: 'Seedream-3',

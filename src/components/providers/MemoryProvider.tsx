@@ -67,11 +67,7 @@ export function MemoryProvider({ children }: MemoryProviderProps) {
     resetAll: () => memoryManager.resetAllStores(),
   }
 
-  return (
-    <MemoryContext.Provider value={contextValue}>
-      {children}
-    </MemoryContext.Provider>
-  )
+  return <MemoryContext.Provider value={contextValue}>{children}</MemoryContext.Provider>
 }
 
 export function useMemoryContext() {
@@ -93,7 +89,7 @@ export function MemoryStats() {
   const stats = getStats()
 
   return (
-    <div className="fixed bottom-4 right-4 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-50">
+    <div className="fixed right-4 bottom-4 z-50 rounded bg-gray-800 p-2 text-xs text-white shadow-lg">
       <div>Nodes: {stats.nodes}</div>
       <div>Images: {stats.images}</div>
       <div>Prompts: {stats.basicPrompts + stats.atomizedPrompts}</div>

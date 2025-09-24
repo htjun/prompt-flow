@@ -18,34 +18,34 @@ interface OperationState {
 interface ImageState {
   // Normalized image storage by node ID
   images: Record<string, ImageData>
-  
+
   // Operation tracking per image
   operations: Record<string, OperationState>
-  
+
   // UI state
   ui: {
     selectedImageId: string | null
     viewMode: 'grid' | 'list'
   }
-  
+
   // Actions
   setImageData: (nodeId: string, data: Omit<ImageData, 'createdAt'>) => void
   removeImage: (nodeId: string) => void
-  
+
   // Operation management
   setOperationStatus: (nodeId: string, status: Omit<OperationState, 'timestamp'>) => void
   clearOperation: (nodeId: string) => void
-  
+
   // Selectors
   getImageData: (nodeId: string) => ImageData | null
   getOperationStatus: (nodeId: string) => OperationState['status']
   getOperationError: (nodeId: string) => string | undefined
   getAllImages: () => ImageData[]
-  
+
   // UI actions
   setSelectedImage: (nodeId: string | null) => void
   setViewMode: (mode: 'grid' | 'list') => void
-  
+
   // Cleanup and memory management
   clearAllImages: () => void
   pruneOldImages: (maxAge: number) => void
@@ -90,7 +90,8 @@ export const useImageStore = create<ImageState>()(
               operations: restOps,
               ui: {
                 ...state.ui,
-                selectedImageId: state.ui.selectedImageId === nodeId ? null : state.ui.selectedImageId,
+                selectedImageId:
+                  state.ui.selectedImageId === nodeId ? null : state.ui.selectedImageId,
               },
             }
           },
@@ -185,8 +186,8 @@ export const useImageStore = create<ImageState>()(
               operations: filteredOperations,
               ui: {
                 ...state.ui,
-                selectedImageId: filteredImages[state.ui.selectedImageId || ''] 
-                  ? state.ui.selectedImageId 
+                selectedImageId: filteredImages[state.ui.selectedImageId || '']
+                  ? state.ui.selectedImageId
                   : null,
               },
             }
@@ -199,15 +200,15 @@ export const useImageStore = create<ImageState>()(
       limitImageCount: (maxImages) => {
         const { images } = get()
         const imageEntries = Object.entries(images)
-        
+
         if (imageEntries.length <= maxImages) return
 
         const sortedImages = imageEntries.sort(([, a], [, b]) => b.createdAt - a.createdAt)
         const imagesToKeep = sortedImages.slice(0, maxImages)
-        
+
         const filteredImages: Record<string, ImageData> = {}
         const filteredOperations: Record<string, OperationState> = {}
-        
+
         imagesToKeep.forEach(([nodeId, imageData]) => {
           filteredImages[nodeId] = imageData
           const operation = get().operations[nodeId]
@@ -222,8 +223,8 @@ export const useImageStore = create<ImageState>()(
             operations: filteredOperations,
             ui: {
               ...state.ui,
-              selectedImageId: filteredImages[state.ui.selectedImageId || ''] 
-                ? state.ui.selectedImageId 
+              selectedImageId: filteredImages[state.ui.selectedImageId || '']
+                ? state.ui.selectedImageId
                 : null,
             },
           }),
@@ -263,7 +264,9 @@ export const selectHasImageError = (nodeId: string) => (state: ImageState) =>
 
 export const selectImageCount = (state: ImageState) => Object.keys(state.images).length
 
-export const selectRecentImages = (limit: number = 10) => (state: ImageState) =>
-  Object.values(state.images)
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .slice(0, limit)
+export const selectRecentImages =
+  (limit: number = 10) =>
+  (state: ImageState) =>
+    Object.values(state.images)
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, limit)

@@ -80,7 +80,6 @@ export const usePromptStore = create<PromptState>()(
           'setBasicPrompt'
         ),
 
-
       setAtomizedPrompt: (id, data) =>
         set(
           (state) => ({
@@ -180,7 +179,7 @@ export const usePromptStore = create<PromptState>()(
         set(
           (state) => {
             const filteredOperations: Record<string, OperationState> = {}
-            
+
             Object.entries(state.operations).forEach(([id, operation]) => {
               if (operation.timestamp > cutoffTime) {
                 filteredOperations[id] = operation
@@ -211,8 +210,8 @@ export const usePromptStore = create<PromptState>()(
               operations: filteredOperations,
               ui: {
                 ...state.ui,
-                activePromptId: validIds.has(state.ui.activePromptId || '') 
-                  ? state.ui.activePromptId 
+                activePromptId: validIds.has(state.ui.activePromptId || '')
+                  ? state.ui.activePromptId
                   : null,
               },
             }
@@ -225,7 +224,7 @@ export const usePromptStore = create<PromptState>()(
       limitPromptCount: (maxPrompts) => {
         const { operations } = get()
         const operationEntries = Object.entries(operations)
-        
+
         if (operationEntries.length <= maxPrompts) return
 
         const sortedOperations = operationEntries.sort(([, a], [, b]) => b.timestamp - a.timestamp)
@@ -263,8 +262,8 @@ export const usePromptStore = create<PromptState>()(
               operations: filteredOperations,
               ui: {
                 ...state.ui,
-                activePromptId: idsToKeep.has(state.ui.activePromptId || '') 
-                  ? state.ui.activePromptId 
+                activePromptId: idsToKeep.has(state.ui.activePromptId || '')
+                  ? state.ui.activePromptId
                   : null,
               },
             }
@@ -283,7 +282,6 @@ export const usePromptStore = create<PromptState>()(
 // Reusable selectors for better performance
 export const selectBasicPromptById = (id: string) => (state: PromptState) =>
   state.entities.basic[id] || ''
-
 
 export const selectAtomizedPromptById = (id: string) => (state: PromptState) =>
   state.entities.atomized[id] || null
