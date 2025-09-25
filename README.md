@@ -1,6 +1,8 @@
-# Image Prompt Flow
+# Prompt Flow
 
 A visual node-based tool for creating and improving AI image generation prompts. Build complex prompt engineering workflows using a flow-based interface with real-time AI enhancement and image generation.
+
+![Prompt Flow screenshot](public/screenshot.jpg)
 
 ## Features
 
